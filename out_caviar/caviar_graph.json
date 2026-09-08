@@ -1,0 +1,7763 @@
+{
+ "phases": {
+  "1": {
+   "approx_range": "1994-01..1994-02(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:2",
+    "caviar:3",
+    "caviar:4",
+    "caviar:5",
+    "caviar:54",
+    "caviar:6",
+    "caviar:64",
+    "caviar:7",
+    "caviar:8",
+    "caviar:83",
+    "caviar:85",
+    "caviar:88",
+    "caviar:89",
+    "caviar:90"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:4",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:89",
+     "weight": 4,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 4,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:5",
+     "weight": 2,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:88",
+     "weight": 2,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 9,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:90",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 2,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:54",
+     "weight": 2,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:64",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:7",
+     "weight": 3,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:6",
+     "weight": 5,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:88",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:85",
+     "weight": 3,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:6",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:88",
+     "weight": 2,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:6",
+     "weight": 5,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:7",
+     "dst": "caviar:89",
+     "weight": 2,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:88",
+     "weight": 1,
+     "phase": 1,
+     "approx_range": "1994-01..1994-02(approx)"
+    }
+   ]
+  },
+  "2": {
+   "approx_range": "1994-03..1994-04(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:10",
+    "caviar:11",
+    "caviar:12",
+    "caviar:2",
+    "caviar:3",
+    "caviar:47",
+    "caviar:5",
+    "caviar:55",
+    "caviar:56",
+    "caviar:6",
+    "caviar:64",
+    "caviar:7",
+    "caviar:76",
+    "caviar:8",
+    "caviar:83",
+    "caviar:85",
+    "caviar:86",
+    "caviar:88",
+    "caviar:89",
+    "caviar:9",
+    "caviar:90",
+    "caviar:97",
+    "caviar:98"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:89",
+     "weight": 6,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 8,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 31,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:5",
+     "weight": 5,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:88",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:90",
+     "weight": 3,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 7,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:64",
+     "weight": 3,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 7,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:55",
+     "weight": 4,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:10",
+     "weight": 3,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:56",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:97",
+     "weight": 2,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:47",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:98",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 4,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:9",
+     "weight": 5,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:7",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:11",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:10",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:11",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:88",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:76",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:1",
+     "weight": 5,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:7",
+     "dst": "caviar:89",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:83",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:1",
+     "weight": 5,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:64",
+     "weight": 2,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:55",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:47",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:98",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 2,
+     "approx_range": "1994-03..1994-04(approx)"
+    }
+   ]
+  },
+  "3": {
+   "approx_range": "1994-05..1994-06(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:10",
+    "caviar:107",
+    "caviar:11",
+    "caviar:12",
+    "caviar:13",
+    "caviar:2",
+    "caviar:3",
+    "caviar:32",
+    "caviar:34",
+    "caviar:35",
+    "caviar:4",
+    "caviar:48",
+    "caviar:49",
+    "caviar:5",
+    "caviar:50",
+    "caviar:51",
+    "caviar:52",
+    "caviar:55",
+    "caviar:56",
+    "caviar:6",
+    "caviar:7",
+    "caviar:76",
+    "caviar:8",
+    "caviar:83",
+    "caviar:84",
+    "caviar:85",
+    "caviar:86",
+    "caviar:88",
+    "caviar:89",
+    "caviar:9",
+    "caviar:90",
+    "caviar:99"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:89",
+     "weight": 7,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 38,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 29,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:5",
+     "weight": 7,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:48",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 11,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:90",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:86",
+     "weight": 29,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 8,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:7",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:6",
+     "weight": 4,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:55",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:10",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:56",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 5,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:9",
+     "weight": 17,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:34",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:35",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:32",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:84",
+     "weight": 4,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:49",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:50",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:13",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:52",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:4",
+     "dst": "caviar:5",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:7",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:86",
+     "weight": 9,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:6",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:11",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:84",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:107",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:52",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:85",
+     "weight": 4,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:86",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:9",
+     "weight": 5,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:99",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:85",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:6",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:83",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:107",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:34",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:32",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:85",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:9",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:9",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:1",
+     "weight": 6,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:52",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:49",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:49",
+     "dst": "caviar:83",
+     "weight": 3,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:49",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:49",
+     "dst": "caviar:90",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:49",
+     "dst": "caviar:84",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:50",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:99",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:13",
+     "dst": "caviar:9",
+     "weight": 2,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    },
+    {
+     "src": "caviar:51",
+     "dst": "caviar:9",
+     "weight": 1,
+     "phase": 3,
+     "approx_range": "1994-05..1994-06(approx)"
+    }
+   ]
+  },
+  "4": {
+   "approx_range": "1994-07..1994-08(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:106",
+    "caviar:107",
+    "caviar:109",
+    "caviar:11",
+    "caviar:12",
+    "caviar:13",
+    "caviar:14",
+    "caviar:15",
+    "caviar:2",
+    "caviar:3",
+    "caviar:31",
+    "caviar:35",
+    "caviar:4",
+    "caviar:47",
+    "caviar:49",
+    "caviar:5",
+    "caviar:51",
+    "caviar:52",
+    "caviar:53",
+    "caviar:6",
+    "caviar:63",
+    "caviar:7",
+    "caviar:76",
+    "caviar:8",
+    "caviar:83",
+    "caviar:84",
+    "caviar:85",
+    "caviar:86",
+    "caviar:88",
+    "caviar:89",
+    "caviar:9",
+    "caviar:90"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:4",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:89",
+     "weight": 12,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 17,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 71,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:5",
+     "weight": 16,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:88",
+     "weight": 7,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 45,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:90",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:86",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 16,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:6",
+     "weight": 11,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 10,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:47",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 9,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:9",
+     "weight": 15,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:11",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:49",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:13",
+     "weight": 7,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:52",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:106",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:15",
+     "weight": 7,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:7",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:49",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:109",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:31",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:89",
+     "dst": "caviar:14",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:85",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:86",
+     "weight": 8,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:84",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:107",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:52",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:106",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 9,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:85",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:9",
+     "weight": 6,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:31",
+     "weight": 7,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:5",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:85",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 7,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:3",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:88",
+     "weight": 6,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:76",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:90",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:90",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:83",
+     "weight": 9,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:107",
+     "weight": 2,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:7",
+     "dst": "caviar:89",
+     "weight": 3,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:1",
+     "weight": 15,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:9",
+     "weight": 4,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:35",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:85",
+     "weight": 6,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:1",
+     "weight": 29,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:53",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:83",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:107",
+     "dst": "caviar:63",
+     "weight": 40,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:13",
+     "dst": "caviar:51",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:31",
+     "dst": "caviar:9",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    },
+    {
+     "src": "caviar:52",
+     "dst": "caviar:83",
+     "weight": 4,
+     "phase": 4,
+     "approx_range": "1994-07..1994-08(approx)"
+    }
+   ]
+  },
+  "5": {
+   "approx_range": "1994-09..1994-10(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:100",
+    "caviar:108",
+    "caviar:11",
+    "caviar:12",
+    "caviar:13",
+    "caviar:15",
+    "caviar:17",
+    "caviar:18",
+    "caviar:19",
+    "caviar:2",
+    "caviar:25",
+    "caviar:3",
+    "caviar:31",
+    "caviar:32",
+    "caviar:34",
+    "caviar:4",
+    "caviar:47",
+    "caviar:5",
+    "caviar:55",
+    "caviar:6",
+    "caviar:7",
+    "caviar:76",
+    "caviar:8",
+    "caviar:82",
+    "caviar:83",
+    "caviar:84",
+    "caviar:85",
+    "caviar:86",
+    "caviar:88",
+    "caviar:89",
+    "caviar:9"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:4",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:89",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 26,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:5",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 18,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:6",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:55",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:47",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 7,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:34",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:31",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:82",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:19",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:15",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:86",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:9",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:31",
+     "weight": 4,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:12",
+     "weight": 4,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:85",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:88",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:83",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:7",
+     "dst": "caviar:89",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:1",
+     "weight": 10,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:5",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:89",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:1",
+     "weight": 19,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:32",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:31",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:31",
+     "dst": "caviar:13",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:9",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:31",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:18",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:25",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:108",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:108",
+     "dst": "caviar:6",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:100",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:18",
+     "dst": "caviar:12",
+     "weight": 3,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:17",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    },
+    {
+     "src": "caviar:19",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 5,
+     "approx_range": "1994-09..1994-10(approx)"
+    }
+   ]
+  },
+  "6": {
+   "approx_range": "1994-11..1994-12(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:11",
+    "caviar:12",
+    "caviar:13",
+    "caviar:14",
+    "caviar:15",
+    "caviar:17",
+    "caviar:18",
+    "caviar:19",
+    "caviar:2",
+    "caviar:20",
+    "caviar:25",
+    "caviar:3",
+    "caviar:31",
+    "caviar:4",
+    "caviar:5",
+    "caviar:6",
+    "caviar:76",
+    "caviar:77",
+    "caviar:78",
+    "caviar:8",
+    "caviar:82",
+    "caviar:83",
+    "caviar:84",
+    "caviar:85",
+    "caviar:87",
+    "caviar:9"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:4",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 12,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 29,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:5",
+     "weight": 14,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 21,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 8,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 12,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 22,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:82",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:19",
+     "weight": 11,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:77",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:15",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 62,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:83",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:85",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:8",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:76",
+     "weight": 8,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:9",
+     "weight": 3,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:12",
+     "weight": 17,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:14",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:77",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:5",
+     "dst": "caviar:1",
+     "weight": 61,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:5",
+     "dst": "caviar:3",
+     "weight": 3,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:5",
+     "dst": "caviar:8",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:76",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:1",
+     "weight": 10,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:3",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:1",
+     "weight": 7,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:1",
+     "weight": 42,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:3",
+     "weight": 4,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:19",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:78",
+     "weight": 3,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:1",
+     "weight": 33,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:20",
+     "weight": 8,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:85",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:13",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:3",
+     "weight": 32,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:76",
+     "weight": 5,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:9",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:13",
+     "weight": 3,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:31",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:14",
+     "weight": 4,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:18",
+     "weight": 31,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:17",
+     "weight": 25,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:25",
+     "weight": 3,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:18",
+     "dst": "caviar:12",
+     "weight": 8,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:17",
+     "dst": "caviar:12",
+     "weight": 15,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:25",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:19",
+     "dst": "caviar:1",
+     "weight": 75,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:19",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:78",
+     "dst": "caviar:76",
+     "weight": 16,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:77",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:77",
+     "dst": "caviar:3",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:20",
+     "dst": "caviar:1",
+     "weight": 10,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:15",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:15",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    },
+    {
+     "src": "caviar:15",
+     "dst": "caviar:76",
+     "weight": 2,
+     "phase": 6,
+     "approx_range": "1994-11..1994-12(approx)"
+    }
+   ]
+  },
+  "7": {
+   "approx_range": "1995-01..1995-02(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:11",
+    "caviar:12",
+    "caviar:14",
+    "caviar:15",
+    "caviar:16",
+    "caviar:17",
+    "caviar:18",
+    "caviar:19",
+    "caviar:2",
+    "caviar:20",
+    "caviar:22",
+    "caviar:28",
+    "caviar:3",
+    "caviar:34",
+    "caviar:4",
+    "caviar:5",
+    "caviar:55",
+    "caviar:6",
+    "caviar:61",
+    "caviar:62",
+    "caviar:68",
+    "caviar:69",
+    "caviar:74",
+    "caviar:75",
+    "caviar:76",
+    "caviar:77",
+    "caviar:78",
+    "caviar:79",
+    "caviar:8",
+    "caviar:81",
+    "caviar:83",
+    "caviar:85",
+    "caviar:87",
+    "caviar:88",
+    "caviar:9"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:4",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 23,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:5",
+     "weight": 3,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 2,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:62",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:9",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 5,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:6",
+     "weight": 5,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 26,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:11",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:14",
+     "weight": 2,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:19",
+     "weight": 4,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:77",
+     "weight": 20,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:87",
+     "weight": 2,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:28",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:81",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:9",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 65,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:83",
+     "weight": 4,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:88",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:85",
+     "weight": 4,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:9",
+     "weight": 12,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:2",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:19",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:77",
+     "weight": 2,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:74",
+     "weight": 3,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:88",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:9",
+     "dst": "caviar:83",
+     "weight": 5,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:1",
+     "weight": 6,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:55",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:19",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:78",
+     "weight": 9,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:79",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:61",
+     "weight": 2,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:34",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:1",
+     "weight": 29,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:20",
+     "weight": 8,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:22",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:18",
+     "dst": "caviar:12",
+     "weight": 6,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:17",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:19",
+     "dst": "caviar:1",
+     "weight": 21,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:19",
+     "dst": "caviar:76",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:78",
+     "dst": "caviar:76",
+     "weight": 7,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:78",
+     "dst": "caviar:79",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:77",
+     "dst": "caviar:1",
+     "weight": 13,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:77",
+     "dst": "caviar:19",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:1",
+     "weight": 15,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:3",
+     "weight": 2,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:81",
+     "weight": 2,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:20",
+     "dst": "caviar:1",
+     "weight": 5,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:22",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:74",
+     "dst": "caviar:85",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:79",
+     "dst": "caviar:78",
+     "weight": 3,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:69",
+     "dst": "caviar:1",
+     "weight": 11,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:68",
+     "dst": "caviar:1",
+     "weight": 11,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:16",
+     "dst": "caviar:12",
+     "weight": 4,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:75",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    },
+    {
+     "src": "caviar:15",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 7,
+     "approx_range": "1995-01..1995-02(approx)"
+    }
+   ]
+  },
+  "8": {
+   "approx_range": "1995-03..1995-04(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:11",
+    "caviar:12",
+    "caviar:13",
+    "caviar:14",
+    "caviar:16",
+    "caviar:17",
+    "caviar:18",
+    "caviar:19",
+    "caviar:2",
+    "caviar:20",
+    "caviar:22",
+    "caviar:23",
+    "caviar:25",
+    "caviar:28",
+    "caviar:3",
+    "caviar:33",
+    "caviar:34",
+    "caviar:35",
+    "caviar:36",
+    "caviar:37",
+    "caviar:38",
+    "caviar:39",
+    "caviar:4",
+    "caviar:59",
+    "caviar:6",
+    "caviar:67",
+    "caviar:73",
+    "caviar:76",
+    "caviar:77",
+    "caviar:78",
+    "caviar:8",
+    "caviar:80",
+    "caviar:81",
+    "caviar:82",
+    "caviar:83",
+    "caviar:84",
+    "caviar:85",
+    "caviar:86",
+    "caviar:87",
+    "caviar:9",
+    "caviar:91"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:4",
+     "weight": 2,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 2,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 76,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 12,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:2",
+     "weight": 4,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 2,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:9",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:11",
+     "weight": 7,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:84",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:14",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:82",
+     "weight": 8,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:19",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:77",
+     "weight": 6,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:87",
+     "weight": 22,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:20",
+     "weight": 6,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:28",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:81",
+     "weight": 2,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:67",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:4",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 6,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:85",
+     "weight": 4,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:86",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:8",
+     "weight": 6,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:34",
+     "weight": 2,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:14",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:82",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:87",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:37",
+     "weight": 9,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:3",
+     "weight": 7,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:86",
+     "dst": "caviar:20",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:34",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:2",
+     "dst": "caviar:35",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:6",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:19",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:73",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:59",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:34",
+     "dst": "caviar:2",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:36",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:13",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:14",
+     "weight": 16,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:22",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:23",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:18",
+     "dst": "caviar:12",
+     "weight": 6,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:17",
+     "dst": "caviar:12",
+     "weight": 6,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:25",
+     "dst": "caviar:12",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:19",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:78",
+     "dst": "caviar:76",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:1",
+     "weight": 6,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:9",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:81",
+     "weight": 4,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:38",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:73",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:39",
+     "weight": 8,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:37",
+     "weight": 4,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:91",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:22",
+     "dst": "caviar:3",
+     "weight": 3,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:16",
+     "dst": "caviar:12",
+     "weight": 25,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:28",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:38",
+     "dst": "caviar:87",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:87",
+     "weight": 2,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:23",
+     "dst": "caviar:12",
+     "weight": 5,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:33",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    },
+    {
+     "src": "caviar:80",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 8,
+     "approx_range": "1995-03..1995-04(approx)"
+    }
+   ]
+  },
+  "9": {
+   "approx_range": "1995-05..1995-06(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:101",
+    "caviar:105",
+    "caviar:11",
+    "caviar:12",
+    "caviar:13",
+    "caviar:14",
+    "caviar:16",
+    "caviar:17",
+    "caviar:18",
+    "caviar:2",
+    "caviar:29",
+    "caviar:3",
+    "caviar:30",
+    "caviar:36",
+    "caviar:37",
+    "caviar:41",
+    "caviar:46",
+    "caviar:59",
+    "caviar:6",
+    "caviar:7",
+    "caviar:76",
+    "caviar:78",
+    "caviar:79",
+    "caviar:8",
+    "caviar:81",
+    "caviar:82",
+    "caviar:83",
+    "caviar:85",
+    "caviar:87",
+    "caviar:88",
+    "caviar:89",
+    "caviar:90",
+    "caviar:96"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 3,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 6,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:6",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 7,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:11",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:82",
+     "weight": 42,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:87",
+     "weight": 12,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:96",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:89",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:85",
+     "weight": 11,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:90",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:2",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:7",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:8",
+     "weight": 11,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:76",
+     "weight": 3,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:82",
+     "weight": 2,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:87",
+     "weight": 17,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:88",
+     "dst": "caviar:85",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:3",
+     "weight": 11,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:7",
+     "dst": "caviar:79",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:87",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:59",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:3",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:13",
+     "weight": 2,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:14",
+     "weight": 13,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:17",
+     "weight": 4,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:16",
+     "weight": 9,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:29",
+     "weight": 6,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:30",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:18",
+     "dst": "caviar:12",
+     "weight": 6,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:17",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:1",
+     "weight": 10,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:87",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:36",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:96",
+     "weight": 4,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:46",
+     "weight": 22,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:78",
+     "dst": "caviar:76",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:1",
+     "weight": 4,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:3",
+     "weight": 25,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:82",
+     "weight": 8,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:81",
+     "weight": 5,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:37",
+     "weight": 10,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:105",
+     "weight": 2,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:41",
+     "weight": 3,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:79",
+     "dst": "caviar:78",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:79",
+     "dst": "caviar:101",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:16",
+     "dst": "caviar:12",
+     "weight": 12,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:81",
+     "dst": "caviar:87",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:96",
+     "dst": "caviar:46",
+     "weight": 4,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:96",
+     "dst": "caviar:30",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:46",
+     "dst": "caviar:82",
+     "weight": 5,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:46",
+     "dst": "caviar:96",
+     "weight": 4,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    },
+    {
+     "src": "caviar:29",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 9,
+     "approx_range": "1995-05..1995-06(approx)"
+    }
+   ]
+  },
+  "10": {
+   "approx_range": "1995-07..1995-08(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:103",
+    "caviar:104",
+    "caviar:105",
+    "caviar:12",
+    "caviar:14",
+    "caviar:16",
+    "caviar:17",
+    "caviar:18",
+    "caviar:19",
+    "caviar:21",
+    "caviar:22",
+    "caviar:24",
+    "caviar:27",
+    "caviar:3",
+    "caviar:37",
+    "caviar:38",
+    "caviar:4",
+    "caviar:40",
+    "caviar:41",
+    "caviar:42",
+    "caviar:44",
+    "caviar:45",
+    "caviar:46",
+    "caviar:58",
+    "caviar:65",
+    "caviar:70",
+    "caviar:71",
+    "caviar:73",
+    "caviar:76",
+    "caviar:8",
+    "caviar:81",
+    "caviar:82",
+    "caviar:83",
+    "caviar:84",
+    "caviar:85",
+    "caviar:86",
+    "caviar:87",
+    "caviar:9",
+    "caviar:93",
+    "caviar:95",
+    "caviar:96"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:4",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:83",
+     "weight": 4,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:3",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 6,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:8",
+     "weight": 7,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:84",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:82",
+     "weight": 17,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:87",
+     "weight": 24,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:81",
+     "weight": 4,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:37",
+     "weight": 2,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:105",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:70",
+     "weight": 5,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:86",
+     "weight": 4,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 11,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:76",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:8",
+     "dst": "caviar:9",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:1",
+     "weight": 7,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:85",
+     "weight": 14,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:14",
+     "weight": 57,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:18",
+     "weight": 2,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:17",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:22",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:16",
+     "weight": 34,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:24",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:12",
+     "weight": 6,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:24",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:58",
+     "weight": 22,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:96",
+     "weight": 6,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:46",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:19",
+     "dst": "caviar:71",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:1",
+     "weight": 14,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:82",
+     "weight": 9,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:81",
+     "weight": 8,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:38",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:73",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:37",
+     "weight": 16,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:105",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:41",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:21",
+     "weight": 8,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:27",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:40",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:16",
+     "dst": "caviar:12",
+     "weight": 8,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:81",
+     "dst": "caviar:87",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:82",
+     "weight": 10,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:87",
+     "weight": 11,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:41",
+     "weight": 27,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:95",
+     "weight": 21,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:93",
+     "weight": 13,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:42",
+     "weight": 4,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:44",
+     "weight": 22,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:24",
+     "dst": "caviar:14",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:58",
+     "dst": "caviar:14",
+     "weight": 7,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:58",
+     "dst": "caviar:24",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:96",
+     "dst": "caviar:82",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:46",
+     "dst": "caviar:82",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:46",
+     "dst": "caviar:96",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:37",
+     "weight": 7,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:104",
+     "dst": "caviar:103",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:71",
+     "dst": "caviar:76",
+     "weight": 3,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:44",
+     "dst": "caviar:37",
+     "weight": 2,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:45",
+     "dst": "caviar:37",
+     "weight": 7,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    },
+    {
+     "src": "caviar:65",
+     "dst": "caviar:12",
+     "weight": 1,
+     "phase": 10,
+     "approx_range": "1995-07..1995-08(approx)"
+    }
+   ]
+  },
+  "11": {
+   "approx_range": "1995-09..1995-10(approx)",
+   "nodes": [
+    "caviar:1",
+    "caviar:101",
+    "caviar:102",
+    "caviar:11",
+    "caviar:12",
+    "caviar:13",
+    "caviar:14",
+    "caviar:16",
+    "caviar:17",
+    "caviar:18",
+    "caviar:24",
+    "caviar:26",
+    "caviar:27",
+    "caviar:3",
+    "caviar:36",
+    "caviar:37",
+    "caviar:41",
+    "caviar:42",
+    "caviar:43",
+    "caviar:46",
+    "caviar:58",
+    "caviar:59",
+    "caviar:61",
+    "caviar:65",
+    "caviar:66",
+    "caviar:72",
+    "caviar:76",
+    "caviar:78",
+    "caviar:79",
+    "caviar:81",
+    "caviar:82",
+    "caviar:83",
+    "caviar:84",
+    "caviar:85",
+    "caviar:86",
+    "caviar:87",
+    "caviar:88",
+    "caviar:92",
+    "caviar:93",
+    "caviar:94",
+    "caviar:96"
+   ],
+   "edges": [
+    {
+     "src": "caviar:1",
+     "dst": "caviar:85",
+     "weight": 6,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:76",
+     "weight": 5,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:11",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:82",
+     "weight": 5,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:87",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:1",
+     "dst": "caviar:41",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:83",
+     "dst": "caviar:86",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:3",
+     "dst": "caviar:12",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:1",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:85",
+     "dst": "caviar:76",
+     "weight": 4,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:1",
+     "weight": 7,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:88",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:85",
+     "weight": 6,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:87",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:79",
+     "weight": 4,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:61",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:76",
+     "dst": "caviar:72",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:11",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:84",
+     "dst": "caviar:85",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:13",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:14",
+     "weight": 29,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:18",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:17",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:16",
+     "weight": 5,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:27",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:26",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:66",
+     "weight": 4,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:12",
+     "dst": "caviar:65",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:12",
+     "weight": 5,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:14",
+     "dst": "caviar:58",
+     "weight": 4,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:18",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:17",
+     "dst": "caviar:12",
+     "weight": 11,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:1",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:87",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:36",
+     "weight": 4,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:82",
+     "dst": "caviar:96",
+     "weight": 5,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:78",
+     "dst": "caviar:79",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:1",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:76",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:82",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:87",
+     "dst": "caviar:81",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:79",
+     "dst": "caviar:78",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:79",
+     "dst": "caviar:59",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:79",
+     "dst": "caviar:102",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:16",
+     "dst": "caviar:12",
+     "weight": 33,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:59",
+     "dst": "caviar:79",
+     "weight": 6,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:41",
+     "weight": 21,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:27",
+     "weight": 4,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:37",
+     "dst": "caviar:93",
+     "weight": 17,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:58",
+     "dst": "caviar:14",
+     "weight": 12,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:58",
+     "dst": "caviar:24",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:96",
+     "dst": "caviar:82",
+     "weight": 5,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:96",
+     "dst": "caviar:46",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:101",
+     "dst": "caviar:79",
+     "weight": 12,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:101",
+     "dst": "caviar:102",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:13",
+     "weight": 12,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:37",
+     "weight": 6,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:27",
+     "weight": 4,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:93",
+     "weight": 3,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:94",
+     "weight": 10,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:41",
+     "dst": "caviar:92",
+     "weight": 11,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:27",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:27",
+     "dst": "caviar:17",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:93",
+     "dst": "caviar:37",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:93",
+     "dst": "caviar:41",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:42",
+     "dst": "caviar:12",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:43",
+     "dst": "caviar:41",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:102",
+     "dst": "caviar:79",
+     "weight": 2,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:102",
+     "dst": "caviar:59",
+     "weight": 1,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    },
+    {
+     "src": "caviar:65",
+     "dst": "caviar:12",
+     "weight": 18,
+     "phase": 11,
+     "approx_range": "1995-09..1995-10(approx)"
+    }
+   ]
+  }
+ },
+ "cumulative": [
+  {
+   "src": "caviar:1",
+   "dst": "caviar:10",
+   "weight": 6,
+   "phases": [
+    2,
+    3
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:105",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:106",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:11",
+   "weight": 13,
+   "phases": [
+    4,
+    7,
+    8,
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:12",
+   "weight": 6,
+   "phases": [
+    3,
+    5,
+    6
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:13",
+   "weight": 9,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:14",
+   "weight": 3,
+   "phases": [
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:15",
+   "weight": 11,
+   "phases": [
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:19",
+   "weight": 19,
+   "phases": [
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:2",
+   "weight": 53,
+   "phases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:20",
+   "weight": 6,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:28",
+   "weight": 4,
+   "phases": [
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:3",
+   "weight": 292,
+   "phases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:31",
+   "weight": 1,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:32",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:34",
+   "weight": 4,
+   "phases": [
+    3,
+    5
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:35",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:37",
+   "weight": 2,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:4",
+   "weight": 10,
+   "phases": [
+    1,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:41",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:47",
+   "weight": 3,
+   "phases": [
+    2,
+    4,
+    5
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:48",
+   "weight": 2,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:49",
+   "weight": 4,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:5",
+   "weight": 50,
+   "phases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:50",
+   "weight": 3,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:52",
+   "weight": 3,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:54",
+   "weight": 2,
+   "phases": [
+    1
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:55",
+   "weight": 10,
+   "phases": [
+    2,
+    3,
+    5
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:56",
+   "weight": 3,
+   "phases": [
+    2,
+    3
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:6",
+   "weight": 24,
+   "phases": [
+    3,
+    4,
+    5,
+    7,
+    9
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:62",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:64",
+   "weight": 4,
+   "phases": [
+    1,
+    2
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:67",
+   "weight": 3,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:7",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:70",
+   "weight": 5,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:76",
+   "weight": 89,
+   "phases": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:77",
+   "weight": 28,
+   "phases": [
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:8",
+   "weight": 45,
+   "phases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:81",
+   "weight": 7,
+   "phases": [
+    7,
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:82",
+   "weight": 74,
+   "phases": [
+    5,
+    6,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:83",
+   "weight": 87,
+   "phases": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:84",
+   "weight": 6,
+   "phases": [
+    3,
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:85",
+   "weight": 136,
+   "phases": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:86",
+   "weight": 32,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:87",
+   "weight": 63,
+   "phases": [
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:88",
+   "weight": 10,
+   "phases": [
+    1,
+    2,
+    4
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:89",
+   "weight": 31,
+   "phases": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:9",
+   "weight": 39,
+   "phases": [
+    2,
+    3,
+    4,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:90",
+   "weight": 7,
+   "phases": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:96",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:97",
+   "weight": 2,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:1",
+   "dst": "caviar:98",
+   "weight": 1,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:100",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:101",
+   "dst": "caviar:102",
+   "weight": 3,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:101",
+   "dst": "caviar:79",
+   "weight": 12,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:102",
+   "dst": "caviar:59",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:102",
+   "dst": "caviar:79",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:104",
+   "dst": "caviar:103",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:107",
+   "dst": "caviar:63",
+   "weight": 40,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:108",
+   "dst": "caviar:1",
+   "weight": 4,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:108",
+   "dst": "caviar:6",
+   "weight": 1,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:11",
+   "dst": "caviar:1",
+   "weight": 117,
+   "phases": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    11
+   ]
+  },
+  {
+   "src": "caviar:11",
+   "dst": "caviar:20",
+   "weight": 16,
+   "phases": [
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:11",
+   "dst": "caviar:3",
+   "weight": 2,
+   "phases": [
+    3,
+    8
+   ]
+  },
+  {
+   "src": "caviar:11",
+   "dst": "caviar:36",
+   "weight": 3,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:1",
+   "weight": 4,
+   "phases": [
+    2,
+    6
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:13",
+   "weight": 7,
+   "phases": [
+    6,
+    8,
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:14",
+   "weight": 119,
+   "phases": [
+    6,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:16",
+   "weight": 48,
+   "phases": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:17",
+   "weight": 32,
+   "phases": [
+    6,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:18",
+   "weight": 37,
+   "phases": [
+    5,
+    6,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:22",
+   "weight": 5,
+   "phases": [
+    7,
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:23",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:24",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:25",
+   "weight": 4,
+   "phases": [
+    5,
+    6
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:26",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:27",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:29",
+   "weight": 6,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:3",
+   "weight": 35,
+   "phases": [
+    4,
+    5,
+    6,
+    9
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:30",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:31",
+   "weight": 4,
+   "phases": [
+    5,
+    6
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:65",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:66",
+   "weight": 4,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:76",
+   "weight": 5,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:12",
+   "dst": "caviar:9",
+   "weight": 3,
+   "phases": [
+    5,
+    6
+   ]
+  },
+  {
+   "src": "caviar:13",
+   "dst": "caviar:12",
+   "weight": 2,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:13",
+   "dst": "caviar:51",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:13",
+   "dst": "caviar:9",
+   "weight": 2,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:14",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:14",
+   "dst": "caviar:12",
+   "weight": 13,
+   "phases": [
+    6,
+    8,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:14",
+   "dst": "caviar:24",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:14",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:14",
+   "dst": "caviar:58",
+   "weight": 26,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:15",
+   "dst": "caviar:1",
+   "weight": 2,
+   "phases": [
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:15",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:15",
+   "dst": "caviar:76",
+   "weight": 2,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:16",
+   "dst": "caviar:12",
+   "weight": 82,
+   "phases": [
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:17",
+   "dst": "caviar:12",
+   "weight": 37,
+   "phases": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:18",
+   "dst": "caviar:12",
+   "weight": 31,
+   "phases": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:19",
+   "dst": "caviar:1",
+   "weight": 98,
+   "phases": [
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:19",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:19",
+   "dst": "caviar:71",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:19",
+   "dst": "caviar:76",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:2",
+   "dst": "caviar:1",
+   "weight": 27,
+   "phases": [
+    2,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:2",
+   "dst": "caviar:3",
+   "weight": 3,
+   "phases": [
+    6,
+    8
+   ]
+  },
+  {
+   "src": "caviar:2",
+   "dst": "caviar:32",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:2",
+   "dst": "caviar:34",
+   "weight": 2,
+   "phases": [
+    3,
+    8
+   ]
+  },
+  {
+   "src": "caviar:2",
+   "dst": "caviar:35",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:20",
+   "dst": "caviar:1",
+   "weight": 15,
+   "phases": [
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:22",
+   "dst": "caviar:12",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:22",
+   "dst": "caviar:3",
+   "weight": 3,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:23",
+   "dst": "caviar:12",
+   "weight": 5,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:24",
+   "dst": "caviar:14",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:25",
+   "dst": "caviar:12",
+   "weight": 4,
+   "phases": [
+    6,
+    8
+   ]
+  },
+  {
+   "src": "caviar:27",
+   "dst": "caviar:12",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:27",
+   "dst": "caviar:17",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:28",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:29",
+   "dst": "caviar:12",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:1",
+   "weight": 149,
+   "phases": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:10",
+   "weight": 1,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:12",
+   "weight": 29,
+   "phases": [
+    3,
+    4,
+    5,
+    6,
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:14",
+   "weight": 2,
+   "phases": [
+    6,
+    8
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:19",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:2",
+   "weight": 2,
+   "phases": [
+    7,
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:31",
+   "weight": 11,
+   "phases": [
+    4,
+    5
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:34",
+   "weight": 2,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:37",
+   "weight": 9,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:7",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:74",
+   "weight": 3,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:76",
+   "weight": 11,
+   "phases": [
+    6,
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:77",
+   "weight": 3,
+   "phases": [
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:8",
+   "weight": 21,
+   "phases": [
+    2,
+    4,
+    6,
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:82",
+   "weight": 3,
+   "phases": [
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:83",
+   "weight": 5,
+   "phases": [
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:85",
+   "weight": 27,
+   "phases": [
+    3,
+    4,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:86",
+   "weight": 4,
+   "phases": [
+    3,
+    8
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:87",
+   "weight": 20,
+   "phases": [
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:88",
+   "weight": 2,
+   "phases": [
+    1,
+    7
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:89",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:9",
+   "weight": 28,
+   "phases": [
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:90",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:3",
+   "dst": "caviar:99",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:31",
+   "dst": "caviar:1",
+   "weight": 3,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:31",
+   "dst": "caviar:13",
+   "weight": 1,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:31",
+   "dst": "caviar:9",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:32",
+   "dst": "caviar:12",
+   "weight": 1,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:33",
+   "dst": "caviar:12",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:34",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:34",
+   "dst": "caviar:2",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:27",
+   "weight": 4,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:41",
+   "weight": 48,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:42",
+   "weight": 4,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:44",
+   "weight": 22,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:82",
+   "weight": 10,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:87",
+   "weight": 13,
+   "phases": [
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:93",
+   "weight": 30,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:37",
+   "dst": "caviar:95",
+   "weight": 21,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:38",
+   "dst": "caviar:87",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:4",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:4",
+   "dst": "caviar:5",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:41",
+   "dst": "caviar:12",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:41",
+   "dst": "caviar:13",
+   "weight": 12,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:41",
+   "dst": "caviar:27",
+   "weight": 4,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:41",
+   "dst": "caviar:37",
+   "weight": 13,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:41",
+   "dst": "caviar:92",
+   "weight": 11,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:41",
+   "dst": "caviar:93",
+   "weight": 3,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:41",
+   "dst": "caviar:94",
+   "weight": 10,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:42",
+   "dst": "caviar:12",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:43",
+   "dst": "caviar:41",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:44",
+   "dst": "caviar:37",
+   "weight": 2,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:45",
+   "dst": "caviar:37",
+   "weight": 7,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:46",
+   "dst": "caviar:82",
+   "weight": 6,
+   "phases": [
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:46",
+   "dst": "caviar:96",
+   "weight": 5,
+   "phases": [
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:47",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:49",
+   "dst": "caviar:1",
+   "weight": 2,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:49",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:49",
+   "dst": "caviar:83",
+   "weight": 3,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:49",
+   "dst": "caviar:84",
+   "weight": 2,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:49",
+   "dst": "caviar:90",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:5",
+   "dst": "caviar:1",
+   "weight": 64,
+   "phases": [
+    4,
+    6
+   ]
+  },
+  {
+   "src": "caviar:5",
+   "dst": "caviar:3",
+   "weight": 3,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:5",
+   "dst": "caviar:8",
+   "weight": 2,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:50",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:51",
+   "dst": "caviar:9",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:52",
+   "dst": "caviar:83",
+   "weight": 4,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:53",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:55",
+   "dst": "caviar:1",
+   "weight": 2,
+   "phases": [
+    2,
+    7
+   ]
+  },
+  {
+   "src": "caviar:58",
+   "dst": "caviar:14",
+   "weight": 19,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:58",
+   "dst": "caviar:24",
+   "weight": 6,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:59",
+   "dst": "caviar:79",
+   "weight": 6,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:6",
+   "dst": "caviar:1",
+   "weight": 40,
+   "phases": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:6",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:6",
+   "dst": "caviar:83",
+   "weight": 1,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:6",
+   "dst": "caviar:88",
+   "weight": 1,
+   "phases": [
+    1
+   ]
+  },
+  {
+   "src": "caviar:65",
+   "dst": "caviar:12",
+   "weight": 19,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:68",
+   "dst": "caviar:1",
+   "weight": 11,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:69",
+   "dst": "caviar:1",
+   "weight": 11,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:7",
+   "dst": "caviar:79",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:7",
+   "dst": "caviar:89",
+   "weight": 7,
+   "phases": [
+    1,
+    2,
+    4,
+    5
+   ]
+  },
+  {
+   "src": "caviar:71",
+   "dst": "caviar:76",
+   "weight": 3,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:74",
+   "dst": "caviar:85",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:75",
+   "dst": "caviar:12",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:1",
+   "weight": 64,
+   "phases": [
+    3,
+    5,
+    6,
+    7,
+    8,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:19",
+   "weight": 5,
+   "phases": [
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:3",
+   "weight": 6,
+   "phases": [
+    6,
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:59",
+   "weight": 4,
+   "phases": [
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:61",
+   "weight": 5,
+   "phases": [
+    7,
+    11
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:72",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:73",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:78",
+   "weight": 12,
+   "phases": [
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:79",
+   "weight": 5,
+   "phases": [
+    7,
+    11
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:85",
+   "weight": 14,
+   "phases": [
+    3,
+    4,
+    11
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:87",
+   "weight": 3,
+   "phases": [
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:88",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:76",
+   "dst": "caviar:89",
+   "weight": 1,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:77",
+   "dst": "caviar:1",
+   "weight": 15,
+   "phases": [
+    6,
+    7
+   ]
+  },
+  {
+   "src": "caviar:77",
+   "dst": "caviar:19",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:77",
+   "dst": "caviar:3",
+   "weight": 2,
+   "phases": [
+    6
+   ]
+  },
+  {
+   "src": "caviar:78",
+   "dst": "caviar:76",
+   "weight": 25,
+   "phases": [
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:78",
+   "dst": "caviar:79",
+   "weight": 2,
+   "phases": [
+    7,
+    11
+   ]
+  },
+  {
+   "src": "caviar:79",
+   "dst": "caviar:101",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:79",
+   "dst": "caviar:102",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:79",
+   "dst": "caviar:59",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:79",
+   "dst": "caviar:78",
+   "weight": 6,
+   "phases": [
+    7,
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:8",
+   "dst": "caviar:1",
+   "weight": 10,
+   "phases": [
+    2,
+    6,
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:8",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:8",
+   "dst": "caviar:35",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:8",
+   "dst": "caviar:5",
+   "weight": 1,
+   "phases": [
+    5
+   ]
+  },
+  {
+   "src": "caviar:8",
+   "dst": "caviar:64",
+   "weight": 2,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:8",
+   "dst": "caviar:9",
+   "weight": 7,
+   "phases": [
+    4,
+    10
+   ]
+  },
+  {
+   "src": "caviar:80",
+   "dst": "caviar:12",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:81",
+   "dst": "caviar:87",
+   "weight": 2,
+   "phases": [
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:82",
+   "dst": "caviar:1",
+   "weight": 16,
+   "phases": [
+    5,
+    6,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:82",
+   "dst": "caviar:36",
+   "weight": 5,
+   "phases": [
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:82",
+   "dst": "caviar:46",
+   "weight": 25,
+   "phases": [
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:82",
+   "dst": "caviar:87",
+   "weight": 4,
+   "phases": [
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:82",
+   "dst": "caviar:96",
+   "weight": 15,
+   "phases": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:1",
+   "weight": 7,
+   "phases": [
+    1,
+    3,
+    6,
+    10
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:106",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:107",
+   "weight": 4,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:11",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:52",
+   "weight": 4,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:6",
+   "weight": 7,
+   "phases": [
+    1,
+    3
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:84",
+   "weight": 4,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:85",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:86",
+   "weight": 26,
+   "phases": [
+    3,
+    4,
+    5,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:83",
+   "dst": "caviar:9",
+   "weight": 1,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:84",
+   "dst": "caviar:1",
+   "weight": 10,
+   "phases": [
+    3,
+    4,
+    5,
+    6,
+    11
+   ]
+  },
+  {
+   "src": "caviar:84",
+   "dst": "caviar:52",
+   "weight": 2,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:84",
+   "dst": "caviar:83",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:84",
+   "dst": "caviar:85",
+   "weight": 16,
+   "phases": [
+    6,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:85",
+   "dst": "caviar:1",
+   "weight": 33,
+   "phases": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:85",
+   "dst": "caviar:3",
+   "weight": 21,
+   "phases": [
+    4,
+    5,
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:85",
+   "dst": "caviar:6",
+   "weight": 5,
+   "phases": [
+    1
+   ]
+  },
+  {
+   "src": "caviar:85",
+   "dst": "caviar:76",
+   "weight": 10,
+   "phases": [
+    2,
+    4,
+    6,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:85",
+   "dst": "caviar:8",
+   "weight": 2,
+   "phases": [
+    6,
+    8
+   ]
+  },
+  {
+   "src": "caviar:85",
+   "dst": "caviar:88",
+   "weight": 12,
+   "phases": [
+    1,
+    2,
+    4,
+    5,
+    7
+   ]
+  },
+  {
+   "src": "caviar:86",
+   "dst": "caviar:1",
+   "weight": 7,
+   "phases": [
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:86",
+   "dst": "caviar:107",
+   "weight": 3,
+   "phases": [
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:86",
+   "dst": "caviar:20",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:86",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:86",
+   "dst": "caviar:83",
+   "weight": 13,
+   "phases": [
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:1",
+   "weight": 44,
+   "phases": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:105",
+   "weight": 5,
+   "phases": [
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:21",
+   "weight": 8,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:27",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:3",
+   "weight": 29,
+   "phases": [
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:37",
+   "weight": 30,
+   "phases": [
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:38",
+   "weight": 2,
+   "phases": [
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:39",
+   "weight": 8,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:40",
+   "weight": 1,
+   "phases": [
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:41",
+   "weight": 6,
+   "phases": [
+    9,
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:73",
+   "weight": 2,
+   "phases": [
+    8,
+    10
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:76",
+   "weight": 2,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:81",
+   "weight": 21,
+   "phases": [
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:82",
+   "weight": 18,
+   "phases": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:9",
+   "weight": 1,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:87",
+   "dst": "caviar:91",
+   "weight": 3,
+   "phases": [
+    8
+   ]
+  },
+  {
+   "src": "caviar:88",
+   "dst": "caviar:1",
+   "weight": 2,
+   "phases": [
+    1,
+    2
+   ]
+  },
+  {
+   "src": "caviar:88",
+   "dst": "caviar:11",
+   "weight": 1,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:88",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    1
+   ]
+  },
+  {
+   "src": "caviar:88",
+   "dst": "caviar:6",
+   "weight": 2,
+   "phases": [
+    1,
+    3
+   ]
+  },
+  {
+   "src": "caviar:88",
+   "dst": "caviar:85",
+   "weight": 10,
+   "phases": [
+    1,
+    3,
+    4,
+    5,
+    9
+   ]
+  },
+  {
+   "src": "caviar:89",
+   "dst": "caviar:1",
+   "weight": 2,
+   "phases": [
+    1,
+    4
+   ]
+  },
+  {
+   "src": "caviar:89",
+   "dst": "caviar:109",
+   "weight": 2,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:89",
+   "dst": "caviar:11",
+   "weight": 1,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:89",
+   "dst": "caviar:14",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:89",
+   "dst": "caviar:31",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:89",
+   "dst": "caviar:49",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:89",
+   "dst": "caviar:7",
+   "weight": 7,
+   "phases": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "src": "caviar:9",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:9",
+   "dst": "caviar:8",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  },
+  {
+   "src": "caviar:9",
+   "dst": "caviar:83",
+   "weight": 5,
+   "phases": [
+    7
+   ]
+  },
+  {
+   "src": "caviar:90",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:90",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    4
+   ]
+  },
+  {
+   "src": "caviar:93",
+   "dst": "caviar:37",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:93",
+   "dst": "caviar:41",
+   "weight": 1,
+   "phases": [
+    11
+   ]
+  },
+  {
+   "src": "caviar:96",
+   "dst": "caviar:30",
+   "weight": 1,
+   "phases": [
+    9
+   ]
+  },
+  {
+   "src": "caviar:96",
+   "dst": "caviar:46",
+   "weight": 6,
+   "phases": [
+    9,
+    11
+   ]
+  },
+  {
+   "src": "caviar:96",
+   "dst": "caviar:82",
+   "weight": 6,
+   "phases": [
+    10,
+    11
+   ]
+  },
+  {
+   "src": "caviar:98",
+   "dst": "caviar:1",
+   "weight": 1,
+   "phases": [
+    2
+   ]
+  },
+  {
+   "src": "caviar:99",
+   "dst": "caviar:3",
+   "weight": 1,
+   "phases": [
+    3
+   ]
+  }
+ ]
+}

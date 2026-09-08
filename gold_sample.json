@@ -1,0 +1,59 @@
+[
+  {
+    "doc_id": "own1",
+    "source": "own_dataset",
+    "text": "FIR No. 102/2024: Complainant Ravi Sharma (phone +91 98765 43210) reported that accused Mohan Yadav, driving vehicle MH12AB1234, met him near Gateway of India, Mumbai on 12 March 2024 and demanded Rs. 50,000 on behalf of Sharma Enterprises.",
+    "entities": [
+      {"text": "Ravi Sharma", "type": "PERSON"},
+      {"text": "+91 98765 43210", "type": "PHONE_NUMBER"},
+      {"text": "Mohan Yadav", "type": "PERSON"},
+      {"text": "MH12AB1234", "type": "VEHICLE_NUMBER"},
+      {"text": "Mumbai", "type": "LOCATION"},
+      {"text": "12 March 2024", "type": "DATE"},
+      {"text": "Rs. 50,000", "type": "MONEY_AMOUNT"},
+      {"text": "Sharma Enterprises", "type": "ORGANIZATION"}
+    ]
+  },
+  {
+    "doc_id": "own2",
+    "source": "own_dataset",
+    "text": "Surveillance note 05/06/2024: At 18:30, suspect Anil Verma (098765 43210) was seen near Connaught Place, Delhi in a white Swift DL8CAB1234. He mentioned Rs 2 lakh payment to Gupta Traders.",
+    "entities": [
+      {"text": "05/06/2024", "type": "DATE"},
+      {"text": "Anil Verma", "type": "PERSON"},
+      {"text": "098765 43210", "type": "PHONE_NUMBER"},
+      {"text": "Delhi", "type": "LOCATION"},
+      {"text": "DL8CAB1234", "type": "VEHICLE_NUMBER"},
+      {"text": "Rs 2 lakh", "type": "MONEY_AMOUNT"},
+      {"text": "Gupta Traders", "type": "ORGANIZATION"}
+    ]
+  },
+  {
+    "doc_id": "enron1",
+    "source": "enron",
+    "text": "From: jeff.dasovich@enron.com To: richard.shapiro@enron.com Date: Mon, 14 May 2001. Jeff Dasovich called me at (713) 555-0142 or 713-555-0199 from the Houston office regarding the $2.5 million deal with California Power on May 15, 2001.",
+    "entities": [
+      {"text": "14 May 2001", "type": "DATE"},
+      {"text": "Jeff Dasovich", "type": "PERSON"},
+      {"text": "(713) 555-0142", "type": "PHONE_NUMBER"},
+      {"text": "713-555-0199", "type": "PHONE_NUMBER"},
+      {"text": "Houston", "type": "LOCATION"},
+      {"text": "$2.5 million", "type": "MONEY_AMOUNT"},
+      {"text": "California Power", "type": "ORGANIZATION"},
+      {"text": "May 15, 2001", "type": "DATE"}
+    ]
+  },
+  {
+    "doc_id": "enron2",
+    "source": "enron",
+    "text": "From: kenneth.lay@enron.com Subject: meeting. Kenneth Lay will meet Jeff Skilling in Houston on June 3, 2001 to discuss $500,000. Call (212) 555-0187.",
+    "entities": [
+      {"text": "Kenneth Lay", "type": "PERSON"},
+      {"text": "Jeff Skilling", "type": "PERSON"},
+      {"text": "Houston", "type": "LOCATION"},
+      {"text": "June 3, 2001", "type": "DATE"},
+      {"text": "$500,000", "type": "MONEY_AMOUNT"},
+      {"text": "(212) 555-0187", "type": "PHONE_NUMBER"}
+    ]
+  }
+]
