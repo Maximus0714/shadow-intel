@@ -37,3 +37,47 @@ def test_clean_drops_empty_and_dedupes():
     assert cleaned[0]["src"] == "P1"
     assert cleaned[0]["frequency"] == 5
     assert len(skipped) == 2
+
+
+def test_detect_native_graph_headers():
+    mapping = detect_column_mapping(["src", "dst", "frequency"])
+    assert mapping["source"] == "src"
+    assert mapping["target"] == "dst"
+
+
+def test_nonfinite_frequency_and_transaction_preservation():
+    rows = [dict(src="P1", dst="P2", rel="FINANCIAL_TRANSFER", amount="900", date="2026-09-08", frequency="Infinity")] * 2
+    cleaned, skipped = clean_edge_rows(rows, detect_column_mapping(list(rows[0])))
+    assert not skipped
+    assert len(cleaned) == 2
+    assert all(row["frequency"] == 1 and row["amount"] == "900" for row in cleaned)
+
+
+def test_invalid_json_shapes_are_validation_errors():
+    import pytest
+    from ingest_preview import parse_upload_file
+    for content in [b"[]", b"null", b'{"edges": [null]}', b'{"edges": {"src":"a"}}']:
+        with pytest.raises(ValueError):
+            parse_upload_file("bad.json", content)
+
+
+def test_workbook_missing_sheet_and_corrupt_file():
+    import io
+    import pytest
+    from openpyxl import Workbook
+    from ingest_preview import parse_upload_file
+    out = io.BytesIO()
+    wb = Workbook()
+    wb.active.append(["src", "dst"])
+    wb.active.append(["a", "b"])
+    wb.save(out)
+    with pytest.raises(ValueError, match="does not exist"):
+        parse_upload_file("data.xlsx", out.getvalue(), "missing")
+    with pytest.raises(ValueError, match="Cannot read"):
+        parse_upload_file("data.xlsx", b"broken")
+
+
+def test_csv_header_whitespace_matches_client_mapping():
+    from ingest_preview import parse_upload_file
+    rows, _ = parse_upload_file("data.csv", b" src , dst \na,b\n")
+    assert rows == [{"src": "a", "dst": "b"}]

@@ -240,7 +240,7 @@ class GraphStore:
 
     def _merge_edge(self, src, dst, kind, freq, timestamps, extra):
         if self.fallback:
-            skey = (self._node_label(src, kind), src)
+            skey = ("Person", src)
             dkey = (self._node_label(dst, kind), dst)
             for k in (skey, dkey):
                 if not self.G.has_node(k):
@@ -265,7 +265,7 @@ class GraphStore:
             props.update(extra)
             self.G.add_edge(skey, dkey, **props)
             return
-        label_s = self._node_label(src, kind)
+        label_s = "Person"
         label_d = self._node_label(dst, kind)
         with self.driver.session() as s:  # APOC-free aggregation
             rec = s.run(f"""MERGE (a:{label_s} {{id: $src}})
@@ -284,8 +284,8 @@ class GraphStore:
                 props["timestamps"] = merged_ts
                 if txs:
                     props["transactions"] = list(rec["txs"] or []) + txs
-                s.run(f"""MATCH (a:{label_s} {{id:$src}})-[e:{kind}]->(b)
-                          SET e += $props""", src=src, props=props)
+                s.run(f"""MATCH (a:{label_s} {{id:$src}})-[e:{kind}]->(b:{label_d} {{id:$dst}})
+                          SET e += $props""", src=src, dst=dst, props=props)
             else:
                 props = dict(extra)
                 props["frequency"] = freq

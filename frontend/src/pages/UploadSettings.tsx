@@ -1,213 +1,341 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import PreviewTable from "../components/PreviewTable";
+import { useMemo, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  cleanRows,
-  detectMapping,
+  UploadSimple,
+  FileCsv,
+  CheckCircle,
+  ArrowRight,
+  ArrowsClockwise,
+  Database,
+  WarningCircle,
+} from "@phosphor-icons/react";
+import {
   parseFile,
-  type CleanedEdge,
-  type SkippedRow,
+  detectMapping,
+  cleanRows,
+  type SheetInfo,
 } from "../lib/upload";
-import {
-  getHealth,
-  loadConfig,
-  postIngest,
-  saveConfig,
-} from "../lib/api";
-
+import { postIngest } from "../lib/api";
+import { useWorkspace } from "../lib/workspace";
+import { PageHeader, Empty } from "../components/UI";
+import PreviewTable from "../components/PreviewTable";
 export default function UploadSettings() {
-  const [cfg, setCfg] = useState(loadConfig);
-  const [remember, setRemember] = useState(true);
-  const [connStatus, setConnStatus] = useState<string>("Not tested yet.");
+  const { cfg, mode, refresh, notify } = useWorkspace();
+  const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
-  const [sheets, setSheets] = useState<string[]>([]);
-  const [sheet, setSheet] = useState("");
-  const [columns, setColumns] = useState<string[]>([]);
-  const [rows, setRows] = useState<Record<string, string>[]>([]);
+  const [info, setInfo] = useState<SheetInfo | null>(null);
   const [mapping, setMapping] = useState<Record<string, string | null>>({});
-  const [cleaned, setCleaned] = useState<CleanedEdge[]>([]);
-  const [skipped, setSkipped] = useState<SkippedRow[]>([]);
-  const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  const testConn = async () => {
-    setConnStatus("Testing…");
-    try {
-      const h = await getHealth(cfg);
-      setConnStatus(`OK — backend: ${h.backend || "unknown"}, status: ${h.status}.`);
-    } catch (e) {
-      setConnStatus(e instanceof Error ? e.message : String(e));
-    }
-  };
-
-  const save = () => {
-    saveConfig(cfg, remember);
-    setConnStatus("Saved. " + connStatus);
-  };
-
-  const onFile = async (f: File | undefined) => {
-    setMsg(null);
-    setCleaned([]);
-    setSkipped([]);
-    if (!f) return;
+  const [parsing, setParsing] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [reviewed, setReviewed] = useState(false);
+  const [drag, setDrag] = useState(false);
+  const version = useRef(0);
+  const input = useRef<HTMLInputElement>(null);
+  const cleaned = useMemo(
+    () => (info ? cleanRows(info.rows, mapping) : { cleaned: [], skipped: [] }),
+    [info, mapping],
+  );
+  const parse = async (f: File, sheet?: string) => {
+    const ticket = ++version.current;
     setFile(f);
+    setInfo(null);
+    setMapping({});
+    setError("");
+    setMessage("");
+    setReviewed(false);
+    setParsing(true);
     try {
-      const info = await parseFile(f);
-      setSheets(info.sheetNames);
-      setSheet(info.sheet);
-      setColumns(info.columns);
-      setRows(info.rows);
-      setMapping(detectMapping(info.columns));
+      const result = await parseFile(f, sheet);
+      if (ticket !== version.current) return;
+      setInfo(result);
+      setMapping(detectMapping(result.columns));
+      if (!result.rows.length)
+        setError(
+          "This file has no data rows. Choose a populated worksheet or another file.",
+        );
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : String(e));
+      if (ticket === version.current)
+        setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      if (ticket === version.current) setParsing(false);
     }
   };
-
-  const onSheet = async (name: string) => {
-    if (!file) return;
-    setSheet(name);
-    try {
-      const info = await parseFile(file, name);
-      setColumns(info.columns);
-      setRows(info.rows);
-      setMapping(detectMapping(info.columns));
-      setCleaned([]);
-      setSkipped([]);
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : String(e));
-    }
-  };
-
-  const runClean = () => {
-    if (!rows.length) {
-      setMsg("No rows parsed yet.");
-      return;
-    }
-    const { cleaned: c, skipped: s } = cleanRows(rows, mapping);
-    setCleaned(c);
-    setSkipped(s);
-    setMsg(`Cleaned: ${c.length} edges, ${s.length} skipped. Review below, then send to backend.`);
-  };
-
-  const sendToBackend = async (endpoint: "preview" | "load") => {
-    if (!file) {
-      setMsg("Choose a file first.");
-      return;
-    }
+  const send = async (endpoint: "preview" | "load") => {
+    if (!file || !info) return;
     setBusy(true);
+    setError("");
     try {
-      const r = await postIngest(cfg, endpoint, file, sheet || undefined);
-      const j = r as Record<string, unknown>;
-      setMsg(
-        endpoint === "preview"
-          ? `Server preview: ${String(j.rows_cleaned)} cleaned rows, ${String(j.node_count)} nodes, ${String(j.edge_count)} edges.`
-          : `Loaded: ${JSON.stringify(j.loaded)}. ${String(j.note || "")}`
-      );
+      const quote = (s: string) => `"${s.replace(/"/g, '""')}"`;
+      const converted = file.name.toLowerCase().endsWith(".xls")
+        ? new File(
+            [
+              [
+                info.columns,
+                ...info.rows.map((r) => info.columns.map((c) => r[c] || "")),
+              ]
+                .map((r) => r.map(quote).join(","))
+                .join("\n"),
+            ],
+            "converted.csv",
+            { type: "text/csv" },
+          )
+        : file;
+      const r = (await postIngest(
+        cfg,
+        endpoint,
+        converted,
+        info.sheet || undefined,
+        mapping,
+      )) as { rows_cleaned?: number; node_count?: number; edge_count?: number };
+      if (endpoint === "preview")
+        setMessage(
+          `Server validated ${r.rows_cleaned} rows, ${r.node_count} entities and ${r.edge_count} relationships.`,
+        );
+      else {
+        refresh();
+        notify("Evidence imported. Your network is ready to explore.");
+        navigate("/network");
+      }
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : String(e));
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
     }
   };
-
   return (
     <>
-      <h1>Upload &amp; Settings</h1>
-      <p className="sub">
-        Connect the backend, then bring your own data: CSV or XLSX is
-        auto-detected, cleaned and previewed before anything is loaded.
-      </p>
-
-      <div className="card">
-        <h2>Backend connection</h2>
-        <label className="field">
-          <span>Base URL</span>
-          <input type="text" value={cfg.baseUrl} onChange={(e) => setCfg({ ...cfg, baseUrl: e.target.value })} />
-        </label>
-        <label className="field">
-          <span>API key (X-API-Key)</span>
-          <input type="text" value={cfg.key} onChange={(e) => setCfg({ ...cfg, key: e.target.value })} placeholder="paste X-API-Key…" autoComplete="off" />
-        </label>
-        <label className="field" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember on this machine
-        </label>
-        <p style={{ display: "flex", gap: 8 }}>
-          <button className="btn" onClick={testConn}>Test connection</button>
-          <button className="btn primary" onClick={save}>Save</button>
-        </p>
-        <p className="mono" style={{ marginTop: 8 }}>{connStatus}</p>
+      <PageHeader
+        title="Every investigation starts somewhere."
+        description="Bring in your records. We’ll help you turn them into connections."
+        eyebrow="UPLOAD & SETTINGS"
+      />
+      <div className="import-steps">
+        <span className="active">
+          <b>1</b>Choose a file
+        </span>
+        <span className={info ? "active" : ""}>
+          <b>2</b>Map & review
+        </span>
+        <span className={reviewed ? "active" : ""}>
+          <b>3</b>Build your graph
+        </span>
       </div>
-
-      <div className="card">
-        <h2>Smart upload — CSV / XLSX / JSON</h2>
-        <label className="field">
-          <span>Data file (.csv, .xlsx, .xls, .json)</span>
-          <input
-            type="file"
-            accept=".csv,.xlsx,.xls,.json"
-            onChange={(e) => onFile(e.target.files?.[0])}
-          />
-        </label>
-        {sheets.length > 1 && (
-          <label className="field" style={{ maxWidth: 320 }}>
-            <span>Worksheet</span>
-            <select value={sheet} onChange={(e) => onSheet(e.target.value)}>
-              {sheets.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </label>
-        )}
-        {columns.length > 0 && (
-          <>
-            <h3 style={{ fontSize: 13, margin: "10px 0 6px" }}>Detected column mapping (override if wrong)</h3>
-            <div className="grid2">
-              {["source", "target", "rel", "weight", "date", "amount"].map((role) => (
-                <label className="field" key={role}>
-                  <span>{role}</span>
-                  <select
-                    value={mapping[role] ?? ""}
-                    onChange={(e) => setMapping({ ...mapping, [role]: e.target.value || null })}
-                  >
-                    <option value="">— none —</option>
-                    {columns.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </label>
-              ))}
+      <section
+        className={`upload-dropzone ${drag ? "dragging" : ""}`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!busy && !parsing) setDrag(true);
+        }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDrag(false);
+          const f = e.dataTransfer.files[0];
+          if (f && !busy && !parsing) parse(f);
+        }}
+      >
+        <div className="upload-orbit">
+          <UploadSimple size={35} weight="thin" />
+        </div>
+        <h2>
+          {parsing
+            ? "Reading your file…"
+            : file
+              ? file.name
+              : "Bring your evidence into focus."}
+        </h2>
+        <p>Drop a file here, or choose one from your device.</p>
+        <button
+          className="btn primary"
+          disabled={busy || parsing}
+          onClick={() => input.current?.click()}
+        >
+          {file ? "Choose another file" : "Choose file"}
+          <ArrowRight size={17} />
+        </button>
+        <input
+          ref={input}
+          className="sr-only"
+          type="file"
+          aria-label="Choose evidence file"
+          accept=".csv,.xlsx,.xls,.json"
+          disabled={busy || parsing}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) parse(f);
+          }}
+        />
+        <div className="file-types">
+          <span>CSV</span>
+          <span>XLSX / XLS</span>
+          <span>JSON</span>
+          <small>Up to 5 MB</small>
+        </div>
+      </section>
+      {error && (
+        <div className="inline-notice warning" role="alert">
+          <WarningCircle size={20} />
+          {error}
+        </div>
+      )}
+      {info && (
+        <section className="panel mapping-panel">
+          <div className="panel-header">
+            <div>
+              <h2>Make sure the columns match.</h2>
+              <p className="muted">
+                Review the detected roles. Source and target identify the
+                connected entities.
+              </p>
             </div>
-            <p style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <button className="btn primary" onClick={runClean}>Clean &amp; preview</button>
-              <button className="btn" onClick={() => sendToBackend("preview")} disabled={busy || !file}>
-                Server preview
-              </button>
-              <button className="btn" onClick={() => sendToBackend("load")} disabled={busy || !file}>
-                {busy ? "Sending…" : "Confirm & send to backend"}
-              </button>
-            </p>
-          </>
-        )}
-        {msg && <p style={{ marginTop: 10 }}>{msg}</p>}
-        {(cleaned.length > 0 || skipped.length > 0) && (
-          <div style={{ marginTop: 10 }}>
-            <PreviewTable columns={columns} rows={cleaned} skipped={skipped} />
-            <p style={{ marginTop: 8 }}>
-              <Link className="btn primary" to="/network">Open in Network Explorer</Link>
-            </p>
+            <span className="tag">{info.rows.length} source rows</span>
           </div>
-        )}
-      </div>
-
-      <div className="card">
-        <h2>Demo dataset</h2>
-        <p className="sub">
-          No backend? Every page falls back to a small fictional demo graph
-          automatically. Use it to explore the UI offline.
-        </p>
-        <p>
-          <Link className="btn" to="/network">Explore demo graph</Link>
-        </p>
+          {info.sheetNames.length > 1 && (
+            <label className="field">
+              <span>Worksheet</span>
+              <select
+                disabled={busy || parsing}
+                value={info.sheet}
+                onChange={(e) => file && parse(file, e.target.value)}
+              >
+                {info.sheetNames.map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
+              </select>
+            </label>
+          )}
+          <div className="mapping-grid">
+            {[
+              { id: "source", name: "Source entity", required: true },
+              { id: "target", name: "Target entity", required: true },
+              { id: "rel", name: "Relationship type" },
+              { id: "weight", name: "Frequency / weight" },
+              { id: "date", name: "Date / timestamp" },
+              { id: "amount", name: "Amount" },
+            ].map((role) => (
+              <label className="field" key={role.id}>
+                <span>
+                  {role.name}
+                  {role.required && " *"}
+                </span>
+                <select
+                  aria-label={role.name + (role.required ? " *" : "")}
+                  value={mapping[role.id] || ""}
+                  disabled={busy}
+                  onChange={(e) => {
+                    setMapping({
+                      ...mapping,
+                      [role.id]: e.target.value || null,
+                    });
+                    setReviewed(false);
+                    setMessage("");
+                  }}
+                >
+                  <option value="">
+                    {role.required ? "Select a column" : "Not included"}
+                  </option>
+                  {info.columns.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </label>
+            ))}
+          </div>
+          {cleaned.cleaned.length ? (
+            <>
+              <div className="preview-summary">
+                <CheckCircle size={22} />
+                <span>
+                  <strong>{cleaned.cleaned.length} usable relationships</strong>
+                  <small>
+                    {cleaned.skipped.length} skipped rows. Repeated
+                    non-financial relationships are combined.
+                  </small>
+                </span>
+              </div>
+              <div className="table-scroll">
+                <PreviewTable
+                  columns={info.columns}
+                  rows={cleaned.cleaned}
+                  skipped={cleaned.skipped}
+                />
+              </div>
+              <label className="checkbox-label review-check">
+                <input
+                  type="checkbox"
+                  checked={reviewed}
+                  onChange={(e) => setReviewed(e.target.checked)}
+                />
+                I’ve reviewed the mapping and cleaned records.
+              </label>
+              {mode === "demo" ? (
+                <div className="inline-notice">
+                  <Database size={20} />
+                  <span>
+                    Your preview is ready. Connect your backend to import these
+                    records.
+                  </span>
+                  <Link className="btn" to="/settings">
+                    Connect backend <ArrowRight size={15} />
+                  </Link>
+                </div>
+              ) : (
+                <div className="inline-actions">
+                  <button
+                    className="btn primary"
+                    disabled={!reviewed || busy}
+                    onClick={() => send("load")}
+                  >
+                    {busy ? "Processing…" : "Build network"}
+                    <ArrowRight size={17} />
+                  </button>
+                  <button
+                    className="btn"
+                    disabled={busy}
+                    onClick={() => send("preview")}
+                  >
+                    <ArrowsClockwise size={17} />
+                    Validate on server
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <Empty
+              title="Choose source and target columns"
+              body="Each relationship needs an entity at both ends. Check the mapping above."
+            />
+          )}
+          {message && (
+            <div className="inline-notice success" role="status">
+              {message}
+            </div>
+          )}
+        </section>
+      )}
+      <div className="import-help">
+        <FileCsv size={28} weight="thin" />
+        <div>
+          <h3>A good starting point</h3>
+          <p>
+            Use a row per relationship, with source and target columns.
+            Optionally include type, frequency, date and amount.{" "}
+            <button
+              className="text-link"
+              onClick={() => {
+                const a = document.createElement("a");
+                a.href =
+                  "data:text/csv;charset=utf-8,src%2Cdst%2Crel%2Cfrequency%0Aexample-a%2Cexample-b%2CCALLED%2C1%0A";
+                a.download = "relationship-template.csv";
+                a.click();
+              }}
+            >
+              Download CSV template <ArrowRight size={14} />
+            </button>
+          </p>
+        </div>
       </div>
     </>
   );

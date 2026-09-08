@@ -1,88 +1,272 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Link, NavLink, Route, Routes } from "react-router-dom";
-import Overview from "./pages/Overview";
-import NetworkExplorer from "./pages/NetworkExplorer";
-import Entities from "./pages/Entities";
-import Alerts from "./pages/Alerts";
-import Documents from "./pages/Documents";
-import UploadSettings from "./pages/UploadSettings";
-
-const NAV = [
-  { to: "/", label: "Overview", end: true },
-  { to: "/network", label: "Network Explorer", end: false },
-  { to: "/entities", label: "Entities & Search", end: false },
-  { to: "/alerts", label: "Alerts & Patterns", end: false },
-  { to: "/documents", label: "Document Intel", end: false },
-  { to: "/upload", label: "Upload & Settings", end: false },
+import { lazy, Suspense, useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Link,
+  NavLink,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import {
+  IconContext,
+  House,
+  Graph,
+  UsersThree,
+  ShieldWarning,
+  FileText,
+  UploadSimple,
+  SquaresFour,
+  BookmarkSimple,
+  GearSix,
+  List,
+  X,
+  MagnifyingGlass,
+  ArrowUpRight,
+  CheckCircle,
+  CaretRight,
+} from "@phosphor-icons/react";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
+import { WorkspaceProvider, useWorkspace } from "./lib/workspace";
+import { Brand, ThemeButton, Loading } from "./components/UI";
+import Landing from "./pages/Landing";
+const Overview = lazy(() => import("./pages/Overview"));
+const NetworkExplorer = lazy(() => import("./pages/NetworkExplorer"));
+const Entities = lazy(() => import("./pages/Entities"));
+const Alerts = lazy(() => import("./pages/Alerts"));
+const Documents = lazy(() => import("./pages/Documents"));
+const UploadSettings = lazy(() => import("./pages/UploadSettings"));
+const Communities = lazy(() => import("./pages/Communities"));
+const Reports = lazy(() => import("./pages/Reports"));
+const Settings = lazy(() => import("./pages/Settings"));
+const nav = [
+  { to: "/overview", label: "Overview", icon: House },
+  { to: "/network", label: "Network Explorer", icon: Graph },
+  { to: "/entities", label: "Entities & Search", icon: UsersThree },
+  { to: "/communities", label: "Communities", icon: SquaresFour },
+  { to: "/alerts", label: "Alerts & Patterns", icon: ShieldWarning },
+  { to: "/documents", label: "Document Intel", icon: FileText },
+  { to: "/reports", label: "Reports & Watchlist", icon: BookmarkSimple },
 ];
-
-export default function App() {
-  const [theme, setTheme] = useState(() => {
-    try {
-      return localStorage.getItem("shadowintel-theme") || "dark";
-    } catch {
-      return "dark";
-    }
-  });
+function RouteReset() {
+  const { pathname } = useLocation();
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    try {
-      localStorage.setItem("shadowintel-theme", theme);
-    } catch {
-      /* storage unavailable */
-    }
-  }, [theme]);
+    window.scrollTo({ top: 0, behavior: "instant" });
+    document.title = `${nav.find((n) => pathname.startsWith(n.to))?.label || "Shadow Intel"} | Investigation workspace`;
+  }, [pathname]);
+  return null;
+}
+function WorkspaceLayout() {
+  const { mode, setMode, notice, watched } = useWorkspace();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [menu, setMenu] = useState(false);
+  const [query, setQuery] = useState("");
+  useEffect(() => setMenu(false), [location.pathname]);
+  useEffect(() => {
+    if (!menu) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenu(false);
+    };
+    document.addEventListener("keydown", close);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", close);
+      document.body.style.overflow = previous;
+    };
+  }, [menu]);
+  const current =
+    nav.find((n) => location.pathname.startsWith(n.to))?.label ||
+    (location.pathname === "/upload"
+      ? "Upload & Settings"
+      : "Connection settings");
   return (
-    <BrowserRouter>
-      <div className="shell">
-        <aside className="sidebar" aria-label="Primary">
-          <Link to="/" className="brand">
-            <span className="brand-mark">S</span>
-            <span className="brand-name">
-              Shadow Intel<small>FROM EVIDENCE TO INTELLIGENCE</small>
-            </span>
-          </Link>
-          <nav className="nav">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.end}
-                className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
-              >
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
-        </aside>
-        <div className="main">
-          <header className="topbar">
-            <span className="case-chip">
-              <span className="dot" aria-hidden="true" />
-              Operation Copper Ledger
-            </span>
-            <button
-              className="btn"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle color theme"
-            >
-              {theme === "dark" ? "Case file" : "Command"}
-            </button>
-          </header>
-          <main className="page">
-            <Routes>
-              <Route path="/" element={<Overview />} />
-              <Route path="/network" element={<NetworkExplorer />} />
-              <Route path="/entities" element={<Entities />} />
-              <Route path="/entities/:id" element={<Entities />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/documents" element={<Documents />} />
-              <Route path="/upload" element={<UploadSettings />} />
-              <Route path="*" element={<div className="empty">Page not found. <Link to="/">Back to Overview</Link>.</div>} />
-            </Routes>
-          </main>
+    <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
+      {menu && (
+        <button
+          className="menu-scrim"
+          aria-label="Close navigation"
+          onClick={() => setMenu(false)}
+        />
+      )}
+      <aside className={`app-sidebar ${menu ? "open" : ""}`}>
+        <Brand />
+        <div className="workspace-label">
+          <span className="workspace-avatar">CL</span>
+          <div>
+            {mode === "demo" ? "Copper Ledger" : "My investigation"}
+            <small>
+              {mode === "demo"
+                ? "Demonstration workspace"
+                : "Connected workspace"}
+            </small>
+          </div>
         </div>
+        <div className="nav-group-label">INVESTIGATE</div>
+        <nav>
+          {nav.map((n) => (
+            <NavLink
+              key={n.to}
+              to={n.to}
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <n.icon size={20} />
+              <span>{n.label}</span>
+              {n.to === "/reports" && watched.length > 0 && (
+                <span className="nav-count">{watched.length}</span>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <ButtonUpload />
+          <Link className="nav-link" to="/settings">
+            <GearSix size={20} />
+            Settings
+          </Link>
+          <Link className="back-home" to="/">
+            About Shadow Intel <ArrowUpRight size={15} />
+          </Link>
+          <div className="sidebar-foot">
+            Evidence informs.
+            <br />
+            People decide.
+          </div>
+        </div>
+      </aside>
+      <div className="app-main">
+        <header className="app-topbar">
+          <button
+            className="icon-button mobile-menu"
+            onClick={() => setMenu(!menu)}
+            aria-label={menu ? "Close navigation" : "Open navigation"}
+          >
+            {menu ? <X /> : <List />}
+          </button>
+          <div className="breadcrumb">
+            Workspace <CaretRight size={12} />
+            <strong>{current}</strong>
+          </div>
+          <form
+            className="global-search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (query.trim()) {
+                navigate(`/entities?q=${encodeURIComponent(query.trim())}`);
+                setQuery("");
+              }
+            }}
+          >
+            <MagnifyingGlass size={16} />
+            <input
+              aria-label="Search workspace"
+              placeholder="Search entities…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <kbd>↵</kbd>
+          </form>
+          <ThemeButton />
+          <span className="analyst-avatar" title="Local analyst workspace">
+            AN
+          </span>
+        </header>
+        <div className={`mode-strip ${mode}`}>
+          <span>
+            <span className="status-dot" />
+            {mode === "demo" ? "Demo workspace" : "Live workspace"}
+            <span className="mode-detail">
+              {mode === "demo"
+                ? "Explore freely with fictional investigation data."
+                : "Connected to your configured data source."}
+            </span>
+          </span>
+          {mode === "demo" ? (
+            <Link to="/settings">
+              Connect your data <ArrowUpRight size={14} />
+            </Link>
+          ) : (
+            <button onClick={() => setMode("demo")}>Explore demo</button>
+          )}
+        </div>
+        <main
+          className={`workspace-page ${location.pathname === "/network" ? "network-page" : ""}`}
+          id="main-content"
+          tabIndex={-1}
+        >
+          <Suspense fallback={<Loading />}>
+            <Outlet />
+          </Suspense>
+        </main>
       </div>
-    </BrowserRouter>
+      <AnimatePresence>
+        {notice && (
+          <motion.div
+            className="toast"
+            role="status"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+          >
+            <CheckCircle size={20} />
+            {notice}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+function ButtonUpload() {
+  return (
+    <Link to="/upload" className="btn primary sidebar-upload">
+      <UploadSimple size={18} />
+      Upload evidence
+    </Link>
+  );
+}
+export default function App() {
+  return (
+    <MotionConfig reducedMotion="user">
+      <IconContext.Provider value={{ weight: "regular", size: 20 }}>
+        <BrowserRouter>
+          <WorkspaceProvider>
+            <RouteReset />
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route element={<WorkspaceLayout />}>
+                <Route path="/overview" element={<Overview />} />
+                <Route path="/network" element={<NetworkExplorer />} />
+                <Route path="/entities" element={<Entities />} />
+                <Route path="/entities/:id" element={<Entities />} />
+                <Route path="/communities" element={<Communities />} />
+                <Route path="/alerts" element={<Alerts />} />
+                <Route path="/documents" element={<Documents />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/upload" element={<UploadSettings />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route
+                  path="*"
+                  element={
+                    <div className="empty-state">
+                      <h1>Page not found</h1>
+                      <Link className="btn" to="/overview">
+                        Return to workspace
+                      </Link>
+                    </div>
+                  }
+                />
+              </Route>
+            </Routes>
+          </WorkspaceProvider>
+        </BrowserRouter>
+      </IconContext.Provider>
+    </MotionConfig>
   );
 }

@@ -26,6 +26,7 @@ Config via environment:
 """
 import csv
 import io
+import json
 import os
 import sys
 import threading
@@ -673,7 +674,7 @@ async def analyze_document(
         doc_id: Optional[str] = Form(None),
         source: str = Form("own_dataset")):
     if file is not None:
-        raw = await file.read()
+        raw = await file.read(500_001)
         if len(raw) > 500_000:
             raise HTTPException(400, "File too large (max ~500KB text).")
         content = raw.decode("utf-8", errors="ignore")
@@ -882,30 +883,47 @@ def entity_paths(a: str, b: str, max_hops: int = Query(3, ge=1, le=5),
 
 
 def _parse_ingest_upload(filename: str, raw: bytes,
-                         sheet: Optional[str]):
+                         sheet: Optional[str], mapping_json: Optional[str] = None):
     from ingest_preview import (clean_edge_rows, detect_column_mapping,
                                 parse_upload_file)
     rows_raw, meta = parse_upload_file(filename, raw, sheet)
     if meta["kind"] == "json":
         mapping = {"source": "src", "target": "dst", "rel": "rel",
-                   "weight": "frequency", "date": None, "amount": None,
+                   "weight": "frequency", "date": "date", "amount": "amount",
                    "node_id": None, "node_label": None}
-        columns = ["src", "dst", "rel", "frequency"]
+        columns = ["src", "dst", "rel", "frequency", "date", "amount"]
     else:
         columns = list(rows_raw[0].keys()) if rows_raw else []
         mapping = detect_column_mapping(columns)
+    if mapping_json is not None:
+        try:
+            override = json.loads(mapping_json)
+        except (TypeError, ValueError) as e:
+            raise ValueError("Invalid column mapping JSON.") from e
+        if not isinstance(override, dict) or any(
+            role not in mapping or (column is not None and
+            (not isinstance(column, str) or column not in columns))
+            for role, column in override.items()
+        ):
+            raise ValueError("Mapping must reference columns in the uploaded file.")
+        mapping.update(override)
     cleaned, skipped = clean_edge_rows(rows_raw, mapping)
+    from graph_store import EDGE_KIND_MAP
+    unsupported = sorted({row["rel"] for row in cleaned if row["rel"] not in EDGE_KIND_MAP})
+    if unsupported:
+        raise ValueError("Unsupported relationship types: " + ", ".join(unsupported) + ". Use " + ", ".join(EDGE_KIND_MAP) + ".")
     return meta, columns, mapping, cleaned, skipped
 
 
 @app.post("/ingest/preview", response_model=IngestPreviewResponse,
           summary="Preview smart-upload detection + cleaning (no persistence)")
 async def ingest_preview(file: UploadFile = File(...),
-                         sheet: Optional[str] = Form(None)):
-    raw = await file.read()
+                         sheet: Optional[str] = Form(None),
+                         mapping: Optional[str] = Form(None)):
+    raw = await file.read(5_000_001)
     try:
         meta, columns, mapping, cleaned, skipped = _parse_ingest_upload(
-            file.filename or "upload", raw, sheet)
+            file.filename or "upload", raw, sheet, mapping)
     except ValueError as e:
         raise HTTPException(400, str(e))
     if not cleaned:
@@ -922,11 +940,12 @@ async def ingest_preview(file: UploadFile = File(...),
 @app.post("/ingest/load", response_model=IngestLoadResponse,
           summary="Load a cleaned upload into the graph")
 async def ingest_load(file: UploadFile = File(...),
-                      sheet: Optional[str] = Form(None)):
-    raw = await file.read()
+                      sheet: Optional[str] = Form(None),
+                         mapping: Optional[str] = Form(None)):
+    raw = await file.read(5_000_001)
     try:
         meta, columns, mapping, cleaned, skipped = _parse_ingest_upload(
-            file.filename or "upload", raw, sheet)
+            file.filename or "upload", raw, sheet, mapping)
     except ValueError as e:
         raise HTTPException(400, str(e))
     if not cleaned:
@@ -935,7 +954,8 @@ async def ingest_load(file: UploadFile = File(...),
     s = _require_store()
     rel_rows = [{"src": c["src"], "dst": c["dst"], "rel": c["rel"],
                  "frequency": c["frequency"],
-                 **({"date": c["date"]} if c.get("date") else {})}
+                 **({"date": c["date"], "timestamps": [c["date"]]} if c.get("date") else {}),
+                 **({"amount": c["amount"]} if c.get("amount") else {})}
                 for c in cleaned]
     n = s.load_relationships(rel_rows)
     global _ranked_cache

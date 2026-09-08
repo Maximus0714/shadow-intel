@@ -8,7 +8,7 @@ Upload fragmented evidence (CSV/XLSX reports, call records, FIR text), clean and
 
 - **Backend (FastAPI, `api.py`)** — graph store + analytics + document intel exposed as REST endpoints. NetworkX fallback by default; optional Neo4j via env vars.
 - **Legacy dashboard** — `dashboard.html` + `dashboard.css` + `dashboard.js`: the original single-file SVG workbench (kept as fallback).
-- **New web app (`frontend/`)** — Vite + React + TypeScript + Cytoscape.js, 6 pages: Overview, Network Explorer, Entities & Search, Alerts & Patterns, Document Intel, Upload & Settings.
+- **New web app (`frontend/`)** — Vite + React + TypeScript + Cytoscape.js, a public landing page plus Overview, Network Explorer, Entities & Search, Communities, Alerts & Patterns, Document Intel, Reports & Watchlist, Upload & Settings, and connection Settings.
 - **Pipelines** — `ingest.py`, `caviar_ingest.py`, `enron_ingest.py`, `nlp_pipeline.py`, `doc_intel.py`, `entity_resolution.py`, `analytics.py`, `suspicious_patterns.py`.
 - **Sample data** — `CAVIAR/` (input phases), `out_caviar/`, `out_bench/` (small working outputs), `gold_sample.json`, `out_analytics_ranked.json`.
 - **Docs** — `docs/` (design spec + implementation plan).
@@ -39,7 +39,7 @@ npm run dev    # http://localhost:5173 (proxies API calls to :8000)
 
 Production build: `npm run build` (outputs `frontend/dist/`, git-ignored).
 
-On first open, go to **Upload & Settings**, paste the `API_KEY` from `.env`, Save, Test connection. With no backend, every page falls back to a labeled fictional demo graph.
+Open `/` for the landing page, then select **Explore demo** for a working fictional workspace. To investigate real data, go to **Settings**, enter the backend URL and `API_KEY` from `.env`, and choose **Connect workspace**. Demo and live mode stay explicit across all pages; live failures display errors rather than substitute demo data.
 
 ## Data note
 
@@ -50,7 +50,9 @@ Large/generated artifacts are **not** committed (`emails.csv` 1.36 GB, `out_enro
 ```powershell
 python -m pytest tests/ -v          # backend: upload helpers + API endpoints
 python analytics.py --top 5         # analytics smoke test
-Set-Location frontend; npx tsc --noEmit; npm run build
+Set-Location frontend
+npm test                          # CSV parsing, mapping, evidence, demo traversal
+npm run build                     # TypeScript + optimized production build
 ```
 
 ## API endpoints
@@ -66,3 +68,17 @@ Set-Location frontend; npx tsc --noEmit; npm run build
 | POST | `/documents/analyze` | NER + summarisation on text/file |
 | POST | `/ingest/preview`, `/ingest/load` | smart upload: detect + clean + preview, then load |
 | POST | `/admin/reload` | reload graph, clear analytics cache |
+
+## Design and upload behavior
+
+`design.md` is an unchanged copy of the supplied xAI design reference. The frontend applies its monochrome palette, self-hosted Geist substitute and Geist Mono, outlined pill buttons, and consistent rounded surfaces. The taste skill governs the complete landing-page and workspace overhaul. The overview now lives at `/overview`; existing investigation route slugs remain available. Dark is the initial brand theme; the existing light-mode toggle remains available.
+
+Upload preview and load accept an optional multipart `mapping` JSON object. Its values must refer to uploaded column names. The same selected mapping is used in both operations. Amounts and dates survive ingestion, and individual financial records remain separate for pattern analysis. Unsupported relationship types return a validation error instead of silently disappearing.
+
+CSV, XLSX and JSON are parsed by the server. The frontend converts legacy XLS worksheets to CSV before submission. The direct API rejects legacy XLS with a conversion message. Node-only JSON ingestion is not supported. NLP extraction still requires its optional models; unavailable models are reported in Document Intel.
+
+See `docs/2026-09-08-frontend-revamp.md` for the current feature map, architecture, verification and limitations. The earlier audit remains as repair history.
+
+Browser regressions: `cd frontend && npx playwright install chromium && npm run test:e2e`. Alternatively, set `PLAYWRIGHT_CHROME_PATH` to an installed Chrome executable. The test runner starts the production preview on port 4179 if one is not already running.
+
+Watchlists and notes are saved locally, separately for demo and each backend. Reports download as Markdown or JSON. No cloud account is required for the demo.

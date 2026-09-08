@@ -1,80 +1,145 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import AlertCard, { sevOf } from "../components/AlertCard";
-import { getAlerts, loadConfig, type AlertFlag } from "../lib/api";
-
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import {
+  ShieldCheck,
+  ArrowUpRight,
+  CaretDown,
+  WarningCircle,
+} from "@phosphor-icons/react";
+import { getAlerts } from "../lib/api";
+import { sampleAlerts, useData, readable } from "../lib/workspace";
+import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 export default function Alerts() {
-  const [cfg] = useState(loadConfig);
-  const [flags, setFlags] = useState<AlertFlag[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "high" | "med" | "low">("all");
-
-  const fetchAll = async () => {
-    setError(null);
-    setFlags(null);
-    try {
-      const r = await getAlerts(cfg);
-      setFlags(r.flags);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  };
-
-  useEffect(() => {
-    fetchAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cfg.baseUrl, cfg.key]);
-
-  const shown = (flags || []).filter((f) =>
-    filter === "all" ? true : sevOf(f.severity_score) === filter
+  const [params] = useSearchParams();
+  const entity = params.get("entity");
+  const [severity, setSeverity] = useState("all");
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const state = useData("alerts", getAlerts, {
+    flags: sampleAlerts,
+    total: sampleAlerts.length,
+  });
+  const all = state.data?.flags || [];
+  const flags = all.filter(
+    (a) =>
+      (!entity || a.entities_involved.includes(entity)) &&
+      (severity === "all" ||
+        (severity === "high"
+          ? a.severity_score >= 0.7
+          : severity === "medium"
+            ? a.severity_score >= 0.4 && a.severity_score < 0.7
+            : a.severity_score < 0.4)),
   );
-
   return (
     <>
-      <h1>Alerts &amp; Patterns</h1>
-      <p className="sub">
-        Explainable flags: rule + anomaly checks with the evidence behind each
-        signal. Signals are leads, not verdicts — the analyst decides.
-      </p>
-      <div className="card">
-        <label className="field" style={{ maxWidth: 240 }}>
-          <span>Severity filter</span>
-          <select value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)}>
-            <option value="all">All severities</option>
-            <option value="high">High (≥ 0.70)</option>
-            <option value="med">Medium (0.40 – 0.69)</option>
-            <option value="low">Low (&lt; 0.40)</option>
-          </select>
-        </label>
-        {error && (
-          <div className="error">
-            {error}{" "}
-            <button className="btn" onClick={fetchAll}>
-              Retry
-            </button>{" "}
-            <Link className="btn" to="/upload">
-              Check connection
-            </Link>
-          </div>
-        )}
-        {!flags && !error && <div className="skeleton">Loading alerts…</div>}
-        {flags && (
-          flags.length === 0 ? (
-            <div className="empty">
-              No flagged patterns for this dataset. Note: structuring and
-              circular-transfer checks skip sources without financial edges.
-            </div>
-          ) : shown.length === 0 ? (
-            <div className="empty">No alerts at this severity level.</div>
-          ) : (
-            <div>
-              {shown.map((f, i) => (
-                <AlertCard key={`${f.pattern_type}-${i}`} flag={f} />
-              ))}
-            </div>
-          )
-        )}
+      <PageHeader
+        title="Signals worth a closer look."
+        description="Review the pattern. Examine the evidence. Make your own judgment."
+        eyebrow="ALERTS & PATTERNS"
+      />
+      <div className="signal-summary">
+        <ShieldCheck size={24} />
+        <p>
+          These are investigation leads, not conclusions. Every flag needs
+          context and human review.
+        </p>
       </div>
+      <div className="filter-bar">
+        <div className="segmented">
+          {["all", "high", "medium", "low"].map((s) => (
+            <button
+              key={s}
+              className={severity === s ? "active" : ""}
+              onClick={() => setSeverity(s)}
+            >
+              {s === "all" ? "All signals" : readable(s)}
+            </button>
+          ))}
+        </div>
+        <span className="muted">{flags.length} signals</span>
+      </div>
+      {entity && (
+        <div className="inline-notice">
+          Showing signals for {entity}.{" "}
+          <Link to="/alerts">Clear entity filter</Link>
+        </div>
+      )}
+      {state.loading ? (
+        <Loading />
+      ) : state.error ? (
+        <ErrorState message={state.error} retry={state.retry} />
+      ) : flags.length ? (
+        <div className="signals-list">
+          {flags.map((a, i) => {
+            const level =
+              a.severity_score >= 0.7
+                ? "high"
+                : a.severity_score >= 0.4
+                  ? "medium"
+                  : "low";
+            return (
+              <section
+                className={`signal-card ${level}`}
+                key={`${a.pattern_type}-${i}`}
+              >
+                <div className="signal-icon">
+                  <WarningCircle size={23} />
+                </div>
+                <div className="signal-content">
+                  <div className="signal-card-top">
+                    <span className={`severity-label ${level}`}>
+                      {level} priority
+                    </span>
+                    <span className="mono">
+                      {a.severity_score.toFixed(2)} score
+                    </span>
+                    <span className="source-label">
+                      {a.source_dataset || "Connected dataset"}
+                    </span>
+                  </div>
+                  <h2>{readable(a.pattern_type)}</h2>
+                  <p>{a.plain_language_explanation}</p>
+                  <div className="signal-entities">
+                    {a.entities_involved.map((id) => (
+                      <Link
+                        className="chip"
+                        to={`/entities/${encodeURIComponent(id)}`}
+                        key={id}
+                      >
+                        {id}
+                        <ArrowUpRight size={13} />
+                      </Link>
+                    ))}
+                  </div>
+                  <button
+                    className="text-link"
+                    onClick={() => setExpanded(expanded === i ? null : i)}
+                    aria-expanded={expanded === i}
+                  >
+                    View supporting evidence <CaretDown size={16} />
+                  </button>
+                  {expanded === i && (
+                    <pre className="evidence-json">
+                      {JSON.stringify(a.evidence || {}, null, 2)}
+                    </pre>
+                  )}
+                </div>
+                <Link
+                  className="icon-button"
+                  aria-label="Explore alert connections"
+                  to={`/network?focus=${encodeURIComponent(a.entities_involved[0] || "")}`}
+                >
+                  <ArrowUpRight size={21} />
+                </Link>
+              </section>
+            );
+          })}
+        </div>
+      ) : (
+        <Empty
+          title="No signals in this view"
+          body="Adjust the filters or bring in additional evidence. Some checks require financial relationships."
+        />
+      )}
     </>
   );
 }

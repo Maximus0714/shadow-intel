@@ -1,321 +1,490 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import cytoscape from "cytoscape";
-import cola from "cytoscape-cola";
-import DossierPanel from "../components/DossierPanel";
 import {
-  getEgo,
+  ArrowsOut,
+  Plus,
+  Minus,
+  DownloadSimple,
+  Path,
+  SlidersHorizontal,
+  X,
+  ArrowClockwise,
+  Graph as GraphIcon,
+} from "@phosphor-icons/react";
+import GraphCanvas, { type GraphHandle } from "../components/GraphCanvas";
+import EntityDossier from "../components/EntityDossier";
+import {
   getGraphFull,
+  getEgo,
   getPaths,
-  loadConfig,
   type FullGraph,
   type FullGraphNode,
 } from "../lib/api";
-import { demoGraph } from "../lib/demo";
-
-cytoscape.use(cola);
-
-const ROLE_COLOR: Record<string, string> = {
-  leader: "#B3261E",
-  bridge: "#A66A00",
-  member: "#5E6E77",
-};
-const REL_COLOR: Record<string, string> = {
-  FINANCIAL_TRANSFER: "#3FA97C",
-  CALLED: "#5E8FC4",
-  ASSOCIATE_OF: "#5E8FC4",
-  CO_LOCATED: "#8E83B8",
-  OWNS_VEHICLE: "#C07E92",
-  REGISTERED_AT: "#C07E92",
-};
-
-const ALL_RELS = ["FINANCIAL_TRANSFER", "CALLED", "ASSOCIATE_OF", "CO_LOCATED", "OWNS_VEHICLE", "REGISTERED_AT"];
-
+import { demoGraph, demoPaths } from "../lib/demo";
+import { useData, useWorkspace, readable } from "../lib/workspace";
+import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 export default function NetworkExplorer() {
   const [params] = useSearchParams();
-  const focusParam = params.get("focus");
-  const [cfg] = useState(loadConfig);
-  const [graph, setGraph] = useState<FullGraph | null>(null);
-  const [isDemo, setIsDemo] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { mode, setMode, cfg } = useWorkspace();
+  useEffect(() => {
+    if (params.get("demo") === "1") setMode("demo");
+  }, [params.get("demo")]);
   const [limit, setLimit] = useState(600);
+  const state = useData(
+    `graph:${limit}`,
+    (c) => getGraphFull(c, limit),
+    demoGraph,
+  );
   const [layout, setLayout] = useState("cola");
-  const [relFilter, setRelFilter] = useState<Set<string>>(new Set(ALL_RELS));
-  const [labelsOn, setLabelsOn] = useState(true);
+  const [labels, setLabels] = useState(true);
+  const [filters, setFilters] = useState(false);
+  const [excluded, setExcluded] = useState<string[]>([]);
+  const [community, setCommunity] = useState("all");
   const [selected, setSelected] = useState<FullGraphNode | null>(null);
-  const [egoMode, setEgoMode] = useState(false);
-  const [pathA, setPathA] = useState("");
-  const [pathB, setPathB] = useState("");
-  const [pathInfo, setPathInfo] = useState<string | null>(null);
-  const cyRef = useRef<cytoscape.Core | null>(null);
-  const divRef = useRef<HTMLDivElement | null>(null);
-
-  const load = async (lim: number) => {
-    setError(null);
-    setGraph(null);
-    try {
-      const g = await getGraphFull(cfg, lim);
-      setGraph(g);
-      setIsDemo(false);
-    } catch (e) {
-      setGraph(demoGraph);
-      setIsDemo(true);
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  };
-
+  const [ego, setEgo] = useState<FullGraph | null>(null);
+  const [depth, setDepth] = useState(1);
+  const [pathMode, setPathMode] = useState(false);
+  const [a, setA] = useState("");
+  const [b, setB] = useState("");
+  const [hops, setHops] = useState(3);
+  const [paths, setPaths] = useState<string[][]>([]);
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const canvas = useRef<GraphHandle>(null);
+  const task = useRef(0);
   useEffect(() => {
-    load(limit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limit]);
-
-  const elements = useMemo(() => {
-    if (!graph) return [];
-    const nodes = graph.nodes.map((n) => ({ data: { ...n } }));
-    const edges = graph.edges
-      .filter((e) => relFilter.has(e.rel))
-      .map((e) => ({ data: { id: e.id, source: e.src, target: e.dst, rel: e.rel, frequency: e.frequency } }));
-    return [...nodes, ...edges];
-  }, [graph, relFilter]);
-
+    task.current++;
+    setEgo(null);
+    setPaths([]);
+    setSelected(null);
+    setMessage("");
+    setExcluded([]);
+    setCommunity("all");
+    setBusy(false);
+  }, [state.data]);
   useEffect(() => {
-    if (!divRef.current || !elements.length) return;
-    if (cyRef.current) {
-      cyRef.current.destroy();
-      cyRef.current = null;
+    if (state.data) {
+      const focus = params.get("focus");
+      if (focus)
+        setSelected(state.data.nodes.find((n) => n.id === focus) || null);
     }
-    type CyEl = { data: (k: string) => unknown };
-    const num = (el: CyEl, k: string) => Number(el.data(k)) || 0;
-    const str = (el: CyEl, k: string) => String(el.data(k) || "");
-    const cy = cytoscape({
-      container: divRef.current,
-      elements,
-      style: [
-        {
-          selector: "node",
-          style: {
-            "background-color": (el: CyEl) => ROLE_COLOR[str(el, "role")] || "#22262d",
-            "border-width": 2,
-            "border-color": "#454e59",
-            width: (el: CyEl) => 22 + Math.min(1, Math.max(0, num(el, "influence_score"))) * 34,
-            height: (el: CyEl) => 22 + Math.min(1, Math.max(0, num(el, "influence_score"))) * 34,
-            label: labelsOn ? "data(name)" : "",
-            "font-size": 10,
-            color: "#E9E6DF",
-            "text-background-color": "#101216",
-            "text-background-opacity": 0.85,
-            "text-background-padding": 2,
-          } as unknown as cytoscape.Css.Node,
-        },
-        {
-          selector: "edge",
-          style: {
-            "line-color": (el: CyEl) => REL_COLOR[str(el, "rel")] || "#7B828C",
-            "target-arrow-color": (el: CyEl) => REL_COLOR[str(el, "rel")] || "#7B828C",
-            width: (el: CyEl) => 1 + Math.min(5, num(el, "frequency") || 1) * 0.7,
-            "line-style": (el: CyEl) => {
-              const r = str(el, "rel");
-              if (r === "CO_LOCATED" || r === "REGISTERED_AT") return "dashed";
-              if (r === "OWNS_VEHICLE") return "dotted";
-              return "solid";
-            },
-            "target-arrow-shape": (el: CyEl) =>
-              str(el, "rel") === "FINANCIAL_TRANSFER" ? "triangle" : "none",
-            "curve-style": "bezier",
-            opacity: 0.85,
-          } as unknown as cytoscape.Css.Edge,
-        },
-        {
-          selector: ".highlight",
-          style: { "border-color": "#fff", "border-width": 4, "line-color": "#fff", opacity: 1 } as unknown as cytoscape.Css.Node,
-        },
-        {
-          selector: ".dim",
-          style: { opacity: 0.15 } as unknown as cytoscape.Css.Node,
-        },
-      ],
-      layout: layout === "cola" ? ({ name: "cola", maxSimulationTime: 1500 } as unknown as cytoscape.LayoutOptions) : ({ name: layout } as cytoscape.LayoutOptions),
-    });
-    cy.on("tap", "node", (evt) => {
-      const d = evt.target.data() as FullGraphNode;
-      setSelected({ id: d.id, label: d.label, name: d.name, community_id: d.community_id, role: d.role, influence_score: d.influence_score });
-      cy.elements().removeClass("highlight");
-      evt.target.addClass("highlight");
-      evt.target.neighborhood().addClass("highlight");
-    });
-    cy.on("tap", (evt) => {
-      if (evt.target === cy) {
-        setSelected(null);
-        cy.elements().removeClass("highlight");
-      }
-    });
-    cyRef.current = cy;
-    if (focusParam) {
-      const n = cy.getElementById(focusParam);
-      if (n.length) {
-        cy.center(n);
-        cy.zoom(1.5);
-        n.addClass("highlight");
-        const d = n.data() as FullGraphNode;
-        setSelected({ id: d.id, label: d.label, name: d.name, community_id: d.community_id, role: d.role, influence_score: d.influence_score });
-      }
-    }
-    return () => {
-      cy.destroy();
-      cyRef.current = null;
+  }, [state.data, params]);
+  const graph = useMemo(() => {
+    const base = ego || state.data;
+    if (!base) return null;
+    const nodes = base.nodes.filter(
+      (n) => community === "all" || String(n.community_id) === community,
+    );
+    const ids = new Set(nodes.map((n) => n.id));
+    return {
+      ...base,
+      nodes,
+      edges: base.edges.filter(
+        (e) => !excluded.includes(e.rel) && ids.has(e.src) && ids.has(e.dst),
+      ),
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elements, layout, labelsOn]);
-
-  const toggleRel = (r: string) => {
-    setRelFilter((prev) => {
-      const next = new Set(prev);
-      if (next.has(r)) next.delete(r);
-      else next.add(r);
-      return next;
-    });
-  };
-
-  const runEgo = async () => {
-    const center = selected?.id || focusParam;
-    if (!center) {
-      setPathInfo("Select a node first, then toggle ego focus.");
-      return;
-    }
-    try {
-      const ego = await getEgo(cfg, center, 1);
-      setGraph({
-        nodes: ego.nodes.map((n) => ({ id: n.id, label: n.label, name: n.name, community_id: n.community_id, role: n.role, influence_score: n.influence_score })),
-        edges: ego.edges.map((e, i) => ({ id: `${e.src}>${e.dst}>${i}`, src: e.src, dst: e.dst, rel: e.rel, frequency: e.frequency })),
-        truncated: false,
-        total_nodes: ego.nodes.length,
-        total_edges: ego.edges.length,
-      });
-      setEgoMode(true);
-      setIsDemo(false);
-      setPathInfo(`1-hop ego of ${center}: ${ego.nodes.length} nodes.`);
-    } catch (e) {
-      setPathInfo(e instanceof Error ? e.message : String(e));
+  }, [state.data, ego, excluded, community]);
+  const choose = (node: FullGraphNode | null) => {
+    setSelected(node);
+    if (node && pathMode) {
+      if (!a) setA(node.id);
+      else if (!b) setB(node.id);
     }
   };
-
-  const runPaths = async () => {
-    if (!pathA.trim() || !pathB.trim()) {
-      setPathInfo("Enter two entity IDs to find paths.");
+  const focus = async () => {
+    if (ego) {
+      setEgo(null);
       return;
     }
+    if (!selected || !state.data) return;
+    setBusy(true);
+    const ticket = ++task.current;
     try {
-      const r = await getPaths(cfg, pathA.trim(), pathB.trim(), 3);
-      const cy = cyRef.current;
-      if (cy) {
-        cy.elements().removeClass("highlight");
-        const keep = new Set(r.paths.flat());
-        if (!keep.size) {
-          setPathInfo(`No path between ${pathA} and ${pathB} within 3 hops.`);
-          return;
+      if (mode === "demo") {
+        const ids = new Set([selected.id]);
+        for (let i = 0; i < depth; i++) {
+          const next = demoGraph.edges.filter(
+            (e) => ids.has(e.src) || ids.has(e.dst),
+          );
+          next.forEach((e) => {
+            ids.add(e.src);
+            ids.add(e.dst);
+          });
         }
-        cy.elements().addClass("dim");
-        keep.forEach((id) => {
-          const el = cy.getElementById(id);
-          el.removeClass("dim");
-          el.addClass("highlight");
+        const nodes = demoGraph.nodes.filter((n) => ids.has(n.id));
+        const edges = demoGraph.edges.filter(
+          (e) => ids.has(e.src) && ids.has(e.dst),
+        );
+        setEgo({ ...demoGraph, nodes, edges });
+      } else {
+        const r = await getEgo(cfg, selected.id, depth);
+        if (ticket !== task.current) return;
+        setEgo({
+          nodes: r.nodes,
+          edges: r.edges.map((e, i) => ({ ...e, id: `ego-${i}` })),
+          truncated: false,
+          total_nodes: r.nodes.length,
+          total_edges: r.edges.length,
         });
       }
-      setPathInfo(`${r.count} path(s) between ${pathA} and ${pathB} (≤3 hops).`);
+      setPaths([]);
+      setMessage("Showing the selected entity’s neighbourhood.");
     } catch (e) {
-      setPathInfo(e instanceof Error ? e.message : String(e));
+      if (ticket === task.current) setMessage(String(e));
+    } finally {
+      if (ticket === task.current) setBusy(false);
     }
   };
-
-  const exportPng = () => {
-    const cy = cyRef.current;
-    if (!cy) return;
-    const png = cy.png({ full: true });
-    const a = document.createElement("a");
-    a.href = png;
-    a.download = "network.png";
-    a.click();
+  const find = async () => {
+    if (!a || !b) {
+      setMessage("Choose a start and end entity.");
+      return;
+    }
+    const ticket = ++task.current;
+    setBusy(true);
+    setPaths([]);
+    try {
+      const r =
+        mode === "demo"
+          ? demoPaths(a, b, hops)
+          : await getPaths(cfg, a, b, hops);
+      if (ticket !== task.current) return;
+      setEgo(null);
+      setExcluded([]);
+      setCommunity("all");
+      setPaths(r.paths);
+      setMessage(
+        r.count
+          ? `${r.count} connecting path${r.count === 1 ? "" : "s"} found. Highlighted in the graph.`
+          : `No path within ${hops} hops. Try increasing the limit.`,
+      );
+    } catch (e) {
+      if (ticket === task.current)
+        setMessage(e instanceof Error ? e.message : String(e));
+    } finally {
+      if (ticket === task.current) setBusy(false);
+    }
   };
-
   return (
     <>
-      <h1>Network Explorer</h1>
-      <p className="sub">
-        The live knowledge graph: people, phones, organizations, locations and
-        their connections. Click a node for its dossier; find paths between two
-        entities.
-      </p>
-      <p>
-        {isDemo ? <span className="pill demo">DEMO — fictional data</span> : <span className="pill live">LIVE</span>}{" "}
-        {graph && (
-          <span className="mono">
-            {graph.nodes.length}/{graph.total_nodes} nodes · {graph.edges.length} edges
-          </span>
-        )}
-      </p>
-      {error && !graph && <div className="error">{error}</div>}
-      {graph?.truncated && (
-        <div className="cy-banner">
-          Showing top {graph.nodes.length} by influence of {graph.total_nodes} — narrow with filters or raise the cap.
-        </div>
-      )}
-      <div className="cy-wrap">
-        <div className="cy-toolbar" role="toolbar" aria-label="Graph controls">
-          <span>
-            {ALL_RELS.map((r) => (
-              <label key={r}>
-                <input type="checkbox" checked={relFilter.has(r)} onChange={() => toggleRel(r)} /> {r}
+      <PageHeader
+        title="Network Explorer"
+        description="Connect the dots. Select an entity to see its story."
+      >
+        <button
+          className="btn"
+          onClick={() => canvas.current?.export()}
+          disabled={!graph}
+        >
+          <DownloadSimple size={17} />
+          Export PNG
+        </button>
+      </PageHeader>
+      {state.loading ? (
+        <Loading />
+      ) : state.error ? (
+        <ErrorState message={state.error} retry={state.retry} />
+      ) : (
+        graph && (
+          <div className="network-workbench">
+            <div className="network-toolbar">
+              <label className="network-search">
+                <GraphIcon size={18} />
+                <select
+                  aria-label="Find an entity in the graph"
+                  value={selected?.id || ""}
+                  onChange={(e) =>
+                    choose(
+                      state.data?.nodes.find((n) => n.id === e.target.value) ||
+                        null,
+                    )
+                  }
+                >
+                  <option value="">Find an entity…</option>
+                  {state.data?.nodes.map((n) => (
+                    <option value={n.id} key={n.id}>
+                      {n.name} ({n.id})
+                    </option>
+                  ))}
+                </select>
               </label>
-            ))}
-          </span>
-          <label>
-            Layout
-            <select value={layout} onChange={(e) => setLayout(e.target.value)}>
-              <option value="cola">cola (physics)</option>
-              <option value="cose">cose</option>
-              <option value="concentric">concentric</option>
-              <option value="circle">circle</option>
-            </select>
-          </label>
-          <label>
-            Cap
-            <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-              <option value={200}>200</option>
-              <option value={600}>600</option>
-              <option value={1200}>1200</option>
-            </select>
-          </label>
-          <label>
-            <input type="checkbox" checked={labelsOn} onChange={(e) => setLabelsOn(e.target.checked)} /> Labels
-          </label>
-          <button className="btn" onClick={runEgo}>{egoMode ? "Reload full (cap)" : "Ego 1-hop of selected"}</button>
-          <button className="btn" onClick={exportPng}>Export PNG</button>
-          <span>
-            <input type="text" placeholder="From ID" value={pathA} onChange={(e) => setPathA(e.target.value)} aria-label="Path start entity" />
-            <input type="text" placeholder="To ID" value={pathB} onChange={(e) => setPathB(e.target.value)} aria-label="Path end entity" />
-            <button className="btn primary" onClick={runPaths}>Find paths</button>
-          </span>
-        </div>
-        {pathInfo && <div className="cy-banner">{pathInfo}</div>}
-        {!graph ? (
-          <div className="skeleton" style={{ margin: 14 }}>Loading graph…</div>
-        ) : (
-          <div className="split" style={{ padding: 12 }}>
-            <div ref={divRef} className="cy-canvas" role="img" aria-label="Criminal network graph" />
-            <DossierPanel node={selected} onClose={() => setSelected(null)} onFocus={(id) => {
-              const cy = cyRef.current;
-              if (cy) {
-                const n = cy.getElementById(id);
-                if (n.length) {
-                  const d = n.data() as FullGraphNode;
-                  setSelected({ id: d.id, label: d.label, name: d.name, community_id: d.community_id, role: d.role, influence_score: d.influence_score });
-                  cy.center(n);
-                }
-              }
-            }} />
+              <div className="toolbar-actions">
+                <button
+                  className={`btn ${filters ? "active-control" : ""}`}
+                  onClick={() => setFilters(!filters)}
+                  aria-expanded={filters}
+                >
+                  <SlidersHorizontal size={17} />
+                  Filters {excluded.length ? `(${excluded.length})` : ""}
+                </button>
+                <button
+                  className={`btn ${pathMode ? "active-control" : ""}`}
+                  onClick={() => setPathMode(!pathMode)}
+                  aria-expanded={pathMode}
+                >
+                  <Path size={18} />
+                  Find a path
+                </button>
+                <select
+                  aria-label="Graph layout"
+                  value={layout}
+                  onChange={(e) => setLayout(e.target.value)}
+                >
+                  <option value="concentric">Concentric layout</option>
+                  <option value="cola">Force layout</option>
+                  <option value="circle">Circle layout</option>
+                  <option value="cose">Organic layout</option>
+                </select>
+              </div>
+            </div>
+            {filters && (
+              <div className="filter-tray">
+                <div>
+                  <span className="field-caption">Relationships</span>
+                  <div className="filter-pills">
+                    {[...new Set(state.data?.edges.map((e) => e.rel))].map(
+                      (rel) => (
+                        <button
+                          key={rel}
+                          className={`filter-pill ${!excluded.includes(rel) ? "selected" : ""}`}
+                          onClick={() => {
+                            setExcluded((v) =>
+                              v.includes(rel)
+                                ? v.filter((r) => r !== rel)
+                                : [...v, rel],
+                            );
+                            setPaths([]);
+                          }}
+                        >
+                          {readable(rel)}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </div>
+                <label className="field">
+                  <span>Community</span>
+                  <select
+                    value={community}
+                    onChange={(e) => {
+                      setCommunity(e.target.value);
+                      setPaths([]);
+                    }}
+                  >
+                    <option value="all">All communities</option>
+                    {[
+                      ...new Set(
+                        state.data?.nodes
+                          .map((n) => n.community_id)
+                          .filter((n) => n != null),
+                      ),
+                    ].map((n) => (
+                      <option key={n} value={String(n)}>
+                        Group {Number(n) + 1}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="field">
+                  <span>Node limit</span>
+                  <select
+                    value={limit}
+                    onChange={(e) => setLimit(Number(e.target.value))}
+                  >
+                    {[200, 600, 1200].map((n) => (
+                      <option key={n}>{n}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={labels}
+                    onChange={(e) => setLabels(e.target.checked)}
+                  />
+                  Show labels
+                </label>
+              </div>
+            )}
+            {pathMode && (
+              <div className="path-tray">
+                {[
+                  { label: "From", value: a, set: setA },
+                  { label: "To", value: b, set: setB },
+                ].map((x) => (
+                  <label className="field" key={x.label}>
+                    <span>{x.label}</span>
+                    <select
+                      aria-label={
+                        x.label === "From"
+                          ? "Path start entity"
+                          : "Path end entity"
+                      }
+                      value={x.value}
+                      onChange={(e) => x.set(e.target.value)}
+                    >
+                      <option value="">Choose entity</option>
+                      {state.data?.nodes.map((n) => (
+                        <option key={n.id} value={n.id}>
+                          {n.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+                <label className="field">
+                  <span>Max hops</span>
+                  <select
+                    value={hops}
+                    onChange={(e) => setHops(Number(e.target.value))}
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n}>{n}</option>
+                    ))}
+                  </select>
+                </label>
+                <button
+                  className="btn primary"
+                  disabled={busy || !a || !b}
+                  onClick={find}
+                >
+                  {busy ? "Finding…" : "Trace path"}
+                  <ArrowClockwise size={15} />
+                </button>
+                <button
+                  className="icon-button"
+                  aria-label="Clear paths"
+                  onClick={() => {
+                    setPaths([]);
+                    setMessage("");
+                    setA("");
+                    setB("");
+                  }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            )}
+            {message && (
+              <div className="inline-notice" role="status">
+                {message}
+              </div>
+            )}
+            {state.data?.truncated && (
+              <div className="inline-notice">
+                Showing {state.data.nodes.length} of {state.data.total_nodes}{" "}
+                entities. Increase the node limit to explore more.
+              </div>
+            )}
+            <div className={`graph-layout ${selected ? "with-dossier" : ""}`}>
+              <div className="graph-stage">
+                {graph.nodes.length ? (
+                  <GraphCanvas
+                    ref={canvas}
+                    graph={graph}
+                    layout={layout}
+                    labels={labels}
+                    selected={selected?.id || null}
+                    paths={paths}
+                    onSelect={choose}
+                  />
+                ) : (
+                  <Empty
+                    title="No entities to display"
+                    body="Adjust your filters or upload relationships to populate the graph."
+                  />
+                )}
+                <div className="graph-summary">
+                  <span>{graph.nodes.length} entities</span>
+                  <span>{graph.edges.length} connections</span>
+                </div>
+                <div className="graph-zoom">
+                  <button
+                    aria-label="Zoom in"
+                    onClick={() => canvas.current?.zoom(1.2)}
+                  >
+                    <Plus />
+                  </button>
+                  <button
+                    aria-label="Zoom out"
+                    onClick={() => canvas.current?.zoom(0.8)}
+                  >
+                    <Minus />
+                  </button>
+                  <button
+                    aria-label="Fit graph to view"
+                    onClick={() => canvas.current?.fit()}
+                  >
+                    <ArrowsOut />
+                  </button>
+                </div>
+                <div className="graph-legend">
+                  <span>
+                    <i className="person" />
+                    Person
+                  </span>
+                  <span>
+                    <i className="vehicle" />
+                    Vehicle
+                  </span>
+                  <span>
+                    <i className="location" />
+                    Location
+                  </span>
+                </div>
+                {selected && (
+                  <div className="ego-actions">
+                    <select
+                      value={depth}
+                      onChange={(e) => setDepth(Number(e.target.value))}
+                      aria-label="Neighbourhood depth"
+                    >
+                      {[1, 2, 3].map((n) => (
+                        <option value={n} key={n}>
+                          {n}-hop neighbourhood
+                        </option>
+                      ))}
+                    </select>
+                    <button className="btn" disabled={busy} onClick={focus}>
+                      {ego ? "Show full graph" : "Focus neighbourhood"}
+                    </button>
+                  </div>
+                )}
+              </div>
+              {selected && (
+                <EntityDossier
+                  node={selected}
+                  onClose={() => setSelected(null)}
+                  onFocus={(id) => {
+                    const n = state.data?.nodes.find((n) => n.id === id);
+                    if (n) choose(n);
+                    else
+                      setMessage(
+                        "This entity is outside the current graph limit. Increase the cap.",
+                      );
+                  }}
+                />
+              )}
+            </div>
+            {paths.length > 0 && (
+              <details className="path-results">
+                <summary>View {paths.length} paths</summary>
+                {paths.map((p, i) => (
+                  <p key={i}>
+                    {p
+                      .map(
+                        (id) =>
+                          state.data?.nodes.find((n) => n.id === id)?.name ||
+                          id,
+                      )
+                      .join(" → ")}
+                  </p>
+                ))}
+              </details>
+            )}
           </div>
-        )}
-      </div>
+        )
+      )}
     </>
   );
 }

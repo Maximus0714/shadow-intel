@@ -24,3 +24,7 @@ out_enron_err.log
 boottest.js
 mkboottest.py
 boot_test_tmp.html
+
+# Browser test artifacts
+frontend/test-results/
+frontend/playwright-report/

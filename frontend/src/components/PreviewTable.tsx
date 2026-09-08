@@ -10,7 +10,7 @@ export default function PreviewTable({ columns, rows, skipped }: Props) {
   return (
     <div>
       <p className="mono" style={{ marginBottom: 6 }}>
-        {rows.length} cleaned edges · columns: {columns.join(", ") || "—"}
+        {rows.length} cleaned edges · columns: {columns.join(", ") || "-"}
       </p>
       {rows.length > 0 ? (
         <table className="data">

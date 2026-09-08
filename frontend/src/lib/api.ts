@@ -59,9 +59,16 @@ const LS_KEY = "shadowintel-api";
 
 export function loadConfig(): ApiConfig {
   try {
-    const raw =
-      localStorage.getItem(LS_KEY) || sessionStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw) as ApiConfig;
+    const raw = localStorage.getItem(LS_KEY) || sessionStorage.getItem(LS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (
+        parsed &&
+        typeof parsed.baseUrl === "string" &&
+        typeof parsed.key === "string"
+      )
+        return parsed as ApiConfig;
+    }
   } catch {
     /* fresh start */
   }
@@ -87,11 +94,12 @@ async function req<T>(
   cfg: ApiConfig,
   path: string,
   init?: RequestInit,
-  body?: unknown
+  body?: unknown,
 ): Promise<T> {
   let res: Response;
   try {
     res = await fetch(cfg.baseUrl.replace(/\/$/, "") + path, {
+      signal: AbortSignal.timeout(30_000),
       ...init,
       headers: {
         "X-API-Key": cfg.key,
@@ -102,11 +110,13 @@ async function req<T>(
     });
   } catch {
     throw new Error(
-      `Cannot reach ${cfg.baseUrl}. Start the backend: python -m uvicorn api:app --port 8000`
+      `Cannot reach ${cfg.baseUrl}. Start the backend: python -m uvicorn api:app --port 8000`,
     );
   }
   if (res.status === 401)
-    throw new Error("API key rejected (401). Check the key in Upload & Settings.");
+    throw new Error(
+      "API key rejected (401). Check the key in Upload & Settings.",
+    );
   if (!res.ok) throw new Error(`HTTP ${res.status} on ${path}`);
   return res.json() as Promise<T>;
 }
@@ -121,41 +131,56 @@ export const getPaths = (c: ApiConfig, a: string, b: string, hops = 3) =>
   req<{ source: string; target: string; paths: string[][]; count: number }>(
     c,
     `/entities/${encodeURIComponent(a)}/paths/${encodeURIComponent(
-      b
-    )}?max_hops=${hops}`
+      b,
+    )}?max_hops=${hops}`,
   );
 export const getKeyPlayers = (c: ApiConfig, limit = 20) =>
   req<{ players: KeyPlayer[]; total: number }>(
     c,
-    `/analytics/key-players?limit=${limit}`
+    `/analytics/key-players?limit=${limit}`,
   );
 export const getAlerts = (c: ApiConfig) =>
   req<{ flags: AlertFlag[]; total: number }>(c, "/analytics/alerts");
 export const searchEntities = (c: ApiConfig, query: string) =>
-  req<{ query: string; results: { id: string; label: string; name: string; score: number; match_type: string }[] }>(
-    c,
-    "/search",
-    { method: "POST" },
-    { query, limit: 10 }
-  );
+  req<{
+    query: string;
+    results: {
+      id: string;
+      label: string;
+      name: string;
+      score: number;
+      match_type: string;
+    }[];
+  }>(c, "/search", { method: "POST" }, { query, limit: 10 });
 export const getEntity = (c: ApiConfig, id: string) =>
   req<EntityDetail>(c, `/entities/${encodeURIComponent(id)}`);
 export interface EgoNetwork {
   center: string;
   depth: number;
-  nodes: { id: string; label: string; name: string; community_id?: number | null; role?: string | null; influence_score?: number | null }[];
+  nodes: {
+    id: string;
+    label: string;
+    name: string;
+    community_id?: number | null;
+    role?: string | null;
+    influence_score?: number | null;
+  }[];
   edges: { src: string; dst: string; rel: string; frequency: number }[];
 }
 export const getEgo = (c: ApiConfig, id: string, depth = 1) =>
-  req<EgoNetwork>(c, `/entities/${encodeURIComponent(id)}/network?depth=${depth}`);
+  req<EgoNetwork>(
+    c,
+    `/entities/${encodeURIComponent(id)}/network?depth=${depth}`,
+  );
 
 export async function analyzeDocumentText(
   cfg: ApiConfig,
-  text: string
+  text: string,
 ): Promise<unknown> {
   let res: Response;
   try {
     res = await fetch(cfg.baseUrl.replace(/\/$/, "") + "/documents/analyze", {
+      signal: AbortSignal.timeout(60_000),
       method: "POST",
       headers: { "X-API-Key": cfg.key },
       body: (() => {
@@ -176,14 +201,17 @@ export async function postIngest(
   cfg: ApiConfig,
   endpoint: "preview" | "load",
   file: File,
-  sheet?: string
+  sheet?: string,
+  mapping?: Record<string, string | null>,
 ): Promise<unknown> {
   const f = new FormData();
   f.append("file", file);
   if (sheet) f.append("sheet", sheet);
+  if (mapping) f.append("mapping", JSON.stringify(mapping));
   let res: Response;
   try {
     res = await fetch(cfg.baseUrl.replace(/\/$/, "") + `/ingest/${endpoint}`, {
+      signal: AbortSignal.timeout(60_000),
       method: "POST",
       headers: { "X-API-Key": cfg.key },
       body: f,
@@ -205,3 +233,11 @@ export async function postIngest(
   }
   return res.json();
 }
+
+export const getCommunities = (c: ApiConfig) =>
+  req<{ communities: import("./workspace").Community[]; total: number }>(
+    c,
+    "/analytics/communities",
+  );
+export const reloadGraph = (c: ApiConfig) =>
+  req<Record<string, unknown>>(c, "/admin/reload", { method: "POST" });

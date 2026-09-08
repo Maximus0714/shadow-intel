@@ -1,162 +1,253 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import ConnectionStatus from "../components/ConnectionStatus";
-import PipelineStepper from "../components/PipelineStepper";
 import {
-  getAlerts,
-  getHealth,
-  getKeyPlayers,
-  getStats,
-  loadConfig,
-  type AlertFlag,
-  type KeyPlayer,
-} from "../lib/api";
-
+  ArrowUpRight,
+  Graph,
+  UsersThree,
+  ShieldWarning,
+  SquaresFour,
+  UploadSimple,
+  FileText,
+  BookmarkSimple,
+  ArrowRight,
+} from "@phosphor-icons/react";
+import { getStats, getKeyPlayers, getAlerts, getCommunities } from "../lib/api";
+import {
+  useWorkspace,
+  useData,
+  samplePlayers,
+  sampleAlerts,
+  sampleCommunities,
+} from "../lib/workspace";
+import { demoGraph } from "../lib/demo";
+import {
+  PageHeader,
+  Reveal,
+  Loading,
+  ErrorState,
+  Empty,
+} from "../components/UI";
 export default function Overview() {
-  const [cfg] = useState(loadConfig);
-  const [stats, setStats] = useState<{ nodes: number; edges: number } | null>(null);
-  const [backend, setBackend] = useState<string | undefined>(undefined);
-  const [players, setPlayers] = useState<KeyPlayer[] | null>(null);
-  const [alerts, setAlerts] = useState<AlertFlag[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [h, s, kp, al] = await Promise.all([
-          getHealth(cfg),
-          getStats(cfg),
-          getKeyPlayers(cfg, 5),
-          getAlerts(cfg),
-        ]);
-        if (cancelled) return;
-        setBackend(h.backend);
-        setStats(s);
-        setPlayers(kp.players);
-        setAlerts(al.flags.slice(0, 3));
-        setError(null);
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [cfg.baseUrl, cfg.key]);
-
+  const { mode, watched } = useWorkspace();
+  const state = useData(
+    "overview",
+    async (c) => {
+      const [stats, players, alerts, communities] = await Promise.all([
+        getStats(c),
+        getKeyPlayers(c, 5),
+        getAlerts(c),
+        getCommunities(c),
+      ]);
+      return {
+        stats,
+        players: players.players,
+        alerts: alerts.flags,
+        communities: communities.communities,
+      };
+    },
+    {
+      stats: { nodes: demoGraph.total_nodes, edges: demoGraph.total_edges },
+      players: samplePlayers.slice(0, 5),
+      alerts: sampleAlerts,
+      communities: sampleCommunities,
+    },
+  );
+  const { data } = state;
   return (
     <>
-      <h1>Overview</h1>
-      <p className="sub">
-        From evidence to intelligence: ingest case data, clean it, explore the
-        network, review flagged patterns, and analyze documents — one step at a
-        time.
-      </p>
-
-      <div className="card">
-        <h2>Backend status</h2>
-        <p style={{ marginBottom: 8 }}>
-          <ConnectionStatus cfg={cfg} />{" "}
-          <span className="pill demo">DEMO — fictional data shown offline</span>
-        </p>
-        {stats ? (
-          <p>
-            <span className="mono">
-              {stats.nodes} nodes / {stats.edges} edges
-            </span>
-            {backend ? ` · backend: ${backend}` : ""}
-          </p>
-        ) : error ? (
-          <div className="error">
-            Backend unreachable: {error}{" "}
-            <Link to="/upload">Connect in Upload &amp; Settings</Link> or keep
-            exploring the demo dataset.
-          </div>
-        ) : (
-          <div className="skeleton">Loading stats…</div>
-        )}
-      </div>
-
-      <div className="card">
-        <h2>Investigation pipeline</h2>
-        <PipelineStepper />
-      </div>
-
-      <div className="grid2">
-        <div className="card">
-          <h2>Top key players</h2>
-          {players ? (
-            players.length ? (
-              <table className="data">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {players.map((p) => (
-                    <tr key={p.person_id}>
-                      <td>
-                        <Link to={`/network?focus=${encodeURIComponent(p.person_id)}`}>
-                          {p.name}
-                        </Link>
-                      </td>
-                      <td>
-                        <span className={`tag ${p.role}`}>{p.role.toUpperCase()}</span>
-                      </td>
-                      <td className="mono">{p.influence_score.toFixed(3)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="empty">No key players yet — upload data first.</div>
-            )
-          ) : (
-            <div className="skeleton">Loading key players…</div>
-          )}
-          <p style={{ marginTop: 8 }}>
-            <Link className="btn" to="/entities">
-              Open Entities &amp; Search
-            </Link>
-          </p>
-        </div>
-        <div className="card">
-          <h2>Top alerts</h2>
-          {alerts ? (
-            alerts.length ? (
-              <ul style={{ paddingLeft: 18 }}>
-                {alerts.map((a, i) => (
-                  <li key={i} style={{ marginBottom: 6 }}>
-                    <span
-                      className={`sev ${a.severity_score >= 0.7 ? "high" : a.severity_score >= 0.4 ? "med" : "low"}`}
-                    />{" "}
-                    {a.plain_language_explanation.slice(0, 140)}…
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="empty">No flagged patterns for this dataset.</div>
-            )
-          ) : (
-            <div className="skeleton">Loading alerts…</div>
-          )}
-          <p style={{ marginTop: 8 }}>
-            <Link className="btn" to="/alerts">
-              Open Alerts &amp; Patterns
-            </Link>
-          </p>
-        </div>
-      </div>
-
-      <p>
-        <Link className="btn primary" to="/network">
-          Open Network Explorer
+      <PageHeader
+        title="A clearer view of your investigation."
+        description={
+          mode === "demo"
+            ? "Welcome to Copper Ledger. Get to know the tools with a fictional investigation."
+            : "Your evidence, connections and next steps, all in one place."
+        }
+        eyebrow="YOUR WORKSPACE"
+      >
+        <Link className="btn primary" to="/upload">
+          <UploadSimple size={18} />
+          Upload evidence
         </Link>
-      </p>
+      </PageHeader>
+      {state.loading ? (
+        <Loading />
+      ) : state.error ? (
+        <ErrorState message={state.error} retry={state.retry} />
+      ) : (
+        data && (
+          <>
+            <div className="metric-grid">
+              {[
+                {
+                  label: "Entities",
+                  value: data.stats.nodes,
+                  icon: UsersThree,
+                  to: "/entities",
+                  sub: "People, places & assets",
+                },
+                {
+                  label: "Connections",
+                  value: data.stats.edges,
+                  icon: Graph,
+                  to: "/network",
+                  sub: "Relationships to explore",
+                },
+                {
+                  label: "Patterns flagged",
+                  value: data.alerts.length,
+                  icon: ShieldWarning,
+                  to: "/alerts",
+                  sub: "Leads for human review",
+                },
+                {
+                  label: "Communities",
+                  value: data.communities.length,
+                  icon: SquaresFour,
+                  to: "/communities",
+                  sub: "Connected groups",
+                },
+              ].map((m, i) => (
+                <Reveal key={m.label} delay={i * 0.04}>
+                  <Link to={m.to} className="metric-card">
+                    <div>
+                      <span>{m.label}</span>
+                      <m.icon size={19} />
+                    </div>
+                    <strong>{m.value.toLocaleString()}</strong>
+                    <small>
+                      {m.sub}
+                      <ArrowUpRight size={14} />
+                    </small>
+                  </Link>
+                </Reveal>
+              ))}
+            </div>
+            <Reveal className="workspace-spotlight">
+              <div>
+                <span className="overline">START WITH THE CONNECTIONS</span>
+                <h2>
+                  See what the records
+                  <br />
+                  can’t show on their own.
+                </h2>
+                <p>
+                  Move through the network. Follow an entity, trace a path, or
+                  uncover a group.
+                </p>
+                <Link className="btn primary" to="/network">
+                  Open Network Explorer <ArrowRight size={17} />
+                </Link>
+              </div>
+              <img
+                src="/images/connections.webp"
+                width="1536"
+                height="1024"
+                alt="Interconnected silver threads"
+              />
+            </Reveal>
+            <div className="overview-columns">
+              <section className="panel">
+                <div className="panel-header">
+                  <h2>Entities to explore</h2>
+                  <Link className="text-link" to="/entities">
+                    View all <ArrowUpRight size={15} />
+                  </Link>
+                </div>
+                {data.players.length ? (
+                  data.players.slice(0, 5).map((p) => (
+                    <Link
+                      className="entity-row"
+                      key={p.person_id}
+                      to={`/entities/${encodeURIComponent(p.person_id)}`}
+                    >
+                      <span className="entity-avatar">
+                        {p.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .slice(0, 2)
+                          .join("")}
+                      </span>
+                      <span>
+                        <strong>{p.name}</strong>
+                        <small>
+                          {p.person_id} · {p.role}
+                        </small>
+                      </span>
+                      <span className="row-score">
+                        {p.influence_score.toFixed(2)}
+                        <small>influence</small>
+                      </span>
+                      <ArrowUpRight size={16} />
+                    </Link>
+                  ))
+                ) : (
+                  <Empty body="Import relationships to start ranking entities." />
+                )}
+              </section>
+              <section className="panel">
+                <div className="panel-header">
+                  <h2>Patterns worth reviewing</h2>
+                  <Link className="text-link" to="/alerts">
+                    View all <ArrowUpRight size={15} />
+                  </Link>
+                </div>
+                {data.alerts.slice(0, 3).map((a, i) => (
+                  <Link className="alert-preview" key={i} to="/alerts">
+                    <span
+                      className={`severity-label ${a.severity_score >= 0.7 ? "high" : "medium"}`}
+                    >
+                      {a.severity_score >= 0.7 ? "High" : "Review"}
+                    </span>
+                    <h3>{a.pattern_type.replace(/_/g, " ")}</h3>
+                    <p>{a.plain_language_explanation}</p>
+                  </Link>
+                ))}
+                {!data.alerts.length && (
+                  <Empty
+                    title="No patterns flagged"
+                    body="New alerts will appear here when the data supports them."
+                  />
+                )}
+              </section>
+            </div>
+          </>
+        )
+      )}
+      <section>
+        <div className="section-title">
+          <h2>Keep your investigation moving.</h2>
+        </div>
+        <div className="quick-actions">
+          {[
+            {
+              icon: UploadSimple,
+              title: "Bring in new data",
+              body: "Preview and import relationships.",
+              to: "/upload",
+            },
+            {
+              icon: FileText,
+              title: "Read between the lines",
+              body: "Analyze a report or statement.",
+              to: "/documents",
+            },
+            {
+              icon: BookmarkSimple,
+              title: "Build your case notes",
+              body: `${watched.length} saved entities in your watchlist.`,
+              to: "/reports",
+            },
+          ].map((x) => (
+            <Link className="quick-action" to={x.to} key={x.title}>
+              <x.icon size={24} weight="thin" />
+              <div>
+                <h3>{x.title}</h3>
+                <p>{x.body}</p>
+              </div>
+              <ArrowUpRight size={18} />
+            </Link>
+          ))}
+        </div>
+      </section>
     </>
   );
 }

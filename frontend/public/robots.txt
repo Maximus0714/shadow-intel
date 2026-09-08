@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /overview
+Disallow: /network
+Disallow: /entities
+Disallow: /communities
+Disallow: /alerts
+Disallow: /documents
+Disallow: /reports
+Disallow: /upload
+Disallow: /settings
