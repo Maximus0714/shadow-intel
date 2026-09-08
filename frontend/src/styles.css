@@ -259,17 +259,34 @@ kbd,
   white-space: nowrap;
 }
 .brand-mark {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 31px;
+  width: 34px;
   height: 34px;
   background: var(--primary);
   color: var(--on-primary);
+  border-radius: 5px;
+  flex: 0 0 auto;
+}
+.brand-x {
+  font-family: "Geist Mono", ui-monospace, monospace;
   font-size: 22px;
   font-weight: 600;
-  border-radius: 5px;
-  letter-spacing: -2px;
-  padding-right: 2px;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  transform: translateX(-1px);
+}
+.brand-lens {
+  position: absolute;
+  right: -5px;
+  bottom: -4px;
+  box-sizing: content-box;
+  padding: 2px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--text);
 }
 .brand-light {
   font-weight: 400;

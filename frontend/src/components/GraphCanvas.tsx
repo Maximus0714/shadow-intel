@@ -55,7 +55,7 @@ const GraphCanvas = forwardRef<GraphHandle, Props>(function GraphCanvas(
             .getPropertyValue("--well")
             .trim(),
         });
-        a.download = "shadow-intel-network.png";
+        a.download = "x-tracer-network.png";
         a.click();
       },
     }),

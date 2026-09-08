@@ -13,14 +13,18 @@ const routes = [
 ];
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem("si-mode", '"demo"');
-    localStorage.setItem("shadowintel-theme", "dark");
+    localStorage.setItem("xt-mode", '"demo"');
+    localStorage.setItem("xtracer-theme", "dark");
   });
 });
 test("landing opens a functional workspace and saved entities export with notes", async ({
   page,
 }) => {
   await page.goto("/");
+  await expect(page).toHaveTitle(/X-Tracer/);
+  await expect(
+    page.getByRole("link", { name: "X-Tracer home" }).first(),
+  ).toBeVisible();
   await page
     .getByRole("link", { name: "Explore demo", exact: true })
     .first()
@@ -44,7 +48,7 @@ test("landing opens a functional workspace and saved entities export with notes"
   await page
     .getByRole("button", { name: "Download report", exact: true })
     .click();
-  expect((await download).suggestedFilename()).toBe("shadow-intel-report.md");
+  expect((await download).suggestedFilename()).toBe("x-tracer-report.md");
 });
 test("graph supports dossiers, neighbourhoods and connected paths", async ({
   page,
@@ -87,21 +91,17 @@ test("documents lead to entity search and upload resets malformed files", async 
     "Mohan Yadav",
   );
   await page.goto("/upload");
-  await page
-    .getByLabel("Choose evidence file")
-    .setInputFiles({
-      name: "valid.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from("src,dst\na,b\n"),
-    });
+  await page.getByLabel("Choose evidence file").setInputFiles({
+    name: "valid.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from("src,dst\na,b\n"),
+  });
   await expect(page.getByText("1 usable relationships")).toBeVisible();
-  await page
-    .getByLabel("Choose evidence file")
-    .setInputFiles({
-      name: "invalid.json",
-      mimeType: "application/json",
-      buffer: Buffer.from("null"),
-    });
+  await page.getByLabel("Choose evidence file").setInputFiles({
+    name: "invalid.json",
+    mimeType: "application/json",
+    buffer: Buffer.from("null"),
+  });
   await expect(page.getByRole("alert")).toContainText("JSON must be an object");
   await expect(page.locator(".mapping-panel")).toHaveCount(0);
 });
@@ -109,7 +109,7 @@ for (const theme of ["dark", "light"])
   test(`${theme} mobile routes fit and navigation works`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(
-      (t) => localStorage.setItem("shadowintel-theme", t),
+      (t) => localStorage.setItem("xtracer-theme", t),
       theme,
     );
     const errors: string[] = [];

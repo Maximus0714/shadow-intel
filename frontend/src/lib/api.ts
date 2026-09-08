@@ -55,11 +55,16 @@ export interface EntityDetail {
   neighbours_sample: string[];
 }
 
-const LS_KEY = "shadowintel-api";
+const LS_KEY = "xtracer-api";
+const LEGACY_LS_KEY = "shadowintel-api";
 
 export function loadConfig(): ApiConfig {
   try {
-    const raw = localStorage.getItem(LS_KEY) || sessionStorage.getItem(LS_KEY);
+    const raw =
+      localStorage.getItem(LS_KEY) ||
+      sessionStorage.getItem(LS_KEY) ||
+      localStorage.getItem(LEGACY_LS_KEY) ||
+      sessionStorage.getItem(LEGACY_LS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (
@@ -85,6 +90,8 @@ export function saveConfig(c: ApiConfig, remember: boolean) {
       sessionStorage.setItem(LS_KEY, s);
       localStorage.removeItem(LS_KEY);
     }
+    localStorage.removeItem(LEGACY_LS_KEY);
+    sessionStorage.removeItem(LEGACY_LS_KEY);
   } catch {
     /* storage unavailable */
   }

@@ -267,7 +267,7 @@ export default function Landing() {
               <span className="secondary-text">Judgment stays human.</span>
             </h2>
             <p>
-              Every connection needs context. Shadow Intel helps you ask better
+              Every connection needs context. X-Tracer helps you ask better
               questions, review evidence, and document your reasoning.
             </p>
             <div className="principle-tags">
@@ -320,7 +320,7 @@ export default function Landing() {
           </Link>
         </div>
         <span className="footer-note">
-          Shadow Intel is an investigation aid. Findings require human review.
+          X-Tracer is an investigation aid. Findings require human review.
         </span>
       </footer>
     </div>

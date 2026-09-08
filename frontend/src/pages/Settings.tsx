@@ -60,7 +60,7 @@ export default function Settings() {
           </div>
           <h2>Connect your backend</h2>
           <p className="muted">
-            Your workspace connects directly to your Shadow Intel API.
+            Your workspace connects directly to your X-Tracer API.
           </p>
           <form
             onSubmit={(e) => {

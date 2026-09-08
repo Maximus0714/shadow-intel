@@ -266,7 +266,7 @@ async def lifespan(app: FastAPI):
         pass
 
 
-app = FastAPI(title="Criminal Network Investigation API", version="1.0.0",
+app = FastAPI(title="X-Tracer Investigation API", version="1.0.0",
               lifespan=lifespan)
 app.add_middleware(ApiKeyMiddleware)
 app.add_middleware(

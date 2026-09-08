@@ -1,6 +1,6 @@
 # Landing assets
 
-Created with the built-in image-generation tool for Shadow Intel. Final project assets:
+Created with the built-in image-generation tool for X-Tracer. Final project assets:
 
 - `connections.webp`: primary connection sculpture.
 - `connections-mobile.webp`: responsive smaller version of the same image.

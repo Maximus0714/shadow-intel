@@ -53,7 +53,7 @@ function RouteReset() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
-    document.title = `${nav.find((n) => pathname.startsWith(n.to))?.label || "Shadow Intel"} | Investigation workspace`;
+    document.title = `${nav.find((n) => pathname.startsWith(n.to))?.label || "X-Tracer"} | Investigation workspace`;
   }, [pathname]);
   return null;
 }
@@ -132,7 +132,7 @@ function WorkspaceLayout() {
             Settings
           </Link>
           <Link className="back-home" to="/">
-            About Shadow Intel <ArrowUpRight size={15} />
+            About X-Tracer <ArrowUpRight size={15} />
           </Link>
           <div className="sidebar-foot">
             Evidence informs.

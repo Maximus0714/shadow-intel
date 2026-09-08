@@ -1,4 +1,4 @@
-# Shadow Intel
+# X-Tracer
 
 **From evidence to intelligence.** An AI-assisted criminal-network investigation workspace built for Smart India Hackathon (SIH) 2026, Problem Statement SIH26189.
 

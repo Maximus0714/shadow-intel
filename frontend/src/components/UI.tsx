@@ -135,7 +135,11 @@ export function Empty({
 export function ThemeButton() {
   const [theme, setTheme] = useState(() => {
     try {
-      return localStorage.getItem("shadowintel-theme") || "dark";
+      return (
+        localStorage.getItem("xtracer-theme") ||
+        localStorage.getItem("shadowintel-theme") ||
+        "dark"
+      );
     } catch {
       return "dark";
     }
@@ -143,7 +147,8 @@ export function ThemeButton() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try {
-      localStorage.setItem("shadowintel-theme", theme);
+      localStorage.setItem("xtracer-theme", theme);
+      localStorage.removeItem("shadowintel-theme");
     } catch {}
   }, [theme]);
   return (
@@ -158,12 +163,13 @@ export function ThemeButton() {
 }
 export function Brand() {
   return (
-    <Link className="brand" to="/" aria-label="S Shadow Intel home">
+    <Link className="brand" to="/" aria-label="X-Tracer home">
       <span className="brand-mark" aria-hidden="true">
-        S
+        <span className="brand-x">X</span>
+        <MagnifyingGlass className="brand-lens" size={15} weight="bold" />
       </span>
       <span>
-        Shadow <span className="brand-light">Intel</span>
+        X-<span className="brand-light">Tracer</span>
       </span>
     </Link>
   );

@@ -103,15 +103,19 @@ function read<T>(key: string, fallback: T): T {
     return fallback;
   }
 }
+function readMigrated<T>(key: string, legacyKey: string, fallback: T): T {
+  const current = read<T | null>(key, null);
+  return current ?? read<T>(legacyKey, fallback);
+}
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [cfg, setCfg] = useState(loadConfig);
   const [mode, setModeState] = useState<"demo" | "live">(() => {
-    const m = read<string>("si-mode", "demo");
+    const m = readMigrated<string>("xt-mode", "si-mode", "demo");
     return m === "live" ? "live" : "demo";
   });
   const [revision, setRevision] = useState(0);
   const [watchState, setWatchState] = useState<Record<string, string[]>>(() =>
-    read("si-watchlists", {}),
+    readMigrated("xt-watchlists", "si-watchlists", {}),
   );
   const [notice, notify] = useState("");
   const scope = mode === "demo" ? "demo" : cfg.baseUrl;
@@ -124,7 +128,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const setMode = (m: "demo" | "live") => {
     setModeState(m);
     try {
-      localStorage.setItem("si-mode", JSON.stringify(m));
+      localStorage.setItem("xt-mode", JSON.stringify(m));
+      localStorage.removeItem("si-mode");
     } catch {}
   };
   const connect = (c: ApiConfig, remember: boolean) => {
@@ -142,7 +147,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         [scope]: ids.includes(id) ? ids.filter((v) => v !== id) : [...ids, id],
       };
       try {
-        localStorage.setItem("si-watchlists", JSON.stringify(next));
+        localStorage.setItem("xt-watchlists", JSON.stringify(next));
+        localStorage.removeItem("si-watchlists");
       } catch {}
       return next;
     });

@@ -18,16 +18,20 @@ import {
 import { PageHeader, ErrorState, Empty } from "../components/UI";
 export default function Reports() {
   const { mode, cfg, watched, toggleWatch, notify } = useWorkspace();
-  const key = `si-notes:${mode === "demo" ? "demo" : cfg.baseUrl}`;
+  const scope = mode === "demo" ? "demo" : cfg.baseUrl;
+  const key = `xt-notes:${scope}`;
+  const legacyKey = `si-notes:${scope}`;
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState("Investigation summary");
   useEffect(() => {
     try {
-      setNotes(localStorage.getItem(key) || "");
+      setNotes(
+        localStorage.getItem(key) || localStorage.getItem(legacyKey) || "",
+      );
     } catch {
       setNotes("");
     }
-  }, [key]);
+  }, [key, legacyKey]);
   const state = useData(
     "reports",
     async (c) => {
@@ -42,6 +46,7 @@ export default function Reports() {
   const save = () => {
     try {
       localStorage.setItem(key, notes);
+      localStorage.removeItem(legacyKey);
       notify("Analyst notes saved on this device.");
     } catch {
       notify("Storage is unavailable. Download a report to keep your notes.");
@@ -51,6 +56,7 @@ export default function Reports() {
     if (!state.data) return;
     const report = {
       title: title.trim() || "Investigation summary",
+      generated_by: "X-Tracer",
       generated_at: new Date().toISOString(),
       data_mode: mode,
       scope: state.data.graph.truncated
@@ -72,7 +78,7 @@ export default function Reports() {
         ? JSON.stringify(report, null, 2)
         : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${mode}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
     downloadFile(
-      `shadow-intel-report.${format}`,
+      `x-tracer-report.${format}`,
       content,
       format === "json" ? "application/json" : "text/markdown",
     );
