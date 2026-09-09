@@ -34,6 +34,7 @@ import { AuthProvider, useAuth } from "./lib/auth";
 import { Brand, ThemeButton, Loading } from "./components/UI";
 import Landing from "./pages/Landing";
 import SignIn from "./pages/SignIn";
+import Signup from "./pages/Signup";
 const Overview = lazy(() => import("./pages/Overview"));
 const NetworkExplorer = lazy(() => import("./pages/NetworkExplorer"));
 const Entities = lazy(() => import("./pages/Entities"));
@@ -254,6 +255,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<Signup />} />
               <Route element={<WorkspaceLayout />}>
                 <Route path="/overview" element={<Overview />} />
                 <Route path="/network" element={<NetworkExplorer />} />
