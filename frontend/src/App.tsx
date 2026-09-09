@@ -64,6 +64,7 @@ function WorkspaceLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menu, setMenu] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [query, setQuery] = useState("");
   useEffect(() => setMenu(false), [location.pathname]);
   useEffect(() => {
@@ -180,9 +181,10 @@ function WorkspaceLayout() {
             <kbd>↵</kbd>
           </form>
           <ThemeButton />
-          <div className="account-menu" title={`${displayName} — click to sign out`}>
+          <div className="account-menu" title={displayName}>
             <span className="account-name">{displayName}</span>
-            <button className="analyst-avatar account-avatar" aria-label={`Sign out ${displayName}`} onClick={() => void signOut()}>{(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={`${displayName} profile`} /> : initials}</button>
+            <button className="analyst-avatar account-avatar" aria-label={`Open ${displayName} account menu`} aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={`${displayName} profile`} /> : initials}</button>
+            {accountOpen && <div className="account-popover"><strong>{displayName}</strong><small>{user.email}</small><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}
           </div>
         </header>
         <div className={`mode-strip ${mode}`}>
