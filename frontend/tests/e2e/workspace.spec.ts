@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixture";
 const routes = [
   "/",
   "/overview",
@@ -91,6 +91,7 @@ test("documents lead to entity search and upload resets malformed files", async 
     "Mohan Yadav",
   );
   await page.goto("/upload");
+  await page.getByRole("button",{name:"Data file",exact:true}).click();
   await page.getByLabel("Choose evidence file").setInputFiles({
     name: "valid.csv",
     mimeType: "text/csv",

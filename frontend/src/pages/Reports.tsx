@@ -17,7 +17,7 @@ import {
 } from "../lib/state/workspace";
 import { PageHeader, ErrorState, Empty } from "../components/UI";
 export default function Reports() {
-  const { mode, cfg, watched, toggleWatch, notify, alertDecisions } = useWorkspace();
+  const { mode, cfg, watched, toggleWatch, notify } = useWorkspace();
   const scope = mode === "demo" ? "demo" : cfg.dataset?.id || "local";
   const key = `xt-notes:${scope}`;
   const legacyKey = `si-notes:${scope}`;
@@ -77,8 +77,8 @@ export default function Reports() {
         (id) =>
           state.data!.graph.nodes.find((n) => n.id === id) || { id, name: id },
       ),
+      source_document: mode === "local" ? cfg.dataset?.source_document : undefined,
       alerts: state.data.alerts,
-      alert_review_decisions: alertDecisions,
       analyst_notes: notes,
       notice:
         "Investigation aid only. Signals require evidence verification and human review.",
@@ -86,7 +86,7 @@ export default function Reports() {
     const content =
       format === "json"
         ? JSON.stringify(report, null, 2)
-        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${report.data_mode}\nAnalysis version: ${report.analysis_version}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analysis methods\n${report.analysis_methods.map((n) => `- ${n}`).join("\n")}\n\n## Entity rankings\n${report.rankings.map((p) => `- ${p.name}: influence ${p.influence_score.toFixed(6)}, Group ${p.community_id + 1}, structural role ${p.role}`).join("\n") || "See the workspace entity list."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
+        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${report.data_mode}\nAnalysis version: ${report.analysis_version}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analysis methods\n${report.analysis_methods.map((n) => `- ${n}`).join("\n")}\n\n## Entity rankings\n${report.rankings.map((p) => `- ${p.name}: influence ${p.influence_score.toFixed(6)}, Group ${p.community_id + 1}, structural role ${p.role}`).join("\n") || "See the workspace entity list."}\n\n## Source document\n${report.source_document?.source_text || "Structured relationship file; see JSON export for every source row."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
     downloadFile(
       `x-tracer-report.${format}`,
       content,
@@ -102,6 +102,7 @@ export default function Reports() {
         eyebrow="REPORTS & WATCHLIST"
       />
       <div className="reports-grid">
+        {mode === "local" && cfg.dataset?.source_document && <section className="panel narrative-input"><h2>Original evidence</h2><p>Source text and unlinked context are retained with this investigation and included in the JSON report.</p><details><summary>Read source document</summary><pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere"}}>{cfg.dataset.source_document.source_text}</pre></details><details><summary>Standalone identifiers and mentions</summary><p>{cfg.dataset.source_document.entities.map(e=>`${e.text} (${e.type})`).join(" · ")}</p></details></section>}
         <section className="panel">
           <div className="panel-header">
             <h2>Saved entities</h2>

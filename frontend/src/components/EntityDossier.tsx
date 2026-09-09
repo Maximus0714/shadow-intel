@@ -97,6 +97,7 @@ export default function EntityDossier({
               Influence describes network position, not criminal responsibility.
             </p>
             <h3>Connected entities</h3>
+            {Array.isArray(data.properties?.payment_history) && data.properties.payment_history.length > 0 && <details className="ev" open><summary>Payment history ({data.properties.payment_history.length})</summary>{(data.properties.payment_history as {src:string;dst:string;date:string;amount:string;currency:string;evidence:string}[]).map((p,i)=><p key={i}>{p.src} → {p.dst}<br/><strong>{p.currency} {p.amount || "Amount not supplied"}</strong> · {p.date || "Undated"}<small className="evidence-type">{p.evidence}</small></p>)}</details>}
             <div className="connection-list">
               {data.neighbours_sample.length ? (
                 data.neighbours_sample.slice(0, 12).map((id) => (

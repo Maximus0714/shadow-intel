@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import threading
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/workspace", tags=["Browser workspace"])
@@ -21,11 +21,17 @@ class Record(BaseModel):
     date: str = ""
     amount: str = ""
     source_rows: list[int] = Field(default_factory=list, max_length=10000)
+    evidence: str = Field(default="", max_length=5000)
+    currency: str = Field(default="", max_length=12)
+    src_type: str = Field(default="Person", max_length=30)
+    dst_type: str = Field(default="Person", max_length=30)
+    attributes: dict[str, str] = Field(default_factory=dict, max_length=30)
 
 
 class Evidence(BaseModel):
     name: str = Field(default="Uploaded evidence", min_length=1, max_length=255)
     records: list[Record] = Field(min_length=1, max_length=10000)
+    source_text: str = Field(default="", max_length=500000)
 
 
 RELATIONSHIP_ALIASES = {
@@ -69,7 +75,10 @@ def build_snapshot(body: Evidence):
     for record in payload["records"]:
         key = str(record["rel"]).strip().upper()
         record["rel"] = RELATIONSHIP_ALIASES.get(key, key)
-    return run_shared(payload)
+    result = run_shared(payload)
+    if body.source_text:
+        result["source_document"] = extract_narrative(body.source_text)
+    return result
 
 
 @router.post("/analyze")
@@ -78,32 +87,116 @@ def analyze_evidence(body: Evidence):
 
 
 class Document(BaseModel):
-    text: str = Field(min_length=1, max_length=100000)
+    text: str = Field(min_length=1, max_length=500000)
 
 
 @router.post("/documents")
 def document(body: Document):
-    return run_shared({"kind": "document", "text": body.text})
+    try:
+        result = extract_narrative(body.text)
+    except ValueError as error:
+        raise HTTPException(422, str(error))
+    return {**result, "doc_id": "narrative", "summary": body.text[:1500],
+            "triples": [{"subject": r["src"], "object": r["dst"], "relation": r["rel"], "evidence": r["evidence"]} for r in result["records"]],
+            "classification": {"method": "English explicit-relationship rules; original text retained"}}
 
 
-class Mention(BaseModel):
-    mention_id: str = Field(min_length=1, max_length=200)
-    type: str = Field(min_length=1, max_length=50)
-    text: str = Field(min_length=1, max_length=500)
-    doc_id: str = Field(default="document", max_length=200)
-    source: str = Field(default="", max_length=200)
-    attrs: dict = Field(default_factory=dict)
+from .narrative import extract_narrative
+from .ingest_preview import parse_upload_file, detect_column_mapping
 
 
-class ResolutionRequest(BaseModel):
-    mentions: list[Mention] = Field(min_length=1, max_length=10000)
-    auto_threshold: float = Field(default=0.85, ge=0.5, le=1.0)
-    review_threshold: float = Field(default=0.60, ge=0.3, le=0.95)
+@router.post("/narrative")
+def narrative(body: Document):
+    try:
+        return extract_narrative(body.text)
+    except ValueError as error:
+        raise HTTPException(422, str(error))
 
 
-@router.post("/resolve")
-def resolve_entities(body: ResolutionRequest):
-    if body.review_threshold >= body.auto_threshold:
-        raise HTTPException(422, "Review threshold must be lower than the automatic merge threshold.")
-    from .entity_resolution import resolve
-    return resolve([mention.model_dump() for mention in body.mentions], body.auto_threshold, body.review_threshold)
+@router.post("/file")
+def evidence_file(file: UploadFile = File(...), kind: str = Form("data"), sheet: str = Form("")):
+    content = file.file.read(20_000_001)
+    if len(content) > 20_000_000:
+        raise HTTPException(413, "File exceeds 20 MB.")
+    try:
+        if kind == "text":
+            if not (file.filename or "").lower().endswith((".txt", ".md", ".vtt", ".srt")):
+                raise ValueError("Upload TXT, Markdown, SRT or VTT text. Transcribe audio or convert PDFs first.")
+            return extract_narrative(content.decode("utf-8-sig"))
+        rows, meta = parse_upload_file(file.filename, content, sheet or None)
+        if len(rows) > 10000:
+            raise ValueError("Use at most 10,000 relationship rows per investigation.")
+        columns = list(rows[0]) if rows else []
+        return {"rows": rows, "columns": columns, "mapping": detect_column_mapping(columns), **meta}
+    except (ValueError, UnicodeError) as error:
+        raise HTTPException(422, str(error))
+
+
+class TablePreview(BaseModel):
+    rows: list[dict] = Field(max_length=10000)
+    mapping: dict[str, str | None]
+
+
+@router.post("/preview")
+def preview_table(body: TablePreview):
+    from .ingest_preview import RELATIONSHIP_ALIASES
+    cleaned, skipped = [], []
+    for i, row in enumerate(body.rows, 2):
+        def value(role, default=""):
+            v = row.get(body.mapping.get(role))
+            return str(v).strip() if v is not None else default
+        src, dst = value("source"), value("target")
+        if not src or not dst:
+            skipped.append({"row": i, "reason": "Missing source or target"})
+            continue
+        rel = value("rel", "ASSOCIATE_OF").upper() or "ASSOCIATE_OF"
+        rel = RELATIONSHIP_ALIASES.get(rel, rel)
+        if rel not in {"CALLED", "EMAILED", "CONTACTED", "ASSOCIATE_OF", "FINANCIAL_TRANSFER", "FAMILY_OF", "CO_LOCATED", "OWNS_VEHICLE", "REGISTERED_AT", "USED_VEHICLE", "HAS_PHONE", "HAS_ACCOUNT", "VISITED", "WORKS_FOR", "ARGUED_WITH", "THREATENED"}:
+            skipped.append({"row": i, "reason": f"Unsupported relationship: {rel}"})
+            continue
+        try:
+            frequency = int(value("weight", "1") or "1")
+            if not 1 <= frequency <= 1000000:
+                raise ValueError()
+        except ValueError:
+            skipped.append({"row": i, "reason": "Frequency must be an integer from 1 to 1,000,000"})
+            continue
+        cleaned.append({"src": src, "dst": dst, "rel": rel, "frequency": frequency,
+                        "date": value("date"), "amount": value("amount"), "currency": value("currency"),
+                        "source_rows": [i], "attributes": {str(k)[:100]: str(v)[:1000] for k, v in list(row.items())[:30] if v is not None}})
+    return {"cleaned": cleaned, "skipped": skipped}
+
+
+class GraphQuery(BaseModel):
+    nodes: list[str] = Field(max_length=2000)
+    edges: list[Record] = Field(max_length=10000)
+    start: str
+    end: str = ""
+    hops: int = Field(default=3, ge=1, le=5)
+
+
+@router.post("/paths")
+def trace_paths(body: GraphQuery):
+    adj = {node: set() for node in body.nodes}
+    if body.start not in adj or body.end not in adj:
+        raise HTTPException(422, "Choose endpoints visible under the current filters.")
+    for edge in body.edges:
+        if edge.src in adj and edge.dst in adj:
+            adj[edge.src].add(edge.dst)
+            adj[edge.dst].add(edge.src)
+    paths, stack, visits = [], [[body.start]], 0
+    while stack and len(paths) < 10 and visits < 50000:
+        path = stack.pop(); visits += 1
+        if path[-1] == body.end:
+            paths.append(path)
+        elif len(path) <= body.hops:
+            stack.extend(path + [n] for n in sorted(adj[path[-1]], reverse=True) if n not in path)
+    return {"paths": paths, "count": len(paths), "truncated": bool(stack), "source": body.start, "target": body.end}
+
+
+@router.post("/ego")
+def neighbourhood(body: GraphQuery):
+    ids = {body.start}
+    for _ in range(body.hops):
+        ids |= {n for e in body.edges if e.src in ids or e.dst in ids for n in (e.src, e.dst)}
+    return {"ids": sorted(ids)}

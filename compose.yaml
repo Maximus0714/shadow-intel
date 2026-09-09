@@ -5,9 +5,6 @@ services:
     build:
       context: .
       target: frontend
-      args:
-        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
-        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
     ports:
       - "${WEB_PORT:-4179}:80"
     depends_on:
@@ -28,25 +25,6 @@ services:
       SUPABASE_URL: ${SUPABASE_URL:-}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
-      SUPABASE_REQUIRE_AUTH: ${SUPABASE_REQUIRE_AUTH:-false}
-      NEO4J_URI: ${NEO4J_URI:-}
-      NEO4J_USER: ${NEO4J_USER:-neo4j}
-      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-}
     expose:
       - "8000"
     restart: unless-stopped
-
-  neo4j:
-    image: neo4j:5-community
-    profiles: ["neo4j"]
-    environment:
-      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-change-this-password}
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - neo4j-data:/data
-    restart: unless-stopped
-
-volumes:
-  neo4j-data:

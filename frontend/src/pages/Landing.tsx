@@ -26,8 +26,8 @@ const questions = [
     "Explore relationships between people, vehicles and locations. Import call records, contact lists or financial relationships, then review graph connections, communities and explainable alerts.",
   ],
   [
-    "Can I use my own data locally?",
-    "Yes. Choose On this device for browser analysis, or Connected backend to use the Python analysis service. Both produce graphs, rankings, communities and review flags. A separate fictional demo is available.",
+    "Can I use my own evidence?",
+    "Yes. Paste English text or upload a transcript to extract candidate relationships, then review and build your graph. Structured data files are also supported. All analysis runs on the backend.",
   ],
   [
     "Does an alert mean someone is guilty?",
@@ -35,11 +35,11 @@ const questions = [
   ],
   [
     "Which files can I upload?",
-    "Upload CSV, XLSX, XLS, JSON, JSONL or EML. Preview and adjust the column mapping before loading data. Document Intel accepts pasted text and plain-text reports.",
+    "Paste text, upload TXT, MD, SRT or VTT transcripts, or choose CSV, XLSX and relationship JSON files up to 20 MB. Text extraction supports up to 500,000 characters.",
   ],
   [
     "Where does my data go?",
-    "Connected backend sends submitted evidence to this website’s server for processing without adding it to the shared graph. On this device keeps analysis in your browser. Signed-in investigation snapshots can sync to your protected Supabase history; watchlists and notes stay in your browser.",
+    "Submitted evidence is processed by this website’s backend. Results, source text, watchlists and notes are saved in this browser. Clearing site data removes saved investigations.",
   ],
 ];
 export default function Landing() {
@@ -71,7 +71,7 @@ export default function Landing() {
           </nav>
           <div className="site-nav-actions">
             <ThemeButton />
-            {user ? <div className="account-menu landing-account"><button className="analyst-avatar account-avatar landing-avatar" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{user.user_metadata?.avatar_url || user.user_metadata?.picture ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Your profile" /> : (user.email?.slice(0, 2).toUpperCase() || "ME")}</button>{accountOpen && <div className="account-popover"><strong>{user.user_metadata?.full_name || user.email?.split("@")[0]}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><Link to="/activity" onClick={() => setAccountOpen(false)}>Account activity</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}</div> : <Link className="btn nav-login" to="/signin">Sign in</Link>}
+            {user ? <div className="account-menu landing-account"><button className="analyst-avatar account-avatar landing-avatar" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{user.user_metadata?.avatar_url || user.user_metadata?.picture ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Your profile" /> : (user.email?.slice(0, 2).toUpperCase() || "ME")}</button>{accountOpen && <div className="account-popover"><strong>{user.user_metadata?.full_name || user.email?.split("@")[0]}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}</div> : <Link className="btn nav-login" to="/signin">Sign in</Link>}
             <button
               className="icon-button mobile-menu"
               aria-label="Toggle menu"
@@ -95,6 +95,7 @@ export default function Landing() {
               alt="Magnifying glass examining fingerprint evidence beside connected case records"
               width="1536"
               height="1024"
+              fetchPriority="high"
             />
           </div>
           <div className="site-container hero-content">
@@ -183,7 +184,7 @@ export default function Landing() {
                     Extract names and relationships from reports. Keep your
                     source material in view.
                   </p>
-                  <Link to="/documents" onClick={demo} className="text-link">
+                  <Link to="/documents" className="text-link">
                     Document Intel <ArrowRight size={16} />
                   </Link>
                 </div>
@@ -317,6 +318,9 @@ export default function Landing() {
         <p>From evidence to intelligence.</p>
         <div>
           <Link to="/upload">Use your own data</Link>
+          <Link to="/upload">
+            Open workspace <ArrowUpRight size={14} />
+          </Link>
         </div>
         <span className="footer-note">
           X-Tracer is an investigation aid. Findings require human review.

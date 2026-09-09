@@ -1,5 +1,3 @@
-import { localPaths } from "../analysis/local";
-import { analyzeLocalText } from "../analysis/localDocuments";
 import { postWorkspace } from "./server";
 export interface ApiConfig {
   engine?: "local" | "backend";
@@ -19,9 +17,6 @@ export interface FullGraphEdge {
   dst: string;
   rel: string;
   frequency: number;
-  date?: string;
-  amount?: string;
-  source_rows?: number[];
 }
 export interface FullGraph {
   nodes: FullGraphNode[];
@@ -85,7 +80,7 @@ export const getGraphFull = async (
   };
 };
 export const getPaths = async (c: ApiConfig, a: string, b: string, hops = 3) =>
-  localPaths(dataset(c).graph, a, b, hops);
+  traceGraph(dataset(c).graph, a, b, hops);
 export const getKeyPlayers = async (c: ApiConfig, limit = 20) => ({
   players: dataset(c).players.slice(0, limit),
   total: dataset(c).players.length,
@@ -129,15 +124,9 @@ export const getEgo = async (
   id: string,
   depth = 1,
 ): Promise<EgoNetwork> => {
-  const graph = dataset(c).graph,
-    ids = new Set([id]);
-  for (let k = 0; k < depth; k++) {
-    const next = graph.edges.filter((e) => ids.has(e.src) || ids.has(e.dst));
-    next.forEach((e) => {
-      ids.add(e.src);
-      ids.add(e.dst);
-    });
-  }
+  const graph = dataset(c).graph;
+  const result = await postWorkspace<{ids:string[]}>("ego", {nodes:graph.nodes.map(n=>n.id),edges:graph.edges,start:id,hops:depth});
+  const ids = new Set(result.ids);
   return {
     center: id,
     depth,
@@ -145,7 +134,7 @@ export const getEgo = async (
     edges: graph.edges.filter((e) => ids.has(e.src) && ids.has(e.dst)),
   };
 };
-export const analyzeDocumentText = async (c: ApiConfig, text: string) =>
-  c.engine === "backend"
-    ? postWorkspace<ReturnType<typeof analyzeLocalText>>("documents", { text })
-    : analyzeLocalText(text);
+export const analyzeDocumentText = async (_c: ApiConfig, text: string) =>
+  postWorkspace("documents", { text });
+export const traceGraph = (graph: FullGraph, start: string, end: string, hops: number) =>
+  postWorkspace<{paths:string[][];count:number;truncated:boolean}>("paths", {nodes:graph.nodes.map(n=>n.id),edges:graph.edges,start,end,hops});

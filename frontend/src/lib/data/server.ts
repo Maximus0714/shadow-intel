@@ -1,7 +1,7 @@
+import { supabase } from "../auth";
 import type { CleanedEdge } from "./upload";
 import type { LocalDataset } from "../analysis/local";
 import { ANALYSIS_VERSION } from "../analysis/local";
-import { supabase } from "../auth";
 
 /** Relative URLs work unchanged in development and behind the deployment proxy. */
 export async function postWorkspace<T>(
@@ -14,14 +14,14 @@ export async function postWorkspace<T>(
     const session = supabase ? (await supabase.auth.getSession()).data.session : null;
     const response = await fetch(`/api/workspace/${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}) },
-      body: JSON.stringify(body),
+      headers: { ...(body instanceof FormData ? {} : { "Content-Type": "application/json" }), ...(session ? {Authorization: `Bearer ${session.access_token}`} : {}) },
+      body: body instanceof FormData ? body : JSON.stringify(body),
       signal: controller.signal,
     });
     const content = response.headers.get("content-type") || "";
     if (!content.includes("application/json"))
       throw new Error(
-        "The analysis service is unavailable. Start the backend or choose On this device.",
+        "The analysis service is unavailable. Start the backend and retry.",
       );
     const result = await response.json();
     if (!response.ok) {
@@ -39,7 +39,7 @@ export async function postWorkspace<T>(
       throw new Error("Analysis timed out. Try a smaller dataset.");
     if (error instanceof TypeError)
       throw new Error(
-        "Cannot reach the backend. Check your connection or choose On this device.",
+        "Cannot reach the backend. Check your connection and retry.",
       );
     throw error;
   } finally {
@@ -47,8 +47,8 @@ export async function postWorkspace<T>(
   }
 }
 
-export async function analyzeOnServer(records: CleanedEdge[], name: string) {
-  const result = await postWorkspace<LocalDataset>("analyze", { records, name });
+export async function analyzeOnServer(records: CleanedEdge[], name: string, sourceText = "") {
+  const result = await postWorkspace<LocalDataset>("analyze", { records, name, source_text: sourceText });
   if (result.analysis_version !== ANALYSIS_VERSION)
     throw new Error(
       "The backend analysis version does not match this website. Deploy matching frontend and backend images together.",

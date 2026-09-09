@@ -19,7 +19,6 @@ interface Analysis {
   triples?: Record<string, unknown>[];
   entities?: { text: string; type: string }[];
   warnings?: string[];
-  resolution?: { clusters: { canonical_label: string; members: string[]; confidence: number }[]; review_queue: { entity_a: string; entity_b: string; confidence: number; reason: string }[]; method: string };
 }
 const SAMPLE =
   "Fictional demonstration report: Mohan Yadav called Ravi Sharma four times. Mohan Yadav is associated with vehicle MH12AB1234 and the Andheri location. A financial relationship connects Mohan Yadav and Farhan Qureshi. These records are illustrative and do not describe real events.";
@@ -53,13 +52,12 @@ const sampleAnalysis: Analysis = {
   ],
 };
 export default function Documents() {
-  const { mode, cfg, notify, engine } = useWorkspace();
+  const { mode, cfg, notify } = useWorkspace();
   const [text, setText] = useState("");
   const [result, setResult] = useState<Analysis | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState("summary");
-  const [resolutionDecisions, setResolutionDecisions] = useState<Record<number, "merge" | "separate">>({});
   const analyze = async () => {
     if (!text.trim()) {
       setError("Add report text or load the example first.");
@@ -67,7 +65,6 @@ export default function Documents() {
     }
     setError("");
     setResult(null);
-    setResolutionDecisions({});
     setBusy(true);
     try {
       if (mode === "demo" && text === SAMPLE) {
@@ -161,7 +158,7 @@ export default function Documents() {
           {error && (
             <div className="inline-notice warning" role="alert">
               {error}
-              <span>{engine === "backend" ? "Submitted to the backend for rule-based extraction." : "Processed on this device with local extraction rules."}</span>
+              <span>Submitted to the backend for extraction.</span>
             </div>
           )}
         </section>
@@ -190,7 +187,7 @@ export default function Documents() {
           ) : result ? (
             <>
               <div className="segmented result-tabs">
-                {["summary", "entities", "relationships", "identity review"].map((t) => (
+                {["summary", "entities", "relationships"].map((t) => (
                   <button
                     key={t}
                     className={tab === t ? "active" : ""}
@@ -251,12 +248,6 @@ export default function Documents() {
                   ) : (
                     <Empty body="No relationships extracted from this document." />
                   )}
-                </div>
-              )}
-              {tab === "identity review" && (
-                <div className="identity-review">
-                  <p className="muted">{result.resolution?.method || "Identity matching was not available for this analysis."}</p>
-                  {result.resolution?.review_queue?.length ? result.resolution.review_queue.map((candidate, i) => <div className="resolution-row" key={i}><div><strong>{candidate.entity_a}</strong><span> may match </span><strong>{candidate.entity_b}</strong><small>{candidate.reason}</small></div><span className="tag">{Math.round(candidate.confidence * 100)}% confidence</span><div className="resolution-actions"><button className={`btn compact ${resolutionDecisions[i] === "merge" ? "primary" : ""}`} onClick={() => setResolutionDecisions((current) => ({ ...current, [i]: "merge" }))}>Same identity</button><button className={`btn compact ${resolutionDecisions[i] === "separate" ? "primary" : ""}`} onClick={() => setResolutionDecisions((current) => ({ ...current, [i]: "separate" }))}>Keep separate</button></div></div>) : <Empty body="No possible duplicate identities need review." />}
                 </div>
               )}
               {result.warnings?.map((w, i) => (

@@ -1,90 +1,33 @@
-import { test, expect } from "@playwright/test";
-test("own data runs locally, persists, exports and stays separate from demo", async ({
-  page,
-}) => {
-  const network: string[] = [];
-  page.on("request", (r) => {
-    if (["fetch", "xhr"].includes(r.resourceType())) network.push(r.url());
-  });
-  await page.goto("/");
-  await page
-    .getByRole("link", { name: "Add your own data", exact: true })
-    .first()
-    .click();
-  await expect(page).toHaveURL(/upload/);
-  await page.getByLabel("Analyze using").selectOption("local");
-  await expect(
-    page.getByRole("heading", { name: "What can X-Tracer process?" }),
-  ).toBeVisible();
-  await page
-    .getByLabel("Choose evidence file")
-    .setInputFiles({
-      name: "my-case.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from(
-        "src,dst,rel,frequency,date,amount\nAsha Rao,Kabir Shah,FINANCIAL_TRANSFER,1,2026-09-01,100\nKabir Shah,Meera Sen,FINANCIAL_TRANSFER,1,2026-09-02,90\nMeera Sen,Asha Rao,FINANCIAL_TRANSFER,1,2026-09-03,80\nMeera Sen,Dev Shah,CALLED,4,,",
-      ),
-    });
-  await page
-    .getByLabel("I’ve reviewed the mapping and cleaned records.")
-    .check();
-  await page
-    .getByRole("button", { name: "Build network", exact: true })
-    .click();
+import {test,expect} from './fixture';
+test('natural language defaults to backend, preserves evidence and payment history',async({page})=>{
+  await page.goto('/upload');
+  await expect(page.getByLabel('Analyze using')).toHaveCount(0);
+  await page.getByLabel('Transcript, argument, article or case note').fill('Asha Rao: I paid INR 12000 to Kabir Shah on 2026-09-01.\nKabir Shah drove vehicle MH12AB1234.\nAsha Rao did not pay Meera Sen.');
+  const extracted=page.waitForResponse(r=>r.url().endsWith('/workspace/narrative'));
+  await page.getByRole('button',{name:'Extract relationships',exact:true}).click();
+  expect((await extracted).status()).toBe(200);
+  await expect(page.getByText('2 usable relationships.',{exact:false})).toBeVisible();
+  await page.getByLabel('I’ve reviewed the mapping and cleaned records.').check();
+  await page.getByRole('button',{name:'Build network',exact:true}).click();
   await expect(page).toHaveURL(/overview/);
-  await expect(
-    page.locator(".mode-strip").filter({ hasText: "Local workspace" }),
-  ).toBeVisible();
-  await page.reload();
-  await expect(
-    page.locator(".mode-strip").filter({ hasText: "Local workspace" }),
-  ).toBeVisible();
-  await page.goto("/entities");
-  await page
-    .getByRole("button", { name: "Save Asha Rao to watchlist" })
-    .click();
-  await page.goto("/network");
-  await page.getByLabel("Find an entity in the graph").selectOption("Asha Rao");
-  await expect(page.locator(".entity-dossier h2")).toHaveText("Asha Rao");
-  await page.goto("/alerts");
-  await expect(
-    page.getByText(/circular transfer links/i).first(),
-  ).toBeVisible();
-  await page.goto("/reports");
-  await expect(page.locator(".entity-row").getByText("Asha Rao", {exact:true})).toBeVisible();
-  const download = page.waitForEvent("download");
-  await page
-    .getByRole("button", { name: "Download report", exact: true })
-    .click();
-  expect((await download).suggestedFilename()).toBe("x-tracer-report.md");
-  await page.getByRole("button", { name: "Explore demo", exact: true }).click();
-  await expect(page.locator(".entity-row").getByText("Asha Rao", {exact:true})).toHaveCount(
-    0,
-  );
-  await page.goto("/upload");
-  await page.getByRole("button", { name: "Resume investigation" }).click();
-  await expect(
-    page.locator(".mode-strip").filter({ hasText: "Local workspace" }),
-  ).toBeVisible();
-  await page.goto("/settings");
-  await expect(page).toHaveURL(/upload/);
-  await expect(page.getByLabel("API key", { exact: true })).toHaveCount(0);
-  expect(network).toEqual([]);
+  await expect(page.locator('.mode-strip')).toContainText('Backend analysis');
+  await page.goto('/network');
+  await page.getByLabel('Find an entity in the graph').selectOption('Asha Rao');
+  await expect(page.getByText('Payment history (1)',{exact:true})).toBeVisible();
+  await page.goto('/reports');
+  const pending=page.waitForEvent('download');
+  await page.getByRole('button',{name:'Export JSON',exact:true}).click();
+  const stream=await(await pending).createReadStream(),chunks=[];
+  for await(const chunk of stream!)chunks.push(chunk);
+  const report=JSON.parse(Buffer.concat(chunks).toString());
+  expect(report.source_document.source_text).toContain('did not pay');
+  expect(report.relationships.find((r:any)=>r.rel==='FINANCIAL_TRANSFER').amount).toBe('12000');
+  expect(report.entities.find((n:any)=>n.id==='MH12AB1234').label).toBe('Vehicle');
 });
-test("custom document text is analyzed without credentials", async ({
-  page,
-}) => {
-  await page.goto("/documents");
-  await page.getByLabel("Analyze using").selectOption("local");
-  await page
-    .locator("textarea")
-    .fill("Asha Rao called Kabir Shah. Vehicle MH12AB1234 was mentioned.");
-  await page
-    .getByRole("button", { name: "Analyze document", exact: true })
-    .click();
-  await page.getByRole("button", { name: "entities", exact: true }).click();
-  await expect(
-    page.locator(".extracted-entities").getByText("Asha Rao", {exact:true}),
-  ).toBeVisible();
-  await expect(page.getByText("API key")).toHaveCount(0);
+test('unmatched narrative stays reviewable without generating false graph',async({page})=>{
+  await page.goto('/upload');
+  await page.getByLabel('Transcript, argument, article or case note').fill('Asha Rao never paid Kabir Shah.');
+  await page.getByRole('button',{name:'Extract relationships',exact:true}).click();
+  await expect(page.getByText('0 usable relationships.',{exact:false})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Build network',exact:true})).toHaveCount(0);
 });

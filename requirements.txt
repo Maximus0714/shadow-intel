@@ -3,7 +3,6 @@ uvicorn==0.41.0
 python-multipart==0.0.32
 python-dotenv
 networkx==3.6.1
-neo4j==5.28.2
 pandas==2.3.3
 python-louvain==0.16
 rapidfuzz==3.14.6

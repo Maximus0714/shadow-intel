@@ -1,0 +1,57 @@
+from fastapi.testclient import TestClient
+from backend.api import app
+from backend.narrative import extract_narrative
+
+
+def test_transcript_payments_assets_and_negation():
+    text = ('Asha Rao: I paid INR 12000 to Kabir Shah on 2026-09-01.\n'
+            'Kabir Shah paid Asha Rao INR 500 on 2026-09-03.\n'
+            'Kabir Shah drove vehicle MH12AB1234.\n'
+            'Meera Sen has account ACCT92831.\n'
+            'Meera Sen uses phone +91 98765 43210.\n'
+            'Asha Rao did not pay Meera Sen.\n'
+            'Asha Rao argued with Meera Sen.')
+    result = extract_narrative(text)
+    payments = [r for r in result['records'] if r['rel'] == 'FINANCIAL_TRANSFER']
+    assert [(r['src'], r['dst'], r['amount'], r['currency'], r['date']) for r in payments] == [
+        ('Asha Rao', 'Kabir Shah', '12000', 'INR', '2026-09-01'),
+        ('Kabir Shah', 'Asha Rao', '500', 'INR', '2026-09-03')]
+    assert len(result['records']) == 6
+    assert result['unresolved'][0]['line'] == 6
+    assert all(r['evidence'] and r['source_rows'] for r in result['records'])
+    with TestClient(app) as client:
+        response = client.post('/workspace/analyze', json={'name':'transcript','records':result['records'],'source_text':text})
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert data['source_document']['source_text'] == text
+        assert data['details']['MH12AB1234']['label'] == 'Vehicle'
+        assert data['details']['ACCT92831']['label'] == 'Account'
+        assert len(data['details']['Asha Rao']['properties']['payment_history']) == 2
+        assert data['records'][0]['evidence']
+
+
+def test_payments_same_sentence_are_not_combined_or_misassigned():
+    result = extract_narrative('Asha Rao paid Kabir Shah INR 100 and Meera Sen paid Dev Shah USD 200.')
+    assert [(r['dst'], r['amount'], r['currency']) for r in result['records']] == [('Kabir Shah','100','INR'),('Dev Shah','200','USD')]
+    assert len(extract_narrative('Asha Rao paid Kabir Shah INR 100. Asha Rao paid Kabir Shah INR 100.')['records']) == 2
+
+
+def test_server_file_preview_metadata_and_path_filters():
+    with TestClient(app) as client:
+        response = client.post('/workspace/file', data={'kind':'data'}, files={'file':('case.csv',b'src,dst,rel,currency,amount,date,note\nA,B,PAID,INR,50,2026-09-01,receipt','text/csv')})
+        assert response.status_code == 200
+        parsed=response.json()
+        preview=client.post('/workspace/preview',json={'rows':parsed['rows'],'mapping':parsed['mapping']}).json()
+        row=preview['cleaned'][0]
+        assert row['currency']=='INR' and row['attributes']['note']=='receipt'
+        assert row['rel']=='FINANCIAL_TRANSFER'
+        graph={'nodes':['A','B','C'],'edges':[{'src':'A','dst':'B'},{'src':'B','dst':'C'}],'start':'A','end':'C','hops':3}
+        assert client.post('/workspace/paths',json=graph).json()['paths']==[['A','B','C']]
+        graph['edges']=graph['edges'][:1]
+        assert client.post('/workspace/paths',json=graph).json()['paths']==[]
+        graph['nodes']=['A','B']
+        assert client.post('/workspace/paths',json=graph).status_code==422
+        large=b' '*5_000_001+b'src,dst\nA,B\n'
+        # File limit is above the former 5 MB boundary, without bypassing graph limits.
+        assert client.post('/workspace/file',data={'kind':'data'},files={'file':('large.csv',large)}).status_code==200
+        assert client.post('/workspace/file',data={'kind':'text'},files={'file':('note.txt',b'Asha Rao called Kabir Shah.')} ).json()['records'][0]['dst']=='Kabir Shah'

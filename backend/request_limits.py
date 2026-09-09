@@ -15,8 +15,8 @@ class WorkspaceBodyLimit:
             if message["type"] == "http.disconnect":
                 return
             size += len(message.get("body", b""))
-            if size > 6_000_000:
-                return await JSONResponse({"detail": "Request exceeds 6 MB."}, 413)(scope, receive, send)
+            if size > 25_000_000:
+                return await JSONResponse({"detail": "Request exceeds 25 MB."}, 413)(scope, receive, send)
             chunks.append(message.get("body", b""))
             if not message.get("more_body", False):
                 break

@@ -1,6 +1,6 @@
 import { compare, rounded, metrics } from "./metrics.mjs";
 export const ANALYSIS_VERSION = "3.0.0";
-const supported = new Set(["CALLED", "EMAILED", "CONTACTED", "ASSOCIATE_OF", "FINANCIAL_TRANSFER", "FAMILY_OF", "CO_LOCATED", "OWNS_VEHICLE", "REGISTERED_AT"]);
+const supported = new Set(["CALLED", "EMAILED", "CONTACTED", "ASSOCIATE_OF", "FINANCIAL_TRANSFER", "FAMILY_OF", "CO_LOCATED", "OWNS_VEHICLE", "REGISTERED_AT", "USED_VEHICLE", "HAS_PHONE", "HAS_ACCOUNT", "VISITED", "WORKS_FOR", "ARGUED_WITH", "THREATENED"]);
 const relationshipAliases = new Map([
   ["PAID", "FINANCIAL_TRANSFER"], ["PAYMENT", "FINANCIAL_TRANSFER"],
   ["TRANSFERRED", "FINANCIAL_TRANSFER"], ["TRANSFER", "FINANCIAL_TRANSFER"],
@@ -25,13 +25,20 @@ export function buildDataset(input, name) {
     if (!Number.isSafeInteger(r.frequency) || r.frequency < 1 || r.frequency > 1000000) throw new Error("Relationship frequency must be an integer from 1 to 1,000,000.");
     if (typeof r.date !== "string" || typeof r.amount !== "string" || r.date.length > 64 || r.amount.length > 64) throw new Error("Date and amount fields must be text of at most 64 characters.");
     if (r.source_rows && (!Array.isArray(r.source_rows) || r.source_rows.length > 10000 || r.source_rows.some(n => !Number.isSafeInteger(n) || n < 1))) throw new Error("Invalid source row references.");
-    return {src: r.src.trim(), dst: r.dst.trim(), rel, frequency: r.frequency, date: r.date, amount: r.amount, source_rows: [...(r.source_rows || [])].sort((a,b)=>a-b)};
+    return {src: r.src.trim(), dst: r.dst.trim(), rel, frequency: r.frequency, date: r.date, amount: r.amount, source_rows: [...(r.source_rows || [])].sort((a,b)=>a-b), evidence:r.evidence||"", currency:r.currency||"", attributes:r.attributes||{}, src_type:r.src_type||"Person", dst_type:r.dst_type||"Person"};
   }).sort((a,b)=>compare(JSON.stringify(a),JSON.stringify(b)));
   const ids = [...new Set(records.flatMap(r => [r.src, r.dst]))].sort(compare);
   if (ids.length > 2000) throw new Error("Use at most 2,000 entities per investigation.");
   const labels = new Map(ids.map(i => [i, "Person"])), explicit = new Map();
-  for (const r of records) if (["OWNS_VEHICLE", "REGISTERED_AT"].includes(r.rel)) {
-    const type = r.rel === "OWNS_VEHICLE" ? "Vehicle" : "Location";
+  for(const r of records) for(const [id,type] of [[r.src,r.src_type],[r.dst,r.dst_type]]) {
+    if(type === "Person") continue;
+    if(!["Vehicle","Location","Phone","Account","Organization","Email","Event"].includes(type)) throw new Error(`Unsupported entity type: ${type}`);
+    if(explicit.has(id) && explicit.get(id)!==type) throw new Error(`Conflicting entity types for ${id}`);
+    explicit.set(id,type); labels.set(id,type);
+  }
+  const assetTypes = {OWNS_VEHICLE:"Vehicle",USED_VEHICLE:"Vehicle",REGISTERED_AT:"Location",VISITED:"Location",HAS_PHONE:"Phone",HAS_ACCOUNT:"Account",WORKS_FOR:"Organization"};
+  for (const r of records) if (assetTypes[r.rel]) {
+    const type = assetTypes[r.rel];
     if (explicit.has(r.dst) && explicit.get(r.dst) !== type) throw new Error(`Conflicting entity types for ${r.dst}. Use distinct IDs for vehicles and locations.`);
     explicit.set(r.dst, type); labels.set(r.dst, type);
   }
@@ -62,10 +69,10 @@ export function buildDataset(input, name) {
   for(const n of nodes) {
     const relevant=records.filter(r=>r.src===n.id||r.dst===n.id);
     details[n.id]={...n,source:name,degree:neighbors.get(n.id).size,in_degree:relevant.filter(r=>r.dst===n.id).length,out_degree:relevant.filter(r=>r.src===n.id).length,
-      neighbours_sample:[...neighbors.get(n.id)].sort(compare).slice(0,20),properties:{analysis:rank.get(n.id)?.centrality_breakdown??null,records:relevant,role_note:"Structural role only; does not establish intent or guilt."}};
+      neighbours_sample:[...neighbors.get(n.id)].sort(compare).slice(0,20),properties:{analysis:rank.get(n.id)?.centrality_breakdown??null,records:relevant,payment_history:relevant.filter(r=>r.rel==="FINANCIAL_TRANSFER").sort((a,b)=>compare(a.date,b.date)),assets:relevant.filter(r=>assetTypes[r.rel]),role_note:"Structural role only; does not establish intent or guilt."}};
   }
   const alerts=[], notes=[
-    `Analysis ${ANALYSIS_VERSION}: identical shared calculations for on-device and backend execution. Rankings and communities cover people only; assets remain in the graph and source records.`,
+    `Analysis ${ANALYSIS_VERSION}: computed on the backend. Rankings and communities cover people only; assets remain in the graph and source records.`,
     "Exact weighted Brandes betweenness uses every person as a source; path distance is inverse interaction frequency. Degree and betweenness are normalized by network size. Self-links are retained as evidence and excluded from metrics.",
     "PageRank damping is 0.85, with an absolute L1 convergence tolerance of 1e-12. Influence = 0.30 × normalized degree + 0.40 × normalized betweenness + 0.30 × PageRank. Scores are relative to this dataset, not probabilities.",
     "Deterministic multilevel Louvain optimizes weighted modularity. Community IDs and score ties use sorted entity IDs. A leader is the highest-ranked person in a community; other people linked to another community are bridges. Communities are heuristic structural clusters, not verified organizations.",
@@ -90,23 +97,6 @@ export function buildDataset(input, name) {
   const directedPairs = new Set(values.map(r => `${r.src}\u0000${r.dst}`));
   for(const r of values) if(directedPairs.has(`${r.dst}\u0000${r.src}`) && compare(r.src,r.dst)<0) flag("Reciprocal relationship",[r.src,r.dst],"Both entities have relationship records pointing to each other. Reciprocal activity can indicate coordination and should be checked against dates and source records.",{pair:[r.src,r.dst],directions:[`${r.src}->${r.dst}`,`${r.dst}->${r.src}`]},0.4);
   for(const [place,owners] of locations) if(owners.size>1) flag("Shared location",[place,...[...owners].sort(compare)],"Multiple people share a location record. This does not establish simultaneous presence.",{location:place,neighbors:[...owners].sort(compare)},0.3);
-  const personDegrees=people.map(id=>({id,degree:neighbors.get(id).size}));
-  const degreeAverage=personDegrees.reduce((sum,item)=>sum+item.degree,0)/Math.max(1,personDegrees.length);
-  const degreeDeviation=Math.sqrt(personDegrees.reduce((sum,item)=>sum+(item.degree-degreeAverage)**2,0)/Math.max(1,personDegrees.length));
-  for(const item of personDegrees) if(item.degree>=3 && item.degree>=degreeAverage+degreeDeviation) flag("Connection hub",[item.id],"This entity connects to substantially more distinct entities than the dataset baseline. Review whether the concentration reflects a coordinator, shared service, or data collection bias.",{degree:item.degree,average:rounded(degreeAverage),threshold:rounded(degreeAverage+degreeDeviation)},0.5);
-  const dated=records.map((r,index)=>({r,index,time:Date.parse(r.date)})).filter(x=>Number.isFinite(x.time)).sort((a,b)=>a.time-b.time||a.index-b.index);
-  const activityByDay=new Map();
-  for(const item of dated){const day=new Date(item.time).toISOString().slice(0,10);for(const id of [item.r.src,item.r.dst]){const key=`${id}\u0000${day}`,bucket=activityByDay.get(key)||{id,day,count:0,relationships:new Set()};bucket.count+=item.r.frequency;bucket.relationships.add(item.r.rel);activityByDay.set(key,bucket);}}
-  const activityValues=[...activityByDay.values()], activityAverage=activityValues.reduce((sum,item)=>sum+item.count,0)/Math.max(1,activityValues.length);
-  for(const item of activityValues) if(item.count>=3 && item.count>=activityAverage*1.5) flag("Activity burst",[item.id],"An entity has a concentrated burst of recorded activity on one day. Compare the date with known events and verify whether aggregation or reporting practices explain the spike.",{date:item.day,activity:item.count,baseline:rounded(activityAverage),relationship_types:[...item.relationships].sort(compare)},0.52);
-  const rapidSeen=new Set();
-  for(let i=0;i<dated.length;i++)for(let j=i+1;j<dated.length;j++){
-    if(dated[j].time-dated[i].time>3*86400000)break;
-    const first=dated[i].r,second=dated[j].r;
-    if(first.rel!=="FINANCIAL_TRANSFER"||second.rel!=="FINANCIAL_TRANSFER"||first.dst!==second.src||first.src===second.dst)continue;
-    const key=JSON.stringify([first.src,first.dst,second.dst]);if(rapidSeen.has(key))continue;rapidSeen.add(key);
-    flag("Rapid transfer chain",[first.src,first.dst,second.dst],"Two financial relationships form a short transfer chain within three days. Verify transaction timestamps, amounts, and account ownership before interpreting movement of funds.",{chain:[first.src,first.dst,second.dst],first_date:first.date,second_date:second.date,window_days:3},0.65);
-  }
   let checks=0; const seen=new Set();
   cycles: for(const a of [...financial.keys()].sort(compare)) for(const b of [...financial.get(a)].sort(compare)) for(const c of [...(financial.get(b)||[])].sort(compare)){
     if(++checks>100000){notes.push("Circular-transfer search reached 100,000 checks; additional loops may exist.");break cycles;}
@@ -116,9 +106,8 @@ export function buildDataset(input, name) {
     flag("Circular transfer links",cycle,"Transfer links form a directed three-entity loop. Verify dates and amounts before interpreting movement of funds.",{cycle:[...cycle,cycle[0]]},0.7);
   }
   if(omitted)notes.push(`${omitted} additional pattern flags omitted by the 200-flag limit.`);
-  notes.push("Pattern coverage: unusual frequency, reciprocal relationships, connection hubs, shared locations, daily activity bursts, rapid transfer chains and directed three-entity transfer loops. Dates/amounts are retained as supplied, not independently verified. Flags require review; no flags does not establish safety.");
-  const timeline=dated.map(({r,index,time})=>({id:`event-${index}`,date:new Date(time).toISOString(),src:r.src,dst:r.dst,rel:r.rel,frequency:r.frequency,amount:r.amount,source_rows:r.source_rows}));
+  notes.push("Pattern coverage: unusual frequency, shared locations and directed three-entity transfer loops. Dates/amounts are retained as supplied, not independently verified. Flags require review; no flags does not establish safety.");
   return {id:crypto.randomUUID(),name,created:new Date().toISOString(),analysis_version:ANALYSIS_VERSION,
     graph:{nodes,edges:records.map((r,i)=>({...r,id:`record-${i}`})),truncated:false,total_nodes:nodes.length,total_edges:records.length},
-    players,communities,details,records,timeline,notes,alerts:alerts.sort((a,b)=>b.severity_score-a.severity_score||compare(a.pattern_type,b.pattern_type)||compare(JSON.stringify(a.entities_involved),JSON.stringify(b.entities_involved)))};
+    players,communities,details,records,notes,alerts:alerts.sort((a,b)=>b.severity_score-a.severity_score||compare(a.pattern_type,b.pattern_type)||compare(JSON.stringify(a.entities_involved),JSON.stringify(b.entities_involved)))};
 }

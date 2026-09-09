@@ -16,16 +16,16 @@ import EntityDossier from "../components/EntityDossier";
 import {
   getGraphFull,
   getEgo,
-  getPaths,
+  traceGraph,
   type FullGraph,
   type FullGraphNode,
 } from "../lib/data/api";
-import { demoGraph, demoPaths } from "../lib/data/demo";
+import { demoGraph } from "../lib/data/demo";
 import { useData, useWorkspace, readable } from "../lib/state/workspace";
 import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 export default function NetworkExplorer() {
   const [params] = useSearchParams();
-  const { mode, setMode, cfg } = useWorkspace();
+  const { setMode, cfg } = useWorkspace();
   useEffect(() => {
     if (params.get("demo") === "1") setMode("demo");
   }, [params.get("demo")]);
@@ -84,6 +84,12 @@ export default function NetworkExplorer() {
       ),
     };
   }, [state.data, ego, excluded, community]);
+  useEffect(() => {
+    task.current++;
+    setBusy(false); setPaths([]); setMessage("");
+    if (graph && !graph.nodes.some(n=>n.id===a)) setA("");
+    if (graph && !graph.nodes.some(n=>n.id===b)) setB("");
+  }, [graph, a, b, hops]);
   const choose = (node: FullGraphNode | null) => {
     setSelected(node);
     if (node && pathMode) {
@@ -100,33 +106,10 @@ export default function NetworkExplorer() {
     setBusy(true);
     const ticket = ++task.current;
     try {
-      if (mode === "demo") {
-        const ids = new Set([selected.id]);
-        for (let i = 0; i < depth; i++) {
-          const next = demoGraph.edges.filter(
-            (e) => ids.has(e.src) || ids.has(e.dst),
-          );
-          next.forEach((e) => {
-            ids.add(e.src);
-            ids.add(e.dst);
-          });
-        }
-        const nodes = demoGraph.nodes.filter((n) => ids.has(n.id));
-        const edges = demoGraph.edges.filter(
-          (e) => ids.has(e.src) && ids.has(e.dst),
-        );
-        setEgo({ ...demoGraph, nodes, edges });
-      } else {
-        const r = await getEgo(cfg, selected.id, depth);
-        if (ticket !== task.current) return;
-        setEgo({
-          nodes: r.nodes,
-          edges: r.edges.map((e, i) => ({ ...e, id: `ego-${i}` })),
-          truncated: false,
-          total_nodes: r.nodes.length,
-          total_edges: r.edges.length,
-        });
-      }
+      const source = state.data;
+      const r = await getEgo({...cfg, dataset: {...(cfg.dataset || {}), graph: source} as NonNullable<typeof cfg.dataset>}, selected.id, depth);
+      if (ticket !== task.current) return;
+      setEgo({nodes:r.nodes,edges:r.edges,truncated:false,total_nodes:r.nodes.length,total_edges:r.edges.length});
       setPaths([]);
       setMessage("Showing the selected entity’s neighbourhood.");
     } catch (e) {
@@ -144,19 +127,14 @@ export default function NetworkExplorer() {
     setBusy(true);
     setPaths([]);
     try {
-      const r =
-        mode === "demo"
-          ? demoPaths(a, b, hops)
-          : await getPaths(cfg, a, b, hops);
+      if (!graph) return;
+      const r = await traceGraph(graph, a, b, hops);
       if (ticket !== task.current) return;
-      setEgo(null);
-      setExcluded([]);
-      setCommunity("all");
       setPaths(r.paths);
       setMessage(
         r.count
-          ? `${r.count} connecting path${r.count === 1 ? "" : "s"} found. Highlighted in the graph.`
-          : `No path within ${hops} hops. Try increasing the limit.`,
+          ? `${r.count} connecting path${r.count === 1 ? "" : "s"} found in the filtered graph.${r.truncated ? " Search limit reached; more paths may exist." : ""}`
+          : `No path within ${hops} hops under these filters. Adjust filters or increase hops.`,
       );
     } catch (e) {
       if (ticket === task.current)
@@ -201,7 +179,7 @@ export default function NetworkExplorer() {
                   }
                 >
                   <option value="">Find an entity…</option>
-                  {state.data?.nodes.map((n) => (
+                  {graph.nodes.map((n) => (
                     <option value={n.id} key={n.id}>
                       {n.name} ({n.id})
                     </option>
@@ -324,7 +302,7 @@ export default function NetworkExplorer() {
                       onChange={(e) => x.set(e.target.value)}
                     >
                       <option value="">Choose entity</option>
-                      {state.data?.nodes.map((n) => (
+                      {graph.nodes.map((n) => (
                         <option key={n.id} value={n.id}>
                           {n.name}
                         </option>

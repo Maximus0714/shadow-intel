@@ -1,10 +1,11 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixture";
 
 test("real backend upload, saved results, documents and reports through same-origin proxy", async ({
   page,
 }) => {
   await page.goto("/upload");
-  await expect(page.getByLabel("Analyze using")).toHaveValue("backend");
+  await page.getByRole("button",{name:"Data file",exact:true}).click();
+  await expect(page.getByLabel("Analyze using")).toHaveCount(0);
   await page
     .getByLabel("Choose evidence file")
     .setInputFiles({
@@ -76,6 +77,7 @@ test("backend outage reports an error and never silently substitutes demo", asyn
     }),
   );
   await page.goto("/upload");
+  await page.getByRole("button",{name:"Data file",exact:true}).click();
   await page
     .getByLabel("Choose evidence file")
     .setInputFiles({

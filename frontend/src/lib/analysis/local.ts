@@ -20,9 +20,12 @@ export interface LocalDataset {
   details: Record<string, EntityDetail>;
   notes: string[];
   records: CleanedEdge[];
-  timeline?: { id: string; date: string; src: string; dst: string; rel: string; frequency: number; amount: string; source_rows?: number[] }[];
+  source_document?: {source_text:string;entities:{text:string;type:string}[];unresolved:{line:number;text:string;reason:string}[];warnings:string[]};
 }
 
+// Compatibility exports remain for regression tests and previously saved
+// snapshots. No production page imports these calculation helpers; uploads,
+// document extraction and graph operations use the FastAPI workspace API.
 export { buildDataset, ANALYSIS_VERSION } from "../../../../shared/analysis.mjs";
 
 export function localPaths(

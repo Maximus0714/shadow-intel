@@ -66,16 +66,3 @@ def test_opposite_direction_cycles_are_not_collapsed():
             for a, b in [("A", "B"), ("B", "C"), ("C", "A"), ("A", "C"), ("C", "B"), ("B", "A")]]
     flags = snapshot(rows)["alerts"]
     assert len([f for f in flags if f["pattern_type"] == "Circular transfer links"]) == 2
-
-
-def test_timeline_and_temporal_patterns_are_explainable():
-    rows = [
-        {"src": "A", "dst": "B", "rel": "FINANCIAL_TRANSFER", "date": "2026-09-01", "frequency": 3},
-        {"src": "B", "dst": "C", "rel": "FINANCIAL_TRANSFER", "date": "2026-09-02"},
-        {"src": "A", "dst": "D", "rel": "CALLED", "date": "2026-09-01", "frequency": 3},
-    ]
-    result = snapshot(rows)
-    assert [event["date"][:10] for event in result["timeline"]] == ["2026-09-01", "2026-09-01", "2026-09-02"]
-    kinds = {flag["pattern_type"] for flag in result["alerts"]}
-    assert "Activity burst" in kinds
-    assert "Rapid transfer chain" in kinds

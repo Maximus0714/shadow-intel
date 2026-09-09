@@ -73,9 +73,8 @@ EVENT_DATES = [d.strip() for d in os.getenv("EVENT_DATES", "").split(",")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
-SUPABASE_REQUIRE_AUTH = os.getenv("SUPABASE_REQUIRE_AUTH", "false").lower() in ("1", "true", "yes")
 PUBLIC_PATHS = {"/", "/health", "/docs", "/redoc", "/openapi.json",
-                "/openapi.yaml", "/workspace/analyze", "/workspace/documents", "/workspace/resolve"}
+                "/openapi.yaml", "/workspace/analyze", "/workspace/documents", "/workspace/narrative", "/workspace/file", "/workspace/preview", "/workspace/paths", "/workspace/ego"}
 
 if API_KEY == "dev-key-change-me":
     print("WARNING: running with default API_KEY — set API_KEY env var.",
@@ -211,20 +210,6 @@ class DocAnalyzeResponse(BaseModel):
 # -------------------------------------------------------------- auth (API key) ---
 class ApiKeyMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        if request.url.path.startswith("/workspace/") and SUPABASE_REQUIRE_AUTH:
-            auth = request.headers.get("authorization", "")
-            if not auth.lower().startswith("bearer ") or not SUPABASE_URL or not SUPABASE_ANON_KEY:
-                return JSONResponse({"detail": "Sign in to use backend analysis."}, status_code=401)
-            try:
-                import httpx
-                async with httpx.AsyncClient(timeout=8) as client:
-                    response = await client.get(f"{SUPABASE_URL}/auth/v1/user", headers={"Authorization": auth, "apikey": SUPABASE_ANON_KEY})
-                if response.status_code != 200:
-                    return JSONResponse({"detail": "Your session is invalid or expired."}, status_code=401)
-                request.state.user = response.json()
-            except Exception:
-                return JSONResponse({"detail": "Authentication service is unavailable."}, status_code=503)
-            return await call_next(request)
         if request.url.path in PUBLIC_PATHS or \
                 request.url.path.startswith("/docs"):
             return await call_next(request)
@@ -412,7 +397,6 @@ def health():
                         else "neo4j") if ok else None,
             "supabase": {"configured": bool(SUPABASE_URL and
                                                 (SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY)),
-                         "auth_required": SUPABASE_REQUIRE_AUTH,
                          "url": SUPABASE_URL or None}}
 
 

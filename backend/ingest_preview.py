@@ -7,16 +7,18 @@ import csv
 import io
 import json
 import re
+import zipfile
 
-MAX_FILE_BYTES = 5_000_000
+MAX_FILE_BYTES = 20_000_000
 
 _ROLE_PATTERNS = {
-    "source": [r":START_ID", r"person_a", r"sender", r"^source$", r"^src$", r"\bfrom\b", r"from_?(number|phone|email|account|user)", r"source_?(id|account)"],
-    "target": [r":END_ID", r"person_b", r"recipient", r"^target$", r"^dst$", r"\bto\b", r"to_?(number|phone|email|account|user)", r"target_?(id|account)"],
+    "source": [r":START_ID", r"person_a", r"sender", r"^source$", r"^src$", r"\bfrom\b", r"^caller$", r"^from_number$"],
+    "target": [r":END_ID", r"person_b", r"recipient", r"^target$", r"^dst$", r"\bto\b", r"^receiver$", r"^callee$", r"^to_number$"],
     "rel": [r":TYPE", r"^rel$", r"^type$"],
     "weight": [r"frequency", r"weight", r"count", r"calls"],
     "date": [r"timestamps?", r"^date$", r"datetime", r"approx_date_range"],
     "amount": [r"amount", r"value", r"\brs\b", r"inr"],
+    "currency": [r"^currency$"],
     "node_id": [r"person_id", r"email", r"account_id", r"^id$"],
     "node_label": [r"^label$", r"^name$", r"person_id"],
 }
@@ -105,12 +107,10 @@ def parse_upload_file(filename, content, sheet=None):
     """
     name = (filename or "").lower()
     if len(content) > MAX_FILE_BYTES:
-        raise ValueError("File too large (max 5 MB).")
-    if name.endswith(".json") or name.endswith(".jsonl"):
+        raise ValueError("File too large (max 20 MB).")
+    if name.endswith(".json"):
         try:
-            decoded = content.decode("utf-8")
-            g = ({"edges": [json.loads(line) for line in decoded.splitlines() if line.strip()]}
-                 if name.endswith(".jsonl") else json.loads(decoded))
+            g = json.loads(content.decode("utf-8"))
         except Exception as e:
             raise ValueError(f"Invalid JSON: {e}")
         if not isinstance(g, dict):
@@ -124,6 +124,7 @@ def parse_upload_file(filename, content, sheet=None):
         raw = []
         for e in el:
             raw.append({
+                **e,
                 "src": e.get("src") or e.get("a") or e.get("source") or e.get("from") or "",
                 "dst": e.get("dst") or e.get("b") or e.get("target") or e.get("to") or "",
                 "date": e.get("date", ""),
@@ -134,15 +135,6 @@ def parse_upload_file(filename, content, sheet=None):
         node_ids = [str(n.get("id") or n.get("person_id") or n.get("email") or "") for n in nl]
         return raw, {"kind": "json", "sheet_names": [], "sheet": None,
                      "header_row": 0, "total_rows": len(raw), "node_ids": node_ids}
-    if name.endswith(".eml"):
-        text = content.decode("utf-8", errors="replace")
-        def header(key):
-            match = re.search(rf"^{key}:\s*(.+)$", text, re.IGNORECASE | re.MULTILINE)
-            return match.group(1).strip() if match else ""
-        src, dst = header("From"), header("To").split(",")[0].strip()
-        if not src or not dst:
-            raise ValueError("EML must include From and To headers.")
-        return [{"src": src, "dst": dst, "rel": "EMAILED", "frequency": "1", "date": header("Date"), "amount": ""}], {"kind": "eml", "sheet_names": [], "sheet": None, "header_row": 0, "total_rows": 1}
     if name.endswith(".xls"):
         raise ValueError("Legacy XLS is not supported by the server. Save as XLSX or CSV.")
     if name.endswith(".xlsx"):
@@ -151,6 +143,9 @@ def parse_upload_file(filename, content, sheet=None):
         except ImportError:
             raise ValueError("XLSX support needs openpyxl: pip install openpyxl (or upload CSV).")
         try:
+            with zipfile.ZipFile(io.BytesIO(content)) as archive:
+                if sum(entry.file_size for entry in archive.infolist()) > 100_000_000:
+                    raise ValueError("Expanded workbook exceeds 100 MB. Split the workbook.")
             wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
         except Exception as e:
             raise ValueError("Cannot read XLSX workbook.") from e
@@ -160,7 +155,10 @@ def parse_upload_file(filename, content, sheet=None):
             raise ValueError(f"Worksheet {sheet!r} does not exist.")
         pick = sheet or names[0]
         ws = wb[pick]
-        table = [[("" if c is None else str(c)) for c in row] for row in ws.iter_rows(values_only=True)]
+        if (ws.max_row or 0) > 10011 or (ws.max_column or 0) > 200:
+            wb.close()
+            raise ValueError("Use at most 10,000 rows and 200 columns per worksheet.")
+        table = [[("" if c is None else str(c)) for c in row] for row in ws.iter_rows(max_row=10011, max_col=min(ws.max_column or 200, 200), values_only=True)]
         wb.close()
         table = [r for r in table if any(x.strip() for x in r)]
         if not table:
@@ -171,7 +169,7 @@ def parse_upload_file(filename, content, sheet=None):
         return raw, {"kind": "xlsx", "sheet_names": names, "sheet": pick,
                      "header_row": hi + 1, "total_rows": len(raw)}
     if not name.endswith(".csv"):
-        raise ValueError("Unsupported file type. Upload CSV, XLSX, JSON, JSONL or EML.")
+        raise ValueError("Unsupported file type. Upload CSV, XLSX or JSON.")
     # CSV
     try:
         text = content.decode("utf-8-sig")
@@ -183,6 +181,10 @@ def parse_upload_file(filename, content, sheet=None):
     reader.fieldnames = [h.strip() for h in reader.fieldnames]
     if any(not h for h in reader.fieldnames) or len(set(reader.fieldnames)) != len(reader.fieldnames):
         raise ValueError("Column names must be non-empty and unique.")
-    raw = [dict(r) for r in reader]
+    raw = []
+    for r in reader:
+        if len(raw) >= 10000:
+            raise ValueError("Use at most 10,000 relationship rows per file.")
+        raw.append(dict(r))
     return raw, {"kind": "csv", "sheet_names": [], "sheet": None,
                  "header_row": 1, "total_rows": len(raw)}

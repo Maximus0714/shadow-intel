@@ -8,6 +8,11 @@ export interface CleanedEdge {
   date: string;
   amount: string;
   source_rows?: number[];
+  evidence?: string;
+  currency?: string;
+  src_type?: string;
+  dst_type?: string;
+  attributes?: Record<string, string>;
 }
 export interface SkippedRow {
   row: number;
@@ -29,8 +34,6 @@ const PATTERNS: Record<string, RegExp[]> = {
     /^src$/i,
     /^from$/i,
     /^caller$/i,
-    /from_?(?:number|phone|email|account|user)/i,
-    /source_?(?:id|account)/i,
   ],
   target: [
     /:END_ID/i,
@@ -41,8 +44,6 @@ const PATTERNS: Record<string, RegExp[]> = {
     /^to$/i,
     /^receiver$/i,
     /^callee$/i,
-    /to_?(?:number|phone|email|account|user)/i,
-    /target_?(?:id|account)/i,
   ],
   rel: [/:TYPE/i, /^rel$/i, /^type$/i, /^relationship$/i],
   weight: [/frequency/i, /weight/i, /count/i, /calls/i],
@@ -197,9 +198,8 @@ export async function parseFile(
     const { columns, rows } = parseCsvText(text);
     return { sheetNames: [], sheet: "", columns, rows };
   }
-  if (name.endsWith(".json") || name.endsWith(".jsonl")) {
-    const rawText = await file.text();
-    const g = name.endsWith(".jsonl") ? { edges: rawText.split(/\r?\n/).filter(Boolean).map((line, index) => { try { return JSON.parse(line); } catch { throw new Error(`Invalid JSON on line ${index + 1}.`); } }) } : JSON.parse(rawText);
+  if (name.endsWith(".json")) {
+    const g = JSON.parse(await file.text());
     if (!g || typeof g !== "object" || Array.isArray(g))
       throw new Error("JSON must be an object with an edges array.");
     const el = g.edges || g.links || [];
@@ -222,13 +222,6 @@ export async function parseFile(
       columns: ["src", "dst", "rel", "frequency", "date", "amount"],
       rows,
     };
-  }
-  if (name.endsWith(".eml")) {
-    const text = await file.text();
-    const header = (key: string) => text.match(new RegExp(`^${key}:\\s*(.+)$`, "im"))?.[1]?.trim() || "";
-    const src = header("From"), dst = header("To").split(",")[0].trim(), date = header("Date");
-    if (!src || !dst) throw new Error("EML must include From and To headers.");
-    return { sheetNames: [], sheet: "", columns: ["src", "dst", "rel", "frequency", "date", "amount"], rows: [{ src, dst, rel: "EMAILED", frequency: "1", date, amount: "" }] };
   }
   if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
     const buf = await file.arrayBuffer();
@@ -264,5 +257,5 @@ export async function parseFile(
     });
     return { sheetNames: wb.SheetNames, sheet: pick, columns, rows };
   }
-  throw new Error("Unsupported file type. Upload .csv, .xlsx, .xls, .json, .jsonl or .eml.");
+  throw new Error("Unsupported file type. Upload .csv, .xlsx, .xls or .json.");
 }

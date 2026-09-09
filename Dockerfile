@@ -22,10 +22,6 @@ CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000"]
 # Build the static React workspace with the lockfile for reproducible installs.
 FROM node:22-alpine AS frontend-build
 WORKDIR /workspace/frontend
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
-    VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ ./
