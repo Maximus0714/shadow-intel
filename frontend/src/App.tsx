@@ -103,13 +103,13 @@ function WorkspaceLayout() {
       <aside className={`app-sidebar ${menu ? "open" : ""}`}>
         <Brand />
         <div className="workspace-label">
-          <span className="workspace-avatar">CL</span>
+          <span className="workspace-avatar">{initials}</span>
           <div>
-            {mode === "demo" ? "Copper Ledger" : dataset?.name || "Your investigation"}
+            {displayName}
             <small>
               {mode === "demo"
                 ? "Demonstration workspace"
-                : "Saved on this device"}
+                : dataset?.name || "Your investigation"}
             </small>
           </div>
         </div>
@@ -180,7 +180,10 @@ function WorkspaceLayout() {
             <kbd>↵</kbd>
           </form>
           <ThemeButton />
-          <button className="analyst-avatar account-avatar" title={`${displayName} — sign out`} onClick={() => void signOut()}>{user.user_metadata?.avatar_url ? <img src={user.user_metadata.avatar_url} alt="" /> : initials}</button>
+          <div className="account-menu" title={`${displayName} — click to sign out`}>
+            <span className="account-name">{displayName}</span>
+            <button className="analyst-avatar account-avatar" aria-label={`Sign out ${displayName}`} onClick={() => void signOut()}>{(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={`${displayName} profile`} /> : initials}</button>
+          </div>
         </header>
         <div className={`mode-strip ${mode}`}>
           <span>

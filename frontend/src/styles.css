@@ -20,6 +20,9 @@
 .error-copy { color: var(--danger) !important; }
 .account-avatar { border: 0; cursor: pointer; padding: 0; overflow: hidden; }
 .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.account-menu { display: inline-flex; align-items: center; gap: 10px; margin-left: 6px; }
+.account-name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 13px; }
+@media (max-width: 720px) { .account-name { display: none; } }
 html[data-theme="dark"] {
   color-scheme: dark;
   --bg: #0a0a0b;
