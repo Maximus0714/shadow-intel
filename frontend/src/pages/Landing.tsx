@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -47,7 +47,6 @@ export default function Landing() {
   const [faq, setFaq] = useState<number | null>(0);
   const { setMode } = useWorkspace();
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
   const reduce = useReducedMotion();
   const demo = () => setMode("demo");
@@ -72,10 +71,7 @@ export default function Landing() {
           </nav>
           <div className="site-nav-actions">
             <ThemeButton />
-            {user ? <div className="account-menu landing-account"><button className="analyst-avatar account-avatar landing-avatar" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{user.user_metadata?.avatar_url || user.user_metadata?.picture ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Your profile" /> : (user.email?.slice(0, 2).toUpperCase() || "ME")}</button>{accountOpen && <div className="account-popover"><strong>{user.user_metadata?.full_name || user.email?.split("@")[0]}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}</div> : <Link className="btn nav-login" to="/signin" onClick={(event) => { event.preventDefault(); navigate("/signin"); }}>Sign in</Link>}
-            <Link className="btn nav-cta" to="/upload">
-              Open workspace <ArrowUpRight size={16} />
-            </Link>
+            {user ? <div className="account-menu landing-account"><button className="analyst-avatar account-avatar landing-avatar" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{user.user_metadata?.avatar_url || user.user_metadata?.picture ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Your profile" /> : (user.email?.slice(0, 2).toUpperCase() || "ME")}</button>{accountOpen && <div className="account-popover"><strong>{user.user_metadata?.full_name || user.email?.split("@")[0]}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}</div> : <Link className="btn nav-login" to="/signin">Sign in</Link>}
             <button
               className="icon-button mobile-menu"
               aria-label="Toggle menu"
@@ -120,16 +116,15 @@ export default function Landing() {
               <div className="hero-actions">
                 <Link
                   className="btn primary large"
-                  to="/overview"
-                  onClick={demo}
+                  to="/upload"
                 >
-                  Explore demo <ArrowRight size={19} />
+                  Add your own data <ArrowRight size={19} />
                 </Link>
                 <a className="btn large" href="#platform">
                   Discover the platform <ArrowUpRight size={19} />
                 </a>
-                <Link className="text-link" to="/signin">
-                  Sign in with Google <ArrowRight size={17} />
+                <Link className="text-link" to="/overview" onClick={demo}>
+                  Explore the demo <ArrowRight size={17} />
                 </Link>
               </div>
             </Reveal>
@@ -312,8 +307,8 @@ export default function Landing() {
               <br />
               starts with a connection.
             </h2>
-            <Link className="btn primary large" to="/overview" onClick={demo}>
-              Explore demo <ArrowRight size={20} />
+            <Link className="btn primary large" to="/upload">
+              Add your own data <ArrowRight size={20} />
             </Link>
           </Reveal>
         </section>
