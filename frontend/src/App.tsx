@@ -26,12 +26,14 @@ import {
   ArrowUpRight,
   CheckCircle,
   CaretRight,
+  ClockCounterClockwise,
 } from "@phosphor-icons/react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { WorkspaceProvider, useWorkspace } from "./lib/state/workspace";
 import { AuthProvider, useAuth } from "./lib/auth";
 import { Brand, ThemeButton, Loading } from "./components/UI";
 import Landing from "./pages/Landing";
+import SignIn from "./pages/SignIn";
 const Overview = lazy(() => import("./pages/Overview"));
 const NetworkExplorer = lazy(() => import("./pages/NetworkExplorer"));
 const Entities = lazy(() => import("./pages/Entities"));
@@ -40,7 +42,7 @@ const Documents = lazy(() => import("./pages/Documents"));
 const UploadSettings = lazy(() => import("./pages/UploadSettings"));
 const Communities = lazy(() => import("./pages/Communities"));
 const Reports = lazy(() => import("./pages/Reports"));
-const SignIn = lazy(() => import("./pages/SignIn"));
+const Investigations = lazy(() => import("./pages/Investigations"));
 const nav = [
   { to: "/overview", label: "Overview", icon: House },
   { to: "/network", label: "Network Explorer", icon: Graph },
@@ -49,6 +51,7 @@ const nav = [
   { to: "/alerts", label: "Alerts & Patterns", icon: ShieldWarning },
   { to: "/documents", label: "Document Intel", icon: FileText },
   { to: "/reports", label: "Reports & Watchlist", icon: BookmarkSimple },
+  { to: "/investigations", label: "Past Investigations", icon: ClockCounterClockwise },
 ];
 function RouteReset() {
   const { pathname } = useLocation();
@@ -184,7 +187,7 @@ function WorkspaceLayout() {
           <div className="account-menu" title={displayName}>
             <span className="account-name">{displayName}</span>
             <button className="analyst-avatar account-avatar" aria-label={`Open ${displayName} account menu`} aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={`${displayName} profile`} /> : initials}</button>
-            {accountOpen && <div className="account-popover"><strong>{displayName}</strong><small>{user.email}</small><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}
+            {accountOpen && <div className="account-popover"><strong>{displayName}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}
           </div>
         </header>
         <div className={`mode-strip ${mode}`}>
@@ -260,6 +263,7 @@ export default function App() {
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/investigations" element={<Investigations />} />
                 <Route path="/upload" element={<UploadSettings />} />
                 <Route path="/settings" element={<Navigate to="/upload" replace />} />
                 <Route

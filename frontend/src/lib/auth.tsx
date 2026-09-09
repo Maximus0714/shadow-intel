@@ -17,7 +17,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { active = false; data.subscription.unsubscribe(); };
   }, []);
   const value = useMemo<AuthValue>(() => ({ user: session?.user ?? null, session, loading, configured: Boolean(supabase),
-    signInWithGoogle: async () => { if (!supabase) return "Supabase authentication is not configured."; const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin, queryParams: { prompt: "select_account", access_type: "offline" } } }); return error?.message ?? null; },
+    signInWithGoogle: async () => { if (!supabase) return "Supabase authentication is not configured."; const { error: signOutError } = await supabase.auth.signOut(); if (signOutError) return signOutError.message; const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin, queryParams: { prompt: "select_account", access_type: "offline" } } }); return error?.message ?? null; },
     signOut: async () => { if (supabase) await supabase.auth.signOut(); },
   }), [session, loading]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

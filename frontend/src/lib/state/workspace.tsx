@@ -13,6 +13,7 @@ import type { LocalDataset } from "../analysis/local";
 import type { CleanedEdge } from "../data/upload";
 import { readDataset, saveDataset } from "./localStorage";
 import { analyzeOnServer } from "../data/server";
+import { useAuth } from "../auth";
 
 export const samplePlayers: KeyPlayer[] = demoGraph.nodes
   .filter((n) => n.label === "Person")
@@ -97,7 +98,10 @@ interface Workspace {
   toggleWatch: (id: string) => void;
   notice: string;
   notify: (text: string) => void;
+  history: InvestigationHistory[];
+  reopenInvestigation: (item: InvestigationHistory) => Promise<void>;
 }
+export interface InvestigationHistory { id: string; name: string; created: string; engine: "local" | "backend"; nodes: number; edges: number; dataset: LocalDataset; }
 const Context = createContext<Workspace | null>(null);
 function read<T>(key: string, fallback: T): T {
   try {
@@ -111,6 +115,7 @@ function readMigrated<T>(key: string, legacyKey: string, fallback: T): T {
   return current ?? read<T>(legacyKey, fallback);
 }
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [dataset, setDataset] = useState<LocalDataset | null>(null);
   const [ready, setReady] = useState(false);
   const [engine, setEngineState] = useState<"local" | "backend">(() =>
@@ -132,6 +137,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     readMigrated("xt-watchlists", "si-watchlists", {}),
   );
   const [notice, notify] = useState("");
+  const historyKey = user ? `xt-investigations:${user.id}` : "xt-investigations:guest";
+  const [history, setHistory] = useState<InvestigationHistory[]>(() => read(historyKey, []));
+  useEffect(() => setHistory(read(historyKey, [])), [historyKey]);
   const scope = mode === "demo" ? "demo" : dataset?.id || "local";
   useEffect(() => {
     let active = true;
@@ -203,6 +211,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       saved = false;
     }
     setDataset(result);
+    const item: InvestigationHistory = { id: result.id, name: result.name, created: result.created, engine, nodes: result.graph.total_nodes, edges: result.graph.total_edges, dataset: result };
+    setHistory((prev) => { const next = [item, ...prev.filter((entry) => entry.id !== item.id)].slice(0, 25); try { localStorage.setItem(historyKey, JSON.stringify(next)); } catch {} return next; });
     setMode("local");
     setRevision((n) => n + 1);
     notify(
@@ -211,6 +221,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         : "Analysis ready for this session. Storage is full or unavailable; download a report before closing.",
     );
   };
+  const reopenInvestigation = async (item: InvestigationHistory) => { await saveDataset(item.dataset); setDataset(item.dataset); setMode("local"); setRevision((n) => n + 1); notify(`Reopened ${item.name}.`); };
   const toggleWatch = (id: string) =>
     setWatchState((prev) => {
       const ids = Array.isArray(prev[scope]) ? prev[scope] : [];
@@ -241,6 +252,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         toggleWatch,
         notice,
         notify,
+        history,
+        reopenInvestigation,
       }}
     >
       {children}

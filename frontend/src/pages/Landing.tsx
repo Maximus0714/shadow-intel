@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -19,6 +19,7 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import { Brand, Reveal, ThemeButton } from "../components/UI";
 import { useWorkspace } from "../lib/state/workspace";
+import { useAuth } from "../lib/auth";
 const questions = [
   [
     "What can I investigate?",
@@ -45,6 +46,9 @@ export default function Landing() {
   const [open, setOpen] = useState(false);
   const [faq, setFaq] = useState<number | null>(0);
   const { setMode } = useWorkspace();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [accountOpen, setAccountOpen] = useState(false);
   const reduce = useReducedMotion();
   const demo = () => setMode("demo");
   return (
@@ -68,6 +72,7 @@ export default function Landing() {
           </nav>
           <div className="site-nav-actions">
             <ThemeButton />
+            {user ? <div className="account-menu landing-account"><button className="analyst-avatar account-avatar landing-avatar" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{user.user_metadata?.avatar_url || user.user_metadata?.picture ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Your profile" /> : (user.email?.slice(0, 2).toUpperCase() || "ME")}</button>{accountOpen && <div className="account-popover"><strong>{user.user_metadata?.full_name || user.email?.split("@")[0]}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}</div> : <Link className="btn nav-login" to="/signin" onClick={(event) => { event.preventDefault(); navigate("/signin"); }}>Sign in</Link>}
             <Link className="btn nav-cta" to="/upload">
               Open workspace <ArrowUpRight size={16} />
             </Link>
