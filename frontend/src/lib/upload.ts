@@ -7,6 +7,7 @@ export interface CleanedEdge {
   frequency: number;
   date: string;
   amount: string;
+  source_rows?: number[];
 }
 export interface SkippedRow {
   row: number;
@@ -27,6 +28,7 @@ const PATTERNS: Record<string, RegExp[]> = {
     /^source$/i,
     /^src$/i,
     /^from$/i,
+    /^caller$/i,
   ],
   target: [
     /:END_ID/i,
@@ -35,8 +37,10 @@ const PATTERNS: Record<string, RegExp[]> = {
     /^target$/i,
     /^dst$/i,
     /^to$/i,
+    /^receiver$/i,
+    /^callee$/i,
   ],
-  rel: [/:TYPE/i, /^rel$/i, /^type$/i],
+  rel: [/:TYPE/i, /^rel$/i, /^type$/i, /^relationship$/i],
   weight: [/frequency/i, /weight/i, /count/i, /calls/i],
   date: [/timestamp/i, /^date$/i, /datetime/i],
   amount: [/amount/i, /value/i],
@@ -58,9 +62,27 @@ export function cleanRows(
 ): { cleaned: CleanedEdge[]; skipped: SkippedRow[] } {
   const agg = new Map<string, CleanedEdge>();
   const skipped: SkippedRow[] = [];
+  const supported = new Set([
+    "CALLED",
+    "EMAILED",
+    "CONTACTED",
+    "ASSOCIATE_OF",
+    "FINANCIAL_TRANSFER",
+    "FAMILY_OF",
+    "CO_LOCATED",
+    "OWNS_VEHICLE",
+    "REGISTERED_AT",
+  ]);
   rows.forEach((r, i) => {
     const src = (m.source ? (r[m.source] ?? "") : "").trim();
     const dst = (m.target ? (r[m.target] ?? "") : "").trim();
+    if (m.source && m.source === m.target) {
+      skipped.push({
+        row: i + 2,
+        reason: "Source and target must use different columns",
+      });
+      return;
+    }
     if (!src || !dst) {
       skipped.push({ row: i + 2, reason: "missing endpoint" });
       return;
@@ -69,10 +91,15 @@ export function cleanRows(
       ((m.rel ? (r[m.rel] ?? "") : "") || "ASSOCIATE_OF")
         .trim()
         .toUpperCase() || "ASSOCIATE_OF";
-    const freq = Math.max(
+    if (!supported.has(rel)) {
+      skipped.push({ row: i + 2, reason: `Unsupported relationship: ${rel}` });
+      return;
+    }
+    const rawFreq = Math.max(
       1,
       Math.trunc(Number(m.weight ? r[m.weight] : 1) || 1),
     );
+    const freq = Number.isFinite(rawFreq) ? rawFreq : 1;
     const date = (m.date ? (r[m.date] ?? "") : "").trim();
     const amount = (m.amount ? (r[m.amount] ?? "") : "").trim();
     const k = JSON.stringify([
@@ -84,8 +111,10 @@ export function cleanRows(
       rel === "FINANCIAL_TRANSFER" ? i : null,
     ]);
     const prev = agg.get(k);
-    if (prev) prev.frequency += freq;
-    else
+    if (prev) {
+      prev.frequency += freq;
+      prev.source_rows?.push(i + 2);
+    } else
       agg.set(k, {
         src,
         dst,
@@ -93,6 +122,7 @@ export function cleanRows(
         frequency: Number.isFinite(freq) ? freq : 1,
         date,
         amount,
+        source_rows: [i + 2],
       });
   });
   return { cleaned: [...agg.values()], skipped };
@@ -167,7 +197,7 @@ export async function parseFile(
     const rows = el.map((e: Record<string, unknown>) => ({
       src: String(e.src ?? e.a ?? e.source ?? e.from ?? ""),
       dst: String(e.dst ?? e.b ?? e.target ?? e.to ?? ""),
-      date: String(e.date ?? ""),
+      date: String(e.date ?? e.timestamp ?? ""),
       amount: String(e.amount ?? ""),
       rel: String(e.rel ?? e.t ?? e.type ?? ""),
       frequency: String((e.frequency ?? e.s ?? e.weight ?? 1) as unknown),
@@ -202,6 +232,8 @@ export async function parseFile(
       }
     }
     const columns = (nonEmpty[hi] || []).map((h) => String(h ?? "").trim());
+    if (new Set(columns).size !== columns.length || columns.some((c) => !c))
+      throw new Error("Column names must be non-empty and unique.");
     const rows = nonEmpty.slice(hi + 1).map((r) => {
       const row: Record<string, string> = {};
       columns.forEach((c, i) => {

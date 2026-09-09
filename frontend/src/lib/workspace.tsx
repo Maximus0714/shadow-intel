@@ -4,16 +4,14 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   type ReactNode,
 } from "react";
-import {
-  loadConfig,
-  saveConfig,
-  type ApiConfig,
-  type KeyPlayer,
-  type AlertFlag,
-} from "./api";
+import { type ApiConfig, type KeyPlayer, type AlertFlag } from "./api";
 import { demoGraph } from "./demo";
+import type { LocalDataset } from "./local";
+import type { CleanedEdge } from "./upload";
+import { readDataset, saveDataset } from "./localStorage";
 
 export const samplePlayers: KeyPlayer[] = demoGraph.nodes
   .filter((n) => n.label === "Person")
@@ -84,10 +82,12 @@ export const sampleCommunities: Community[] = [
 });
 
 interface Workspace {
-  mode: "demo" | "live";
-  setMode: (mode: "demo" | "live") => void;
+  mode: "demo" | "local";
+  setMode: (mode: "demo" | "local") => void;
   cfg: ApiConfig;
-  connect: (cfg: ApiConfig, remember: boolean) => void;
+  dataset: LocalDataset | null;
+  ready: boolean;
+  importData: (records: CleanedEdge[], name: string) => Promise<void>;
   revision: number;
   refresh: () => void;
   watched: string[];
@@ -108,36 +108,88 @@ function readMigrated<T>(key: string, legacyKey: string, fallback: T): T {
   return current ?? read<T>(legacyKey, fallback);
 }
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
-  const [cfg, setCfg] = useState(loadConfig);
-  const [mode, setModeState] = useState<"demo" | "live">(() => {
+  const [dataset, setDataset] = useState<LocalDataset | null>(null);
+  const [ready, setReady] = useState(false);
+  const cfg = useMemo(() => ({ dataset }), [dataset]);
+  const [mode, setModeState] = useState<"demo" | "local">(() => {
     const m = readMigrated<string>("xt-mode", "si-mode", "demo");
-    return m === "live" ? "live" : "demo";
+    return m === "demo" ? "demo" : "local";
   });
   const [revision, setRevision] = useState(0);
   const [watchState, setWatchState] = useState<Record<string, string[]>>(() =>
     readMigrated("xt-watchlists", "si-watchlists", {}),
   );
   const [notice, notify] = useState("");
-  const scope = mode === "demo" ? "demo" : cfg.baseUrl;
+  const scope = mode === "demo" ? "demo" : dataset?.id || "local";
+  useEffect(() => {
+    let active = true;
+    readDataset()
+      .then((d) => {
+        if (active) setDataset(d);
+      })
+      .catch(() => {
+        if (active)
+          notify(
+            "Browser storage is unavailable. Your analysis will last for this session.",
+          );
+      })
+      .finally(() => {
+        if (active) setReady(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const watched = Array.isArray(watchState[scope]) ? watchState[scope] : [];
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(() => notify(""), 4500);
     return () => clearTimeout(t);
   }, [notice]);
-  const setMode = (m: "demo" | "live") => {
+  const setMode = (m: "demo" | "local") => {
     setModeState(m);
     try {
       localStorage.setItem("xt-mode", JSON.stringify(m));
       localStorage.removeItem("si-mode");
     } catch {}
   };
-  const connect = (c: ApiConfig, remember: boolean) => {
-    saveConfig(c, remember);
-    setCfg(c);
-    setMode("live");
+  const importData = async (records: CleanedEdge[], name: string) => {
+    const worker = new Worker(
+      new URL("./analysis.worker.ts", import.meta.url),
+      { type: "module" },
+    );
+    const result = await new Promise<LocalDataset>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        worker.terminate();
+        reject(new Error("Analysis timed out. Try a smaller dataset."));
+      }, 60000);
+      worker.onmessage = ({ data }) => {
+        clearTimeout(timeout);
+        worker.terminate();
+        if (data.error) reject(new Error(data.error));
+        else resolve(data.dataset);
+      };
+      worker.onerror = () => {
+        clearTimeout(timeout);
+        worker.terminate();
+        reject(new Error("Local analysis failed. Try a smaller dataset."));
+      };
+      worker.postMessage({ records, name });
+    });
+    let saved = true;
+    try {
+      await saveDataset(result);
+    } catch {
+      saved = false;
+    }
+    setDataset(result);
+    setMode("local");
     setRevision((n) => n + 1);
-    notify("Connection saved. Your workspace is now live.");
+    notify(
+      saved
+        ? "Your local investigation is ready and saved on this device."
+        : "Analysis ready for this session. Storage is full or unavailable; download a report before closing.",
+    );
   };
   const toggleWatch = (id: string) =>
     setWatchState((prev) => {
@@ -158,7 +210,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         mode,
         setMode,
         cfg,
-        connect,
+        dataset,
+        ready,
+        importData,
         revision,
         refresh: () => setRevision((n) => n + 1),
         watched,
@@ -184,13 +238,12 @@ export function useData<T>(
   const { mode, cfg, revision } = useWorkspace();
   const [data, setData] = useState<T | null>(mode === "demo" ? sample : null);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(mode === "live");
+  const [loading, setLoading] = useState(mode === "local");
   const [retryKey, retry] = useState(0);
   const scope = JSON.stringify([
     key,
     mode,
-    cfg.baseUrl,
-    cfg.key,
+    cfg.dataset?.id,
     revision,
     retryKey,
   ]);
@@ -221,7 +274,7 @@ export function useData<T>(
       active = false;
     };
     // The named resource key includes any query parameters; callers supply stable resource identities.
-  }, [key, mode, cfg.baseUrl, cfg.key, revision, retryKey]);
+  }, [key, mode, cfg.dataset?.id, revision, retryKey]);
   return {
     data: resolvedScope === scope ? data : null,
     error: resolvedScope === scope ? error : "",

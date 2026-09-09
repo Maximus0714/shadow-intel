@@ -5,8 +5,6 @@ import {
   FileCsv,
   CheckCircle,
   ArrowRight,
-  ArrowsClockwise,
-  Database,
   WarningCircle,
 } from "@phosphor-icons/react";
 import {
@@ -15,12 +13,11 @@ import {
   cleanRows,
   type SheetInfo,
 } from "../lib/upload";
-import { postIngest } from "../lib/api";
 import { useWorkspace } from "../lib/workspace";
 import { PageHeader, Empty } from "../components/UI";
 import PreviewTable from "../components/PreviewTable";
 export default function UploadSettings() {
-  const { cfg, mode, refresh, notify } = useWorkspace();
+  const { importData, dataset, setMode } = useWorkspace();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [info, setInfo] = useState<SheetInfo | null>(null);
@@ -62,42 +59,13 @@ export default function UploadSettings() {
       if (ticket === version.current) setParsing(false);
     }
   };
-  const send = async (endpoint: "preview" | "load") => {
-    if (!file || !info) return;
+  const send = async () => {
+    if (!file || !info || !reviewed) return;
     setBusy(true);
     setError("");
     try {
-      const quote = (s: string) => `"${s.replace(/"/g, '""')}"`;
-      const converted = file.name.toLowerCase().endsWith(".xls")
-        ? new File(
-            [
-              [
-                info.columns,
-                ...info.rows.map((r) => info.columns.map((c) => r[c] || "")),
-              ]
-                .map((r) => r.map(quote).join(","))
-                .join("\n"),
-            ],
-            "converted.csv",
-            { type: "text/csv" },
-          )
-        : file;
-      const r = (await postIngest(
-        cfg,
-        endpoint,
-        converted,
-        info.sheet || undefined,
-        mapping,
-      )) as { rows_cleaned?: number; node_count?: number; edge_count?: number };
-      if (endpoint === "preview")
-        setMessage(
-          `Server validated ${r.rows_cleaned} rows, ${r.node_count} entities and ${r.edge_count} relationships.`,
-        );
-      else {
-        refresh();
-        notify("Evidence imported. Your network is ready to explore.");
-        navigate("/network");
-      }
+      await importData(cleaned.cleaned, file.name);
+      navigate("/overview");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -108,9 +76,92 @@ export default function UploadSettings() {
     <>
       <PageHeader
         title="Every investigation starts somewhere."
-        description="Bring in your records. We’ll help you turn them into connections."
-        eyebrow="UPLOAD & SETTINGS"
+        description="Upload your own records and explore a detailed investigation, entirely on this device."
+        eyebrow="YOUR DATA, LOCAL"
       />
+      {dataset && (
+        <div className="inline-notice">
+          <span>Saved investigation: {dataset.name}</span>
+          <button
+            className="btn"
+            onClick={() => {
+              setMode("local");
+              navigate("/overview");
+            }}
+          >
+            Resume investigation
+          </button>
+        </div>
+      )}
+      <section className="panel data-guide">
+        <h2>What can X-Tracer process?</h2>
+        <p>
+          Use <strong>CSV, XLSX, XLS or JSON</strong> with one relationship per
+          row. Maximum{" "}
+          <strong>5 MB, 10,000 relationships and 2,000 entities</strong>.
+          Processing and saved results stay in this browser.
+        </p>
+        <div className="data-guide-grid">
+          <div>
+            <h3>Communication & connections</h3>
+            <p>
+              Caller → receiver, sender → recipient, or person → associate.
+              Include frequency to compare repeated interactions.
+            </p>
+          </div>
+          <div>
+            <h3>Transfers, vehicles & locations</h3>
+            <p>
+              Sender → recipient with an amount, person → vehicle, or person →
+              address. Dates and amounts appear in the entity’s source records.
+            </p>
+          </div>
+          <div>
+            <h3>Required columns</h3>
+            <p>
+              <strong>Source and target</strong>: consistent names or IDs at
+              both ends. Optional: relationship, frequency, date (YYYY-MM-DD),
+              amount (plain number). Missing type defaults to ASSOCIATE_OF.
+            </p>
+          </div>
+          <div>
+            <h3>Reports & case notes</h3>
+            <p>
+              For pasted English text or .txt files, use{" "}
+              <Link to="/documents">Document Intel</Link>. Local rules extract
+              explicit connections and identifiers, plus a summary. PDF scans,
+              images, audio, chat archives and inboxes are not parsed.
+            </p>
+          </div>
+        </div>
+        <details>
+          <summary>Supported relationship types and example format</summary>
+          <p>
+            CALLED, EMAILED, CONTACTED, ASSOCIATE_OF, FINANCIAL_TRANSFER,
+            FAMILY_OF, CO_LOCATED, OWNS_VEHICLE, REGISTERED_AT. Unknown types
+            are skipped with a reason. Use the same currency across financial
+            records; no currency conversion is performed.
+          </p>
+          <pre className="data-example">
+            {
+              "src,dst,rel,frequency,date,amount\nAsha Rao,Kabir Shah,CALLED,4,2026-09-01,\nAsha Rao,Meera Sen,FINANCIAL_TRANSFER,1,2026-09-02,12000\nKabir Shah,MH12AB1234,OWNS_VEHICLE,1,,\nMeera Sen,Pune,REGISTERED_AT,1,,"
+            }
+          </pre>
+          <p>
+            JSON: an object with an <code>edges</code> array containing{" "}
+            <code>src</code>, <code>dst</code> and optional <code>rel</code>,{" "}
+            <code>frequency</code>, <code>date</code>, <code>amount</code>.
+            Node-only lists and adjacency matrices need conversion to
+            relationship rows.
+          </p>
+        </details>
+        <p className="helper">
+          You’ll get a searchable graph, entity dossiers and source records,
+          influence rankings, communities, path tracing, explainable flags, a
+          watchlist and downloadable reports. Flags describe review-worthy
+          patterns, not guilt; some datasets produce no flags.
+        </p>
+      </section>
       <div className="import-steps">
         <span className="active">
           <b>1</b>Choose a file
@@ -270,37 +321,21 @@ export default function UploadSettings() {
                 />
                 I’ve reviewed the mapping and cleaned records.
               </label>
-              {mode === "demo" ? (
-                <div className="inline-notice">
-                  <Database size={20} />
-                  <span>
-                    Your preview is ready. Connect your backend to import these
-                    records.
-                  </span>
-                  <Link className="btn" to="/settings">
-                    Connect backend <ArrowRight size={15} />
-                  </Link>
-                </div>
-              ) : (
-                <div className="inline-actions">
-                  <button
-                    className="btn primary"
-                    disabled={!reviewed || busy}
-                    onClick={() => send("load")}
-                  >
-                    {busy ? "Processing…" : "Build network"}
-                    <ArrowRight size={17} />
-                  </button>
-                  <button
-                    className="btn"
-                    disabled={busy}
-                    onClick={() => send("preview")}
-                  >
-                    <ArrowsClockwise size={17} />
-                    Validate on server
-                  </button>
-                </div>
+              {dataset && (
+                <p className="helper">
+                  Building a new investigation replaces the currently saved
+                  dataset, {dataset.name}. Download its report first if you need
+                  to keep it.
+                </p>
               )}
+              <button
+                className="btn primary"
+                disabled={!reviewed || busy || parsing}
+                onClick={send}
+              >
+                {busy ? "Analyzing locally…" : "Build network"}{" "}
+                <ArrowRight size={17} />
+              </button>
             </>
           ) : (
             <Empty

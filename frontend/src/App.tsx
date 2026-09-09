@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import {
   BrowserRouter,
+  Navigate,
   Link,
   NavLink,
   Outlet,
@@ -19,7 +20,6 @@ import {
   UploadSimple,
   SquaresFour,
   BookmarkSimple,
-  GearSix,
   List,
   X,
   MagnifyingGlass,
@@ -39,7 +39,6 @@ const Documents = lazy(() => import("./pages/Documents"));
 const UploadSettings = lazy(() => import("./pages/UploadSettings"));
 const Communities = lazy(() => import("./pages/Communities"));
 const Reports = lazy(() => import("./pages/Reports"));
-const Settings = lazy(() => import("./pages/Settings"));
 const nav = [
   { to: "/overview", label: "Overview", icon: House },
   { to: "/network", label: "Network Explorer", icon: Graph },
@@ -58,7 +57,7 @@ function RouteReset() {
   return null;
 }
 function WorkspaceLayout() {
-  const { mode, setMode, notice, watched } = useWorkspace();
+  const { mode, setMode, notice, watched, dataset, ready } = useWorkspace();
   const location = useLocation();
   const navigate = useNavigate();
   const [menu, setMenu] = useState(false);
@@ -80,8 +79,8 @@ function WorkspaceLayout() {
   const current =
     nav.find((n) => location.pathname.startsWith(n.to))?.label ||
     (location.pathname === "/upload"
-      ? "Upload & Settings"
-      : "Connection settings");
+      ? "Upload your data"
+      : "Workspace");
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -99,11 +98,11 @@ function WorkspaceLayout() {
         <div className="workspace-label">
           <span className="workspace-avatar">CL</span>
           <div>
-            {mode === "demo" ? "Copper Ledger" : "My investigation"}
+            {mode === "demo" ? "Copper Ledger" : dataset?.name || "Your investigation"}
             <small>
               {mode === "demo"
                 ? "Demonstration workspace"
-                : "Connected workspace"}
+                : "Saved on this device"}
             </small>
           </div>
         </div>
@@ -127,9 +126,9 @@ function WorkspaceLayout() {
         </nav>
         <div className="sidebar-bottom">
           <ButtonUpload />
-          <Link className="nav-link" to="/settings">
-            <GearSix size={20} />
-            Settings
+          <Link className="nav-link" to="/upload">
+            <House size={20} />
+            Your data
           </Link>
           <Link className="back-home" to="/">
             About X-Tracer <ArrowUpRight size={15} />
@@ -181,16 +180,16 @@ function WorkspaceLayout() {
         <div className={`mode-strip ${mode}`}>
           <span>
             <span className="status-dot" />
-            {mode === "demo" ? "Demo workspace" : "Live workspace"}
+            {mode === "demo" ? "Demo workspace" : "Local workspace"}
             <span className="mode-detail">
               {mode === "demo"
                 ? "Explore freely with fictional investigation data."
-                : "Connected to your configured data source."}
+                : "Analyzed on this device. Your data stays local."}
             </span>
           </span>
           {mode === "demo" ? (
-            <Link to="/settings">
-              Connect your data <ArrowUpRight size={14} />
+            <Link to="/upload">
+              Use your own data <ArrowUpRight size={14} />
             </Link>
           ) : (
             <button onClick={() => setMode("demo")}>Explore demo</button>
@@ -202,7 +201,7 @@ function WorkspaceLayout() {
           tabIndex={-1}
         >
           <Suspense fallback={<Loading />}>
-            <Outlet />
+            {!ready ? <Loading label="Restoring your local workspace" /> : mode === "local" && !dataset && !["/upload","/documents"].includes(location.pathname) ? <Navigate to="/upload" replace /> : <Outlet />}
           </Suspense>
         </main>
       </div>
@@ -250,7 +249,7 @@ export default function App() {
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/upload" element={<UploadSettings />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/settings" element={<Navigate to="/upload" replace />} />
                 <Route
                   path="*"
                   element={

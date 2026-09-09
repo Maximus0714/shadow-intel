@@ -27,7 +27,7 @@ import {
   Empty,
 } from "../components/UI";
 export default function Overview() {
-  const { mode, watched } = useWorkspace();
+  const { mode, watched, dataset, setMode } = useWorkspace();
   const state = useData(
     "overview",
     async (c) => {
@@ -68,6 +68,8 @@ export default function Overview() {
           Upload evidence
         </Link>
       </PageHeader>
+      {mode === 'demo' && dataset && <div className="inline-notice"><span>Your dataset, {dataset.name}, is saved on this device.</span><button className="btn" onClick={()=>setMode('local')}>Resume my data</button></div>}
+      {mode === 'local' && dataset && <details className="panel data-guide"><summary>Analysis methods & data coverage</summary>{dataset.notes.map(note=><p key={note}>{note}</p>)}<p>Dataset: {dataset.name}. Imported {new Date(dataset.created).toLocaleString()}. Dates and amounts are preserved in entity dossiers and the JSON report.</p></details>}
       {state.loading ? (
         <Loading />
       ) : state.error ? (

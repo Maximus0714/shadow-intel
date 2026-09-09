@@ -37,8 +37,8 @@ export default function Entities() {
     "entities",
     async (c) => {
       const [g, p] = await Promise.all([
-        getGraphFull(c, 1200),
-        getKeyPlayers(c, 100),
+        getGraphFull(c, 2000),
+        getKeyPlayers(c, 2000),
       ]);
       return { nodes: g.nodes, players: p.players, truncated: g.truncated };
     },
@@ -81,7 +81,7 @@ export default function Entities() {
   }, [query, mode, cfg]);
   const nodes = (hits || state.data?.nodes || []).filter(
     (n) =>
-      (mode === "live" && query.trim() && hits
+      (mode === "local" && query.trim() && hits
         ? true
         : !query.trim() ||
           `${n.name} ${n.id}`.toLowerCase().includes(query.toLowerCase())) &&

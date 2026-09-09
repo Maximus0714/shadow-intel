@@ -18,7 +18,7 @@ import {
 import { PageHeader, ErrorState, Empty } from "../components/UI";
 export default function Reports() {
   const { mode, cfg, watched, toggleWatch, notify } = useWorkspace();
-  const scope = mode === "demo" ? "demo" : cfg.baseUrl;
+  const scope = mode === "demo" ? "demo" : cfg.dataset?.id || "local";
   const key = `xt-notes:${scope}`;
   const legacyKey = `si-notes:${scope}`;
   const [notes, setNotes] = useState("");
@@ -36,7 +36,7 @@ export default function Reports() {
     "reports",
     async (c) => {
       const [graph, alerts] = await Promise.all([
-        getGraphFull(c, 1200),
+        getGraphFull(c, 2000),
         getAlerts(c),
       ]);
       return { graph, alerts: alerts.flags };
@@ -57,6 +57,14 @@ export default function Reports() {
     const report = {
       title: title.trim() || "Investigation summary",
       generated_by: "X-Tracer",
+      analysis_methods:
+        mode === "local"
+          ? cfg.dataset?.notes || []
+          : ["Fictional demonstration"],
+      entities: state.data.graph.nodes,
+      relationships: state.data.graph.edges,
+      rankings: mode === "local" ? cfg.dataset?.players || [] : [],
+      communities: mode === "local" ? cfg.dataset?.communities || [] : [],
       generated_at: new Date().toISOString(),
       data_mode: mode,
       scope: state.data.graph.truncated
@@ -76,7 +84,7 @@ export default function Reports() {
     const content =
       format === "json"
         ? JSON.stringify(report, null, 2)
-        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${mode}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
+        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${mode}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analysis methods\n${report.analysis_methods.map((n) => `- ${n}`).join("\n")}\n\n## Entity rankings\n${report.rankings.map((p) => `- ${p.name}: influence ${p.influence_score.toFixed(3)}, group ${p.community_id}, structural role ${p.role}`).join("\n") || "See the workspace entity list."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
     downloadFile(
       `x-tracer-report.${format}`,
       content,
@@ -133,7 +141,7 @@ export default function Reports() {
             />
           )}
           <p className="helper">
-            Watchlists are stored in this browser, separately for demo and live
+            Watchlists are stored in this browser, separately for demo and local
             datasets.
           </p>
         </section>
@@ -169,8 +177,9 @@ export default function Reports() {
           <div className="report-download">
             <h3>Take your findings with you.</h3>
             <p>
-              The export includes network counts, your watchlist, flags and
-              analyst notes.{" "}
+              Reports include network counts, rankings, analysis methods, your
+              watchlist, flags and analyst notes. JSON also includes entities,
+              relationships and communities.{" "}
               {mode === "demo"
                 ? "Demo exports are clearly labeled fictional."
                 : ""}

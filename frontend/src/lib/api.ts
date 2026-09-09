@@ -1,6 +1,7 @@
+import { localPaths } from "./local";
+import { analyzeLocalText } from "./localDocuments";
 export interface ApiConfig {
-  baseUrl: string;
-  key: string;
+  dataset: import("./local").LocalDataset | null;
 }
 export interface FullGraphNode {
   id: string;
@@ -55,196 +56,89 @@ export interface EntityDetail {
   neighbours_sample: string[];
 }
 
-const LS_KEY = "xtracer-api";
-const LEGACY_LS_KEY = "shadowintel-api";
-
-export function loadConfig(): ApiConfig {
-  try {
-    const raw =
-      localStorage.getItem(LS_KEY) ||
-      sessionStorage.getItem(LS_KEY) ||
-      localStorage.getItem(LEGACY_LS_KEY) ||
-      sessionStorage.getItem(LEGACY_LS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (
-        parsed &&
-        typeof parsed.baseUrl === "string" &&
-        typeof parsed.key === "string"
-      )
-        return parsed as ApiConfig;
-    }
-  } catch {
-    /* fresh start */
-  }
-  return { baseUrl: "http://127.0.0.1:8000", key: "" };
-}
-
-export function saveConfig(c: ApiConfig, remember: boolean) {
-  try {
-    const s = JSON.stringify(c);
-    if (remember) {
-      localStorage.setItem(LS_KEY, s);
-      sessionStorage.removeItem(LS_KEY);
-    } else {
-      sessionStorage.setItem(LS_KEY, s);
-      localStorage.removeItem(LS_KEY);
-    }
-    localStorage.removeItem(LEGACY_LS_KEY);
-    sessionStorage.removeItem(LEGACY_LS_KEY);
-  } catch {
-    /* storage unavailable */
-  }
-}
-
-async function req<T>(
-  cfg: ApiConfig,
-  path: string,
-  init?: RequestInit,
-  body?: unknown,
-): Promise<T> {
-  let res: Response;
-  try {
-    res = await fetch(cfg.baseUrl.replace(/\/$/, "") + path, {
-      signal: AbortSignal.timeout(30_000),
-      ...init,
-      headers: {
-        "X-API-Key": cfg.key,
-        "Content-Type": "application/json",
-        ...(init?.headers || {}),
-      },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-  } catch {
-    throw new Error(
-      `Cannot reach ${cfg.baseUrl}. Start the backend: python -m uvicorn api:app --port 8000`,
-    );
-  }
-  if (res.status === 401)
-    throw new Error(
-      "API key rejected (401). Check the key in Upload & Settings.",
-    );
-  if (!res.ok) throw new Error(`HTTP ${res.status} on ${path}`);
-  return res.json() as Promise<T>;
-}
-
-export const getHealth = (c: ApiConfig) =>
-  req<{ status: string; backend?: string }>(c, "/health");
-export const getStats = (c: ApiConfig) =>
-  req<{ nodes: number; edges: number }>(c, "/stats");
-export const getGraphFull = (c: ApiConfig, limit = 600) =>
-  req<FullGraph>(c, `/graph/full?limit=${limit}`);
-export const getPaths = (c: ApiConfig, a: string, b: string, hops = 3) =>
-  req<{ source: string; target: string; paths: string[][]; count: number }>(
-    c,
-    `/entities/${encodeURIComponent(a)}/paths/${encodeURIComponent(
-      b,
-    )}?max_hops=${hops}`,
-  );
-export const getKeyPlayers = (c: ApiConfig, limit = 20) =>
-  req<{ players: KeyPlayer[]; total: number }>(
-    c,
-    `/analytics/key-players?limit=${limit}`,
-  );
-export const getAlerts = (c: ApiConfig) =>
-  req<{ flags: AlertFlag[]; total: number }>(c, "/analytics/alerts");
-export const searchEntities = (c: ApiConfig, query: string) =>
-  req<{
-    query: string;
-    results: {
-      id: string;
-      label: string;
-      name: string;
-      score: number;
-      match_type: string;
-    }[];
-  }>(c, "/search", { method: "POST" }, { query, limit: 10 });
-export const getEntity = (c: ApiConfig, id: string) =>
-  req<EntityDetail>(c, `/entities/${encodeURIComponent(id)}`);
+const dataset = (cfg: ApiConfig) => {
+  if (!cfg.dataset)
+    throw new Error("Upload a dataset to start your investigation.");
+  return cfg.dataset;
+};
+export const getStats = async (c: ApiConfig) => ({
+  nodes: dataset(c).graph.total_nodes,
+  edges: dataset(c).graph.total_edges,
+});
+export const getGraphFull = async (
+  c: ApiConfig,
+  limit = 600,
+): Promise<FullGraph> => {
+  const graph = dataset(c).graph;
+  const nodes = graph.nodes.slice(0, limit),
+    ids = new Set(nodes.map((n) => n.id));
+  return {
+    ...graph,
+    nodes,
+    edges: graph.edges.filter((e) => ids.has(e.src) && ids.has(e.dst)),
+    truncated: nodes.length < graph.nodes.length,
+  };
+};
+export const getPaths = async (c: ApiConfig, a: string, b: string, hops = 3) =>
+  localPaths(dataset(c).graph, a, b, hops);
+export const getKeyPlayers = async (c: ApiConfig, limit = 20) => ({
+  players: dataset(c).players.slice(0, limit),
+  total: dataset(c).players.length,
+});
+export const getAlerts = async (c: ApiConfig) => ({
+  flags: dataset(c).alerts,
+  total: dataset(c).alerts.length,
+});
+export const getCommunities = async (c: ApiConfig) => ({
+  communities: dataset(c).communities,
+  total: dataset(c).communities.length,
+});
+export const searchEntities = async (c: ApiConfig, query: string) => ({
+  query,
+  results: dataset(c)
+    .graph.nodes.filter((n) =>
+      (n.name + " " + n.id).toLowerCase().includes(query.toLowerCase()),
+    )
+    .map((n) => ({
+      ...n,
+      score: n.id === query ? 100 : 80,
+      match_type: "text",
+    })),
+});
+export const getEntity = async (
+  c: ApiConfig,
+  id: string,
+): Promise<EntityDetail> => {
+  const detail = dataset(c).details[id];
+  if (!detail) throw new Error("Entity not found in this dataset.");
+  return detail;
+};
 export interface EgoNetwork {
   center: string;
   depth: number;
-  nodes: {
-    id: string;
-    label: string;
-    name: string;
-    community_id?: number | null;
-    role?: string | null;
-    influence_score?: number | null;
-  }[];
-  edges: { src: string; dst: string; rel: string; frequency: number }[];
+  nodes: FullGraphNode[];
+  edges: FullGraph["edges"];
 }
-export const getEgo = (c: ApiConfig, id: string, depth = 1) =>
-  req<EgoNetwork>(
-    c,
-    `/entities/${encodeURIComponent(id)}/network?depth=${depth}`,
-  );
-
-export async function analyzeDocumentText(
-  cfg: ApiConfig,
-  text: string,
-): Promise<unknown> {
-  let res: Response;
-  try {
-    res = await fetch(cfg.baseUrl.replace(/\/$/, "") + "/documents/analyze", {
-      signal: AbortSignal.timeout(60_000),
-      method: "POST",
-      headers: { "X-API-Key": cfg.key },
-      body: (() => {
-        const f = new FormData();
-        f.append("text", text);
-        return f;
-      })(),
+export const getEgo = async (
+  c: ApiConfig,
+  id: string,
+  depth = 1,
+): Promise<EgoNetwork> => {
+  const graph = dataset(c).graph,
+    ids = new Set([id]);
+  for (let k = 0; k < depth; k++) {
+    const next = graph.edges.filter((e) => ids.has(e.src) || ids.has(e.dst));
+    next.forEach((e) => {
+      ids.add(e.src);
+      ids.add(e.dst);
     });
-  } catch {
-    throw new Error(`Cannot reach ${cfg.baseUrl}.`);
   }
-  if (res.status === 401) throw new Error("API key rejected (401).");
-  if (!res.ok) throw new Error(`HTTP ${res.status} on /documents/analyze`);
-  return res.json();
-}
-
-export async function postIngest(
-  cfg: ApiConfig,
-  endpoint: "preview" | "load",
-  file: File,
-  sheet?: string,
-  mapping?: Record<string, string | null>,
-): Promise<unknown> {
-  const f = new FormData();
-  f.append("file", file);
-  if (sheet) f.append("sheet", sheet);
-  if (mapping) f.append("mapping", JSON.stringify(mapping));
-  let res: Response;
-  try {
-    res = await fetch(cfg.baseUrl.replace(/\/$/, "") + `/ingest/${endpoint}`, {
-      signal: AbortSignal.timeout(60_000),
-      method: "POST",
-      headers: { "X-API-Key": cfg.key },
-      body: f,
-    });
-  } catch {
-    throw new Error(`Cannot reach ${cfg.baseUrl}.`);
-  }
-  if (res.status === 401) throw new Error("API key rejected (401).");
-  if (!res.ok) {
-    let msg = `HTTP ${res.status} on /ingest/${endpoint}`;
-    try {
-      const j = await res.json();
-      if (typeof j?.detail === "string") msg = j.detail;
-      else if (j?.detail?.message) msg = j.detail.message;
-    } catch {
-      /* keep default */
-    }
-    throw new Error(msg);
-  }
-  return res.json();
-}
-
-export const getCommunities = (c: ApiConfig) =>
-  req<{ communities: import("./workspace").Community[]; total: number }>(
-    c,
-    "/analytics/communities",
-  );
-export const reloadGraph = (c: ApiConfig) =>
-  req<Record<string, unknown>>(c, "/admin/reload", { method: "POST" });
+  return {
+    center: id,
+    depth,
+    nodes: graph.nodes.filter((n) => ids.has(n.id)),
+    edges: graph.edges.filter((e) => ids.has(e.src) && ids.has(e.dst)),
+  };
+};
+export const analyzeDocumentText = async (c: ApiConfig, text: string) =>
+  analyzeLocalText(text, c.dataset?.graph.nodes || []);

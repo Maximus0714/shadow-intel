@@ -106,8 +106,8 @@ export function ErrorState({
               Try again
             </button>
           )}
-          <Link className="text-link" to="/settings">
-            Connection settings <ArrowRight />
+          <Link className="text-link" to="/upload">
+            Upload your data <ArrowRight />
           </Link>
         </div>
       </div>

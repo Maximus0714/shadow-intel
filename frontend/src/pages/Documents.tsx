@@ -47,7 +47,7 @@ const sampleAnalysis: Analysis = {
     { subject: "Mohan Yadav", relation: "REGISTERED_AT", object: "Andheri" },
   ],
   warnings: [
-    "This is a prewritten demonstration. Connect a backend to analyze your own documents.",
+    "This is a prewritten demonstration. Your own text is analyzed with local rules.",
   ],
 };
 export default function Documents() {
@@ -66,11 +66,7 @@ export default function Documents() {
     setResult(null);
     setBusy(true);
     try {
-      if (mode === "demo") {
-        if (text !== SAMPLE)
-          throw new Error(
-            "Connect your backend to analyze your own text, or load the fictional example.",
-          );
+      if (mode === "demo" && text === SAMPLE) {
         setResult(sampleAnalysis);
       } else
         setResult((await analyzeDocumentText(cfg, text.trim())) as Analysis);
@@ -160,7 +156,7 @@ export default function Documents() {
           {error && (
             <div className="inline-notice warning" role="alert">
               {error}
-              {mode === "demo" && <Link to="/settings">Connect backend</Link>}
+              <span>Processed on this device with local extraction rules.</span>
             </div>
           )}
         </section>
@@ -230,7 +226,7 @@ export default function Documents() {
                       </Link>
                     ))
                   ) : (
-                    <Empty body="No entities extracted. Check model availability and source text." />
+                    <Empty body="No identifiers or explicit connections matched the local rules. Try clear English statements such as Asha Rao called Kabir Shah." />
                   )}
                 </div>
               )}

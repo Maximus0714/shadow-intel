@@ -17,3 +17,9 @@ Use case: stylized-concept. Asset type: premium intelligence software landing pa
 ### Evidence
 
 Use case: product-mockup. Asset type: wide editorial image for an intelligence software website, 1536x1024. A beautiful architectural arrangement of thin translucent smoked-glass document sheets, layered like evidence pages, one sheet lifting slightly and casting a precise silver shadow. Fine etched ruled lines on the sheets but no readable text. Shot in a deep graphite studio, monochromatic black and silver, delicate white edge lighting, subtly frosted material, museum-grade contemporary product photography. The glass pages arranged diagonally from bottom left to upper right, filling most frame. Highly tactile and premium, macro detail, quiet and sophisticated. No labels, no text, no hands, no logos, no colored glow, no UI. A physical metaphor for turning fragmented evidence into clarity. Dark background #0a0a0a.
+
+### Investigation (current landing hero)
+
+Generated with the built-in image-generation tool. Saved responsive assets: `investigation.webp` and `investigation-mobile.webp`.
+
+Use case: product-mockup. Asset type: wide monochrome hero photograph for X-Tracer investigation software, 1536x1024. A forensic investigator's evidence desk in a dark graphite studio: a sharply detailed fingerprint on a translucent evidence card under a large elegant magnifying glass, a few overlapping case document sheets with abstract unreadable lines, fine silver connecting threads between three small evidence pins. Objects arranged primarily in right half and lower right, left half fades to near-black negative space for website headline. Premium cinematic macro photography, restrained silver edge lighting, realistic glass refraction and paper texture, sophisticated and credible detective atmosphere. No people, weapons, blood, readable text, logos, UI, neon or colored glow. Near-black and silver only.

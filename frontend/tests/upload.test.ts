@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import './local.test';
 import { cleanRows, detectMapping, parseCsvText } from "../src/lib/upload";
 import { demoPaths, demoEgo } from "../src/lib/demo";
 const parsed = parseCsvText(

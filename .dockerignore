@@ -1,0 +1,15 @@
+.git
+.env
+.pytest_cache
+__pycache__
+*.pyc
+node_modules
+frontend/node_modules
+frontend/dist
+frontend/test-results
+frontend/playwright-report
+out
+out_enron
+out_enron_dev
+emails.csv
+*.log

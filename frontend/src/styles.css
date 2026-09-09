@@ -248,6 +248,14 @@ kbd,
   background: var(--surface-hover);
   color: var(--text);
 }
+.data-guide { margin-bottom: 24px; padding: 24px; }
+.data-guide > p { line-height: 1.7; margin-block: 14px; }
+.data-guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 24px; margin-block: 24px; }
+.data-guide-grid p { color: var(--muted); line-height: 1.7; font-size: 13px; margin-top: 8px; }
+.data-guide a { text-decoration: underline; }
+.data-guide details { border-top: 1px solid var(--line); padding-top: 16px; }
+.data-guide details p { line-height: 1.7; margin-block: 16px; font-size: 13px; }
+.data-example { overflow-x: auto; max-width: 100%; padding: 16px; background: var(--surface); font-size: 12px; }
 .brand {
   display: inline-flex;
   gap: 11px;

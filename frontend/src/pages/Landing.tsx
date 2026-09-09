@@ -25,8 +25,8 @@ const questions = [
     "Explore relationships between people, vehicles and locations. Import call records, contact lists or financial relationships, then review graph connections, communities and explainable alerts.",
   ],
   [
-    "Can I try it without a backend?",
-    "Yes. The demo workspace includes a fictional network with working search, entity dossiers, paths, communities, sample alerts and downloadable summaries. Your demo watchlist is saved in this browser.",
+    "Can I use my own data locally?",
+    "Yes. Upload relationship records to compute your graph, rankings, communities and review flags in your browser. You can also explore a separate fictional demo.",
   ],
   [
     "Does an alert mean someone is guilty?",
@@ -38,7 +38,7 @@ const questions = [
   ],
   [
     "Where does my data go?",
-    "Live requests go to the backend you configure. Demo data stays local. Watchlists and report notes are stored in your browser. You choose whether the connection credentials are remembered.",
+    "Your files are processed on your device. The current dataset is saved in this browser, with local watchlists and notes. Nothing is sent to an analysis server. Clearing site data removes saved investigations.",
   ],
 ];
 export default function Landing() {
@@ -68,7 +68,7 @@ export default function Landing() {
           </nav>
           <div className="site-nav-actions">
             <ThemeButton />
-            <Link className="btn nav-cta" to="/overview">
+            <Link className="btn nav-cta" to="/upload">
               Open workspace <ArrowUpRight size={16} />
             </Link>
             <button
@@ -88,10 +88,10 @@ export default function Landing() {
               initial={reduce ? false : { scale: 1.04 }}
               animate={{ scale: 1 }}
               transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-              src="/images/connections.webp"
-              srcSet="/images/connections-mobile.webp 768w, /images/connections.webp 1536w"
+              src="/images/investigation.webp"
+              srcSet="/images/investigation-mobile.webp 768w, /images/investigation.webp 1536w"
               sizes="(max-width: 767px) 100vw, 65vw"
-              alt="Silver strands converging into a connected network"
+              alt="Magnifying glass examining fingerprint evidence beside connected case records"
               width="1536"
               height="1024"
               fetchPriority="high"
@@ -314,8 +314,8 @@ export default function Landing() {
         <Brand />
         <p>From evidence to intelligence.</p>
         <div>
-          <Link to="/settings">Connect your data</Link>
-          <Link to="/overview">
+          <Link to="/upload">Use your own data</Link>
+          <Link to="/upload">
             Open workspace <ArrowUpRight size={14} />
           </Link>
         </div>

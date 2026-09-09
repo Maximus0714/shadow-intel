@@ -8,38 +8,67 @@ Upload fragmented evidence (CSV/XLSX reports, call records, FIR text), clean and
 
 - **Backend (FastAPI, `api.py`)** — graph store + analytics + document intel exposed as REST endpoints. NetworkX fallback by default; optional Neo4j via env vars.
 - **Legacy dashboard** — `dashboard.html` + `dashboard.css` + `dashboard.js`: the original single-file SVG workbench (kept as fallback).
-- **New web app (`frontend/`)** — Vite + React + TypeScript + Cytoscape.js, a public landing page plus Overview, Network Explorer, Entities & Search, Communities, Alerts & Patterns, Document Intel, Reports & Watchlist, Upload & Settings, and connection Settings.
+- **New web app (`frontend/`)** — Vite + React + TypeScript + Cytoscape.js, a public landing page plus Overview, Network Explorer, Entities & Search, Communities, Alerts & Patterns, Document Intel, Reports & Watchlist, Upload evidence.
 - **Pipelines** — `ingest.py`, `caviar_ingest.py`, `enron_ingest.py`, `nlp_pipeline.py`, `doc_intel.py`, `entity_resolution.py`, `analytics.py`, `suspicious_patterns.py`.
 - **Sample data** — `CAVIAR/` (input phases), `out_caviar/`, `out_bench/` (small working outputs), `gold_sample.json`, `out_analytics_ranked.json`.
 - **Docs** — `docs/` (design spec + implementation plan).
 
-## Prerequisites
+## Run the website
 
-- Python 3.14, Node 24, `git`, GitHub CLI (`gh`) optional.
+### Docker (recommended for a fresh clone)
 
-## Backend setup
+Install Docker Desktop, then run this from the repository root:
 
-```powershell
+```sh
+docker compose up --build
+```
+
+Open `http://localhost:4179`. The website is the `web` container and the
+original FastAPI service is available at `http://localhost:8000` for its
+separate API integrations. The current browser workspace does not call that
+API or require an API key. Stop the stack with `docker compose down`; add
+`--remove-orphans` if you have old project containers.
+
+For a clean rebuild after changing dependencies or Docker files:
+
+```sh
+docker compose build --no-cache
+docker compose up
+```
+
+The API uses a development-only default key in Compose so a cloned demo boots
+without secret files. Set `API_KEY` in your shell or a local `.env` file before
+starting Compose if anyone will call the API outside their own machine. Do not
+commit that `.env` file.
+
+### Local development
+
+```sh
+cd frontend
+npm install
+npm run dev
+```
+
+Open the URL printed by Vite (normally `http://localhost:5173`). No Python server, account, or API key is needed. Production build: `npm run build`; serve it with `npm run preview`.
+
+Choose **Open workspace** to upload your own evidence, or **Explore demo** for the fictional sample. CSV, XLSX, XLS and JSON relationship records are supported, up to 5 MB, 10,000 cleaned relationships and 2,000 entities. Map source and target columns; relationship, frequency, date and amount are optional. The upload screen explains all supported relationship types and provides examples. PDF, images, audio, raw chat archives and node-only JSON are not supported. Document Intel accepts pasted text or TXT files with limited English rule-based extraction.
+
+Analysis runs in a browser Web Worker: degree, weighted PageRank, betweenness (sampled above 100 entities), weighted label-propagation groups, structural roles, unusual-frequency flags, shared-location links and directed three-entity financial loops. Methods and coverage limitations appear on the overview. Graph paths are bounded to 10 results and 50,000 search expansions. These are explainable graph heuristics, not trained criminal classifiers or unrestricted language-model analysis.
+
+The current investigation is saved in IndexedDB; notes and watchlists use local storage, separately for each dataset and demo. Returning to the same browser and origin restores it. Clearing site data removes it; replacing the dataset replaces the saved investigation. Download reports to retain findings. All uploaded-data analysis stays in the browser and makes no API requests. Initial page loading still needs the local web server.
+
+## Optional standalone Python API
+
+The original Python backend remains available for separate scripts/integrations; the website does not use it.
+
+```sh
 pip install -r requirements.txt
-Copy-Item .env.example .env   # then set a real API_KEY inside .env
+cp .env.example .env
+# Set API_KEY in .env for direct API clients.
 python -m uvicorn api:app --port 8000
 ```
 
-Health check: `http://127.0.0.1:8000/health`. Interactive docs: `http://127.0.0.1:8000/docs`.
-
-Default dataset: Caviar (`out_caviar/`) + Enron (`out_enron/`, capped by `ENRON_MAX_EDGES`). The API key goes in the `X-API-Key` header (or `Authorization: Bearer`, or `?api_key=`).
-
-## Frontend setup
-
-```powershell
-Set-Location frontend
-npm install
-npm run dev    # http://localhost:5173 (proxies API calls to :8000)
-```
-
-Production build: `npm run build` (outputs `frontend/dist/`, git-ignored).
-
-Open `/` for the landing page, then select **Explore demo** for a working fictional workspace. To investigate real data, go to **Settings**, enter the backend URL and `API_KEY` from `.env`, and choose **Connect workspace**. Demo and live mode stay explicit across all pages; live failures display errors rather than substitute demo data.
+Interactive API docs: `http://127.0.0.1:8000/docs`. Backend authentication remains in place for those clients.
 
 ## Data note
 
@@ -73,12 +102,10 @@ npm run build                     # TypeScript + optimized production build
 
 `design.md` is an unchanged copy of the supplied xAI design reference. The frontend applies its monochrome palette, self-hosted Geist substitute and Geist Mono, outlined pill buttons, and consistent rounded surfaces. The taste skill governs the complete landing-page and workspace overhaul. The overview now lives at `/overview`; existing investigation route slugs remain available. Dark is the initial brand theme; the existing light-mode toggle remains available.
 
-Upload preview and load accept an optional multipart `mapping` JSON object. Its values must refer to uploaded column names. The same selected mapping is used in both operations. Amounts and dates survive ingestion, and individual financial records remain separate for pattern analysis. Unsupported relationship types return a validation error instead of silently disappearing.
+The browser parses and previews uploads before local analysis. Dates, amounts and source-row references are retained. Unsupported relationships are flagged during cleaning. Document results use explicit rules and extractive summaries, with their limitations shown in the interface.
 
-CSV, XLSX and JSON are parsed by the server. The frontend converts legacy XLS worksheets to CSV before submission. The direct API rejects legacy XLS with a conversion message. Node-only JSON ingestion is not supported. NLP extraction still requires its optional models; unavailable models are reported in Document Intel.
-
-See `docs/2026-09-08-frontend-revamp.md` for the current feature map, architecture, verification and limitations. The earlier audit remains as repair history.
+Earlier documents in `docs/` describe the previous server-connected implementation and remain as project history.
 
 Browser regressions: `cd frontend && npx playwright install chromium && npm run test:e2e`. Alternatively, set `PLAYWRIGHT_CHROME_PATH` to an installed Chrome executable. The test runner starts the production preview on port 4179 if one is not already running.
 
-Watchlists and notes are saved locally, separately for demo and each backend. Reports download as Markdown or JSON. No cloud account is required for the demo.
+Watchlists and notes are saved locally, separately for demo and each local dataset. Reports download as Markdown or JSON. No cloud account is required.

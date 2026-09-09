@@ -1,8 +1,7 @@
 import type { FullGraph } from "./api";
 
-// Bundled fictional demo graph (Copper-Ledger family). Used whenever the
-// backend is unreachable so every page stays usable offline. Clearly labeled
-// DEMO wherever rendered.
+// Bundled fictional demo graph (Copper-Ledger family), used only when demo
+// mode is explicitly selected and labeled DEMO wherever rendered.
 export const demoGraph: FullGraph = {
   nodes: [
     {
