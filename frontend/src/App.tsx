@@ -27,6 +27,7 @@ import {
   CheckCircle,
   CaretRight,
   ClockCounterClockwise,
+  CalendarDots,
 } from "@phosphor-icons/react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { WorkspaceProvider, useWorkspace } from "./lib/state/workspace";
@@ -43,12 +44,16 @@ const UploadSettings = lazy(() => import("./pages/UploadSettings"));
 const Communities = lazy(() => import("./pages/Communities"));
 const Reports = lazy(() => import("./pages/Reports"));
 const Investigations = lazy(() => import("./pages/Investigations"));
+const Timeline = lazy(() => import("./pages/Timeline"));
+const Activity = lazy(() => import("./pages/Activity"));
+const SharedInvestigation = lazy(() => import("./pages/SharedInvestigation"));
 const nav = [
   { to: "/overview", label: "Overview", icon: House },
   { to: "/network", label: "Network Explorer", icon: Graph },
   { to: "/entities", label: "Entities & Search", icon: UsersThree },
   { to: "/communities", label: "Communities", icon: SquaresFour },
   { to: "/alerts", label: "Alerts & Patterns", icon: ShieldWarning },
+  { to: "/timeline", label: "Event Timeline", icon: CalendarDots },
   { to: "/documents", label: "Document Intel", icon: FileText },
   { to: "/reports", label: "Reports & Watchlist", icon: BookmarkSimple },
   { to: "/investigations", label: "Past Investigations", icon: ClockCounterClockwise },
@@ -63,7 +68,7 @@ function RouteReset() {
 }
 function WorkspaceLayout() {
   const { mode, setMode, notice, watched, dataset, ready } = useWorkspace();
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, configured, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [menu, setMenu] = useState(false);
@@ -88,9 +93,11 @@ function WorkspaceLayout() {
     (location.pathname === "/upload"
       ? "Upload your data"
       : "Workspace");
+  const publicDemoRoutes = ["/overview", "/network", "/entities", "/communities", "/alerts", "/timeline", "/documents", "/reports"];
+  const guestDemo = !user && mode === "demo" && publicDemoRoutes.some((path) => location.pathname === path || location.pathname.startsWith(`${path}/`));
   if (loading) return <Loading label="Restoring your account" />;
-  if (!user) return <Navigate to="/signin" state={{ from: location.pathname }} replace />;
-  const displayName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Investigator";
+  if (!user && configured && !guestDemo) return <Navigate to="/signin" state={{ from: location.pathname }} replace />;
+  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || (guestDemo ? "Demo visitor" : "Local investigator");
   const initials = displayName.split(/\s+/).map((part: string) => part[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div className="app-shell">
@@ -184,11 +191,11 @@ function WorkspaceLayout() {
             <kbd>↵</kbd>
           </form>
           <ThemeButton />
-          <div className="account-menu" title={displayName}>
+          {user ? <div className="account-menu" title={displayName}>
             <span className="account-name">{displayName}</span>
             <button className="analyst-avatar account-avatar" aria-label={`Open ${displayName} account menu`} aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={`${displayName} profile`} /> : initials}</button>
-            {accountOpen && <div className="account-popover"><strong>{displayName}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}
-          </div>
+            {accountOpen && <div className="account-popover"><strong>{displayName}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><Link to="/activity" onClick={() => setAccountOpen(false)}>Account activity</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}
+          </div> : <Link className="btn nav-login" to="/signin">Sign in</Link>}
         </header>
         <div className={`mode-strip ${mode}`}>
           <span>
@@ -247,13 +254,14 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <IconContext.Provider value={{ weight: "regular", size: 20 }}>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AuthProvider>
           <WorkspaceProvider>
             <RouteReset />
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/signin" element={<SignIn />} />
+              <Route path="/shared/:token" element={<SharedInvestigation />} />
               <Route element={<WorkspaceLayout />}>
                 <Route path="/overview" element={<Overview />} />
                 <Route path="/network" element={<NetworkExplorer />} />
@@ -261,9 +269,11 @@ export default function App() {
                 <Route path="/entities/:id" element={<Entities />} />
                 <Route path="/communities" element={<Communities />} />
                 <Route path="/alerts" element={<Alerts />} />
+                <Route path="/timeline" element={<Timeline />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/investigations" element={<Investigations />} />
+                <Route path="/activity" element={<Activity />} />
                 <Route path="/upload" element={<UploadSettings />} />
                 <Route path="/settings" element={<Navigate to="/upload" replace />} />
                 <Route

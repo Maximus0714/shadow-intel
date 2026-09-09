@@ -34,11 +34,15 @@ assert.equal(
 );
 assert.throws(() => buildDataset([], "empty"));
 const doc = analyzeLocalText(
-  "Asha Rao called Kabir Shah. Their vehicle is MH12AB1234. Meeting date 2026-09-01.",
+  "Asha Rao called Kabir Shah. Their vehicle is MH12AB1234. Meeting date 2026-09-01. Account number ACCT-92831 was used by Rao Traders Ltd near Mumbai. The report mentions a fraud threat.",
 );
 assert.equal(doc.triples[0].subject, "Asha Rao");
 assert.equal(doc.triples[0].object, "Kabir Shah");
 assert.ok(doc.entities.some((e) => e.text === "MH12AB1234"));
+assert.ok(doc.entities.some((e) => e.text === "ACCT-92831" && e.type === "Account"));
+assert.ok(doc.entities.some((e) => e.text === "Rao Traders Ltd" && e.type === "Organization"));
+assert.equal(doc.classification.review_priority, "moderate");
+assert.ok(doc.classification.matched_cues.includes("fraud"));
 assert.equal(
   analyzeLocalText("No identifiable structured evidence here.").triples
     .length,

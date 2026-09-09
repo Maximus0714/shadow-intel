@@ -20,6 +20,7 @@ export interface LocalDataset {
   details: Record<string, EntityDetail>;
   notes: string[];
   records: CleanedEdge[];
+  timeline?: { id: string; date: string; src: string; dst: string; rel: string; frequency: number; amount: string; source_rows?: number[] }[];
 }
 
 export { buildDataset, ANALYSIS_VERSION } from "../../../../shared/analysis.mjs";

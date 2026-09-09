@@ -8,7 +8,7 @@ test("own data runs locally, persists, exports and stays separate from demo", as
   });
   await page.goto("/");
   await page
-    .getByRole("link", { name: "Open workspace", exact: true })
+    .getByRole("link", { name: "Add your own data", exact: true })
     .first()
     .click();
   await expect(page).toHaveURL(/upload/);

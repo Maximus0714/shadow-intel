@@ -84,3 +84,26 @@ class Document(BaseModel):
 @router.post("/documents")
 def document(body: Document):
     return run_shared({"kind": "document", "text": body.text})
+
+
+class Mention(BaseModel):
+    mention_id: str = Field(min_length=1, max_length=200)
+    type: str = Field(min_length=1, max_length=50)
+    text: str = Field(min_length=1, max_length=500)
+    doc_id: str = Field(default="document", max_length=200)
+    source: str = Field(default="", max_length=200)
+    attrs: dict = Field(default_factory=dict)
+
+
+class ResolutionRequest(BaseModel):
+    mentions: list[Mention] = Field(min_length=1, max_length=10000)
+    auto_threshold: float = Field(default=0.85, ge=0.5, le=1.0)
+    review_threshold: float = Field(default=0.60, ge=0.3, le=0.95)
+
+
+@router.post("/resolve")
+def resolve_entities(body: ResolutionRequest):
+    if body.review_threshold >= body.auto_threshold:
+        raise HTTPException(422, "Review threshold must be lower than the automatic merge threshold.")
+    from .entity_resolution import resolve
+    return resolve([mention.model_dump() for mention in body.mentions], body.auto_threshold, body.review_threshold)

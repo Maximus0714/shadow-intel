@@ -81,3 +81,19 @@ def test_csv_header_whitespace_matches_client_mapping():
     from backend.ingest_preview import parse_upload_file
     rows, _ = parse_upload_file("data.csv", b" src , dst \na,b\n")
     assert rows == [{"src": "a", "dst": "b"}]
+
+
+def test_jsonl_and_eml_sources_are_supported():
+    from backend.ingest_preview import parse_upload_file
+    rows, meta = parse_upload_file("records.jsonl", b'{"src":"A","dst":"B","rel":"KNOWS"}\n')
+    assert meta["kind"] == "json"
+    assert rows[0]["src"] == "A"
+    rows, meta = parse_upload_file("message.eml", b"From: a@example.com\nTo: b@example.com\nDate: 2026-09-09\nSubject: Test\n\nBody")
+    assert meta["kind"] == "eml"
+    assert rows[0]["rel"] == "EMAILED"
+
+
+def test_phone_and_account_column_synonyms():
+    mapping = detect_column_mapping(["from_number", "to_number", "timestamp"])
+    assert mapping["source"] == "from_number"
+    assert mapping["target"] == "to_number"

@@ -19,6 +19,9 @@ export interface FullGraphEdge {
   dst: string;
   rel: string;
   frequency: number;
+  date?: string;
+  amount?: string;
+  source_rows?: number[];
 }
 export interface FullGraph {
   nodes: FullGraphNode[];

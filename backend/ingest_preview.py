@@ -11,8 +11,8 @@ import re
 MAX_FILE_BYTES = 5_000_000
 
 _ROLE_PATTERNS = {
-    "source": [r":START_ID", r"person_a", r"sender", r"^source$", r"^src$", r"\bfrom\b"],
-    "target": [r":END_ID", r"person_b", r"recipient", r"^target$", r"^dst$", r"\bto\b"],
+    "source": [r":START_ID", r"person_a", r"sender", r"^source$", r"^src$", r"\bfrom\b", r"from_?(number|phone|email|account|user)", r"source_?(id|account)"],
+    "target": [r":END_ID", r"person_b", r"recipient", r"^target$", r"^dst$", r"\bto\b", r"to_?(number|phone|email|account|user)", r"target_?(id|account)"],
     "rel": [r":TYPE", r"^rel$", r"^type$"],
     "weight": [r"frequency", r"weight", r"count", r"calls"],
     "date": [r"timestamps?", r"^date$", r"datetime", r"approx_date_range"],
@@ -106,9 +106,11 @@ def parse_upload_file(filename, content, sheet=None):
     name = (filename or "").lower()
     if len(content) > MAX_FILE_BYTES:
         raise ValueError("File too large (max 5 MB).")
-    if name.endswith(".json"):
+    if name.endswith(".json") or name.endswith(".jsonl"):
         try:
-            g = json.loads(content.decode("utf-8"))
+            decoded = content.decode("utf-8")
+            g = ({"edges": [json.loads(line) for line in decoded.splitlines() if line.strip()]}
+                 if name.endswith(".jsonl") else json.loads(decoded))
         except Exception as e:
             raise ValueError(f"Invalid JSON: {e}")
         if not isinstance(g, dict):
@@ -132,6 +134,15 @@ def parse_upload_file(filename, content, sheet=None):
         node_ids = [str(n.get("id") or n.get("person_id") or n.get("email") or "") for n in nl]
         return raw, {"kind": "json", "sheet_names": [], "sheet": None,
                      "header_row": 0, "total_rows": len(raw), "node_ids": node_ids}
+    if name.endswith(".eml"):
+        text = content.decode("utf-8", errors="replace")
+        def header(key):
+            match = re.search(rf"^{key}:\s*(.+)$", text, re.IGNORECASE | re.MULTILINE)
+            return match.group(1).strip() if match else ""
+        src, dst = header("From"), header("To").split(",")[0].strip()
+        if not src or not dst:
+            raise ValueError("EML must include From and To headers.")
+        return [{"src": src, "dst": dst, "rel": "EMAILED", "frequency": "1", "date": header("Date"), "amount": ""}], {"kind": "eml", "sheet_names": [], "sheet": None, "header_row": 0, "total_rows": 1}
     if name.endswith(".xls"):
         raise ValueError("Legacy XLS is not supported by the server. Save as XLSX or CSV.")
     if name.endswith(".xlsx"):
@@ -160,7 +171,7 @@ def parse_upload_file(filename, content, sheet=None):
         return raw, {"kind": "xlsx", "sheet_names": names, "sheet": pick,
                      "header_row": hi + 1, "total_rows": len(raw)}
     if not name.endswith(".csv"):
-        raise ValueError("Unsupported file type. Upload CSV, XLSX or JSON.")
+        raise ValueError("Unsupported file type. Upload CSV, XLSX, JSON, JSONL or EML.")
     # CSV
     try:
         text = content.decode("utf-8-sig")

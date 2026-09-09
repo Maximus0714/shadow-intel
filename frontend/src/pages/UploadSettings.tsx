@@ -106,7 +106,7 @@ export default function UploadSettings() {
       <section className="panel data-guide">
         <h2>What can X-Tracer process?</h2>
         <p>
-          Use <strong>CSV, XLSX, XLS or JSON</strong> with one relationship per
+          Use <strong>CSV, XLSX, XLS, JSON, JSONL or EML</strong> with one relationship per
           row. Maximum{" "}
           <strong>5 MB, 10,000 relationships and 2,000 entities</strong>.
           Results are saved in this browser. Connected backend sends your reviewed records to the server; On this device keeps processing local.
@@ -137,10 +137,10 @@ export default function UploadSettings() {
           <div>
             <h3>Reports & case notes</h3>
             <p>
-              For pasted English text or .txt files, use{" "}
+              EML email records can be imported directly. For pasted English text or .txt files, use{" "}
               <Link to="/documents">Document Intel</Link>. Local rules extract
               explicit connections and identifiers, plus a summary. PDF scans,
-              images, audio, chat archives and inboxes are not parsed.
+              images, audio and proprietary encrypted chat archives require conversion first.
             </p>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function UploadSettings() {
           className="sr-only"
           type="file"
           aria-label="Choose evidence file"
-          accept=".csv,.xlsx,.xls,.json"
+          accept=".csv,.xlsx,.xls,.json,.jsonl,.eml"
           disabled={busy || parsing}
           onChange={(e) => {
             const f = e.target.files?.[0];
@@ -232,6 +232,7 @@ export default function UploadSettings() {
           <span>CSV</span>
           <span>XLSX / XLS</span>
           <span>JSON</span>
+          <span>JSONL / EML</span>
           <small>Up to 5 MB</small>
         </div>
       </section>

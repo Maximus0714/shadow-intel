@@ -22,7 +22,11 @@ export default defineConfig({
     {
       command:
         "npm run build && npm run preview -- --host 127.0.0.1 --port 4180 --strictPort",
-      env: { API_PROXY_TARGET: "http://127.0.0.1:18000" },
+      env: {
+        API_PROXY_TARGET: "http://127.0.0.1:18000",
+        VITE_SUPABASE_URL: "",
+        VITE_SUPABASE_ANON_KEY: "",
+      },
       url: "http://127.0.0.1:4180",
       reuseExistingServer: false,
       timeout: 120_000,

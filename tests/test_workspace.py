@@ -72,6 +72,18 @@ def test_relationship_aliases_are_canonicalized():
         assert result.json()["records"][0]["rel"] == "FINANCIAL_TRANSFER"
 
 
+def test_entity_resolution_exposes_confidence_and_review_queue():
+    with TestClient(app) as client:
+        result = client.post("/workspace/resolve", json={"mentions": [
+            {"mention_id": "m1", "type": "PERSON", "text": "Rahul Sharma"},
+            {"mention_id": "m2", "type": "PERSON", "text": "R. Sharma"},
+        ]})
+        assert result.status_code == 200, result.text
+        body = result.json()
+        assert body["stats"]["mentions"] == 2
+        assert body["clusters"] or body["review_queue"]
+
+
 def test_frequency_is_strength_not_path_distance():
     graph = GraphStore(fallback=True)
     graph.load_relationships([

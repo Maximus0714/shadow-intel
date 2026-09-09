@@ -17,7 +17,7 @@ import {
 } from "../lib/state/workspace";
 import { PageHeader, ErrorState, Empty } from "../components/UI";
 export default function Reports() {
-  const { mode, cfg, watched, toggleWatch, notify } = useWorkspace();
+  const { mode, cfg, watched, toggleWatch, notify, alertDecisions } = useWorkspace();
   const scope = mode === "demo" ? "demo" : cfg.dataset?.id || "local";
   const key = `xt-notes:${scope}`;
   const legacyKey = `si-notes:${scope}`;
@@ -78,6 +78,7 @@ export default function Reports() {
           state.data!.graph.nodes.find((n) => n.id === id) || { id, name: id },
       ),
       alerts: state.data.alerts,
+      alert_review_decisions: alertDecisions,
       analyst_notes: notes,
       notice:
         "Investigation aid only. Signals require evidence verification and human review.",

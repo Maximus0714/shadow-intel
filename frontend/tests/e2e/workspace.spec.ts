@@ -26,7 +26,7 @@ test("landing opens a functional workspace and saved entities export with notes"
     page.getByRole("link", { name: "X-Tracer home" }).first(),
   ).toBeVisible();
   await page
-    .getByRole("link", { name: "Explore demo", exact: true })
+    .getByRole("link", { name: "Explore the demo", exact: true })
     .first()
     .click();
   await expect(page).toHaveURL(/overview/);

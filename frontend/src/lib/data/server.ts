@@ -1,6 +1,7 @@
 import type { CleanedEdge } from "./upload";
 import type { LocalDataset } from "../analysis/local";
 import { ANALYSIS_VERSION } from "../analysis/local";
+import { supabase } from "../auth";
 
 /** Relative URLs work unchanged in development and behind the deployment proxy. */
 export async function postWorkspace<T>(
@@ -10,9 +11,10 @@ export async function postWorkspace<T>(
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 90000);
   try {
+    const session = supabase ? (await supabase.auth.getSession()).data.session : null;
     const response = await fetch(`/api/workspace/${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}) },
       body: JSON.stringify(body),
       signal: controller.signal,
     });

@@ -13,7 +13,7 @@ import type { LocalDataset } from "../analysis/local";
 import type { CleanedEdge } from "../data/upload";
 import { readDataset, saveDataset } from "./localStorage";
 import { analyzeOnServer } from "../data/server";
-import { useAuth } from "../auth";
+import { supabase, useAuth } from "../auth";
 
 export const samplePlayers: KeyPlayer[] = demoGraph.nodes
   .filter((n) => n.label === "Person")
@@ -100,6 +100,10 @@ interface Workspace {
   notify: (text: string) => void;
   history: InvestigationHistory[];
   reopenInvestigation: (item: InvestigationHistory) => Promise<void>;
+  deleteInvestigation: (id: string) => Promise<void>;
+  cloudStatus: "local" | "syncing" | "synced" | "setup-required";
+  alertDecisions: Record<string, "confirmed" | "dismissed">;
+  setAlertDecision: (key: string, decision: "confirmed" | "dismissed" | "unreviewed") => void;
 }
 export interface InvestigationHistory { id: string; name: string; created: string; engine: "local" | "backend"; nodes: number; edges: number; dataset: LocalDataset; }
 const Context = createContext<Workspace | null>(null);
@@ -137,13 +141,31 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     readMigrated("xt-watchlists", "si-watchlists", {}),
   );
   const [notice, notify] = useState("");
+  const currentDatasetKey = `current:${user?.id || "guest"}`;
   const historyKey = user ? `xt-investigations:${user.id}` : "xt-investigations:guest";
   const [history, setHistory] = useState<InvestigationHistory[]>(() => read(historyKey, []));
+  const [cloudStatus, setCloudStatus] = useState<"local" | "syncing" | "synced" | "setup-required">("local");
   useEffect(() => setHistory(read(historyKey, [])), [historyKey]);
+  useEffect(() => {
+    if (!user || !supabase) { setCloudStatus("local"); return; }
+    let active = true; setCloudStatus("syncing");
+    supabase.from("investigations").select("id,name,created_at,engine,node_count,edge_count,dataset").order("created_at", { ascending: false }).limit(25).then(({ data, error }) => {
+      if (!active) return;
+      if (error) { setCloudStatus("setup-required"); return; }
+      const cloud = (data || []).map((row) => ({ id: row.id, name: row.name, created: row.created_at, engine: row.engine, nodes: row.node_count, edges: row.edge_count, dataset: row.dataset })) as InvestigationHistory[];
+      setHistory((local) => { const merged = [...cloud, ...local.filter((item) => !cloud.some((saved) => saved.id === item.id))].slice(0, 25); try { localStorage.setItem(historyKey, JSON.stringify(merged)); } catch {} return merged; });
+      setCloudStatus("synced");
+    });
+    return () => { active = false; };
+  }, [user?.id, historyKey]);
   const scope = mode === "demo" ? "demo" : dataset?.id || "local";
+  const decisionKey = `xt-alert-decisions:${user?.id || "guest"}:${scope}`;
+  const [alertDecisions, setAlertDecisions] = useState<Record<string, "confirmed" | "dismissed">>(() => read(decisionKey, {}));
+  useEffect(() => setAlertDecisions(read(decisionKey, {})), [decisionKey]);
   useEffect(() => {
     let active = true;
-    readDataset()
+    setReady(false);
+    readDataset(currentDatasetKey)
       .then((d) => {
         if (active) setDataset(d);
       })
@@ -159,7 +181,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [currentDatasetKey]);
   const watched = Array.isArray(watchState[scope]) ? watchState[scope] : [];
   useEffect(() => {
     if (!notice) return;
@@ -206,13 +228,19 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     if (retainId && retainId === dataset?.id) result.id = retainId;
     let saved = true;
     try {
-      await saveDataset(result);
+      await saveDataset(result, currentDatasetKey);
     } catch {
       saved = false;
     }
     setDataset(result);
     const item: InvestigationHistory = { id: result.id, name: result.name, created: result.created, engine, nodes: result.graph.total_nodes, edges: result.graph.total_edges, dataset: result };
     setHistory((prev) => { const next = [item, ...prev.filter((entry) => entry.id !== item.id)].slice(0, 25); try { localStorage.setItem(historyKey, JSON.stringify(next)); } catch {} return next; });
+    if (user && supabase) {
+      setCloudStatus("syncing");
+      const { error } = await supabase.from("investigations").upsert({ id: item.id, user_id: user.id, name: item.name, created_at: item.created, engine: item.engine, node_count: item.nodes, edge_count: item.edges, dataset: item.dataset, updated_at: new Date().toISOString() });
+      if (!error) void supabase.from("audit_events").insert({ user_id: user.id, investigation_id: item.id, action: "investigation_analyzed", detail: { name: item.name, engine: item.engine, nodes: item.nodes, edges: item.edges } });
+      setCloudStatus(error ? "setup-required" : "synced");
+    }
     setMode("local");
     setRevision((n) => n + 1);
     notify(
@@ -221,7 +249,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         : "Analysis ready for this session. Storage is full or unavailable; download a report before closing.",
     );
   };
-  const reopenInvestigation = async (item: InvestigationHistory) => { await saveDataset(item.dataset); setDataset(item.dataset); setMode("local"); setRevision((n) => n + 1); notify(`Reopened ${item.name}.`); };
+  const reopenInvestigation = async (item: InvestigationHistory) => { await saveDataset(item.dataset, currentDatasetKey); setDataset(item.dataset); setMode("local"); setRevision((n) => n + 1); if(user && supabase) void supabase.from("audit_events").insert({ user_id:user.id, investigation_id:item.id, action:"investigation_reopened", detail:{name:item.name} }); notify(`Reopened ${item.name}.`); };
+  const deleteInvestigation = async (id: string) => { setHistory((prev) => { const next = prev.filter((item) => item.id !== id); try { localStorage.setItem(historyKey, JSON.stringify(next)); } catch {} return next; }); if (user && supabase) { await supabase.from("audit_events").insert({ user_id: user.id, investigation_id: id, action: "investigation_deleted", detail: {} }); await supabase.from("investigations").delete().eq("id", id); } notify("Investigation removed from history."); };
+  const setAlertDecision = (key: string, decision: "confirmed" | "dismissed" | "unreviewed") => setAlertDecisions((prev) => { const next = { ...prev }; if (decision === "unreviewed") delete next[key]; else next[key] = decision; try { localStorage.setItem(decisionKey, JSON.stringify(next)); } catch {} if (user && dataset && supabase) void supabase.from("audit_events").insert({ user_id: user.id, investigation_id: dataset.id, action: `alert_${decision}`, detail: { alert_key: key } }); return next; });
   const toggleWatch = (id: string) =>
     setWatchState((prev) => {
       const ids = Array.isArray(prev[scope]) ? prev[scope] : [];
@@ -254,6 +284,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         notify,
         history,
         reopenInvestigation,
+        deleteInvestigation,
+        cloudStatus,
+        alertDecisions,
+        setAlertDecision,
       }}
     >
       {children}

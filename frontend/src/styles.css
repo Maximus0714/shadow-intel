@@ -39,6 +39,31 @@
 .investigation-copy { flex: 1; min-width: 0; }
 .investigation-copy h2 { margin: 0 0 5px; font-size: 16px; }
 .investigation-copy p { margin: 0; color: var(--muted); font-size: 13px; }
+.danger-action { color: #f87171; }
+.timeline-list { display: grid; max-width: 980px; border-top: 1px solid var(--line); }
+.timeline-row { display: grid; grid-template-columns: 42px 180px 1fr auto; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.timeline-marker { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--panel2); color: var(--muted); }
+.timeline-row time { color: var(--muted); font: 12px "Geist Mono", monospace; }
+.timeline-row h2 { margin: 0 0 5px; font-size: 15px; }
+.timeline-row p { display: flex; align-items: center; gap: 7px; margin: 0; }
+.timeline-row small { color: var(--muted); }
+.review-actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
+.review-actions button { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+.review-actions button.active { color: var(--text); border-color: var(--line-strong); background: var(--panel2); }
+.review-actions button.active.danger { color: #f87171; border-color: rgb(248 113 113 / 45%); }
+.identity-review { display: grid; gap: 10px; }
+.resolution-row { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.resolution-row small { display: block; margin-top: 5px; color: var(--muted); }
+.resolution-actions { display: flex; gap: 8px; margin-left: auto; }
+.btn.compact { min-height: 32px; padding: 6px 10px; font-size: .76rem; }
+@media (max-width: 720px) { .timeline-row { grid-template-columns: 36px 1fr; } .timeline-row time, .timeline-row > .tag { grid-column: 2; } .resolution-row { align-items: flex-start; flex-direction: column; } }
+.shared-page { width: min(1100px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 80px; }
+.shared-page > .brand { display: inline-flex; margin-bottom: 72px; }
+.shared-page > h1 { margin: 8px 0; font-size: clamp(38px, 6vw, 72px); letter-spacing: -.05em; }
+.shared-page .metric-grid { margin: 36px 0; }
+.shared-signal { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.shared-signal p { margin: 6px 0; color: var(--muted); }
+.shared-signal small { color: var(--faint); }
 @media (max-width: 720px) { .account-name { display: none; } }
 html[data-theme="dark"] {
   color-scheme: dark;

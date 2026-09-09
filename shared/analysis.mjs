@@ -90,6 +90,23 @@ export function buildDataset(input, name) {
   const directedPairs = new Set(values.map(r => `${r.src}\u0000${r.dst}`));
   for(const r of values) if(directedPairs.has(`${r.dst}\u0000${r.src}`) && compare(r.src,r.dst)<0) flag("Reciprocal relationship",[r.src,r.dst],"Both entities have relationship records pointing to each other. Reciprocal activity can indicate coordination and should be checked against dates and source records.",{pair:[r.src,r.dst],directions:[`${r.src}->${r.dst}`,`${r.dst}->${r.src}`]},0.4);
   for(const [place,owners] of locations) if(owners.size>1) flag("Shared location",[place,...[...owners].sort(compare)],"Multiple people share a location record. This does not establish simultaneous presence.",{location:place,neighbors:[...owners].sort(compare)},0.3);
+  const personDegrees=people.map(id=>({id,degree:neighbors.get(id).size}));
+  const degreeAverage=personDegrees.reduce((sum,item)=>sum+item.degree,0)/Math.max(1,personDegrees.length);
+  const degreeDeviation=Math.sqrt(personDegrees.reduce((sum,item)=>sum+(item.degree-degreeAverage)**2,0)/Math.max(1,personDegrees.length));
+  for(const item of personDegrees) if(item.degree>=3 && item.degree>=degreeAverage+degreeDeviation) flag("Connection hub",[item.id],"This entity connects to substantially more distinct entities than the dataset baseline. Review whether the concentration reflects a coordinator, shared service, or data collection bias.",{degree:item.degree,average:rounded(degreeAverage),threshold:rounded(degreeAverage+degreeDeviation)},0.5);
+  const dated=records.map((r,index)=>({r,index,time:Date.parse(r.date)})).filter(x=>Number.isFinite(x.time)).sort((a,b)=>a.time-b.time||a.index-b.index);
+  const activityByDay=new Map();
+  for(const item of dated){const day=new Date(item.time).toISOString().slice(0,10);for(const id of [item.r.src,item.r.dst]){const key=`${id}\u0000${day}`,bucket=activityByDay.get(key)||{id,day,count:0,relationships:new Set()};bucket.count+=item.r.frequency;bucket.relationships.add(item.r.rel);activityByDay.set(key,bucket);}}
+  const activityValues=[...activityByDay.values()], activityAverage=activityValues.reduce((sum,item)=>sum+item.count,0)/Math.max(1,activityValues.length);
+  for(const item of activityValues) if(item.count>=3 && item.count>=activityAverage*1.5) flag("Activity burst",[item.id],"An entity has a concentrated burst of recorded activity on one day. Compare the date with known events and verify whether aggregation or reporting practices explain the spike.",{date:item.day,activity:item.count,baseline:rounded(activityAverage),relationship_types:[...item.relationships].sort(compare)},0.52);
+  const rapidSeen=new Set();
+  for(let i=0;i<dated.length;i++)for(let j=i+1;j<dated.length;j++){
+    if(dated[j].time-dated[i].time>3*86400000)break;
+    const first=dated[i].r,second=dated[j].r;
+    if(first.rel!=="FINANCIAL_TRANSFER"||second.rel!=="FINANCIAL_TRANSFER"||first.dst!==second.src||first.src===second.dst)continue;
+    const key=JSON.stringify([first.src,first.dst,second.dst]);if(rapidSeen.has(key))continue;rapidSeen.add(key);
+    flag("Rapid transfer chain",[first.src,first.dst,second.dst],"Two financial relationships form a short transfer chain within three days. Verify transaction timestamps, amounts, and account ownership before interpreting movement of funds.",{chain:[first.src,first.dst,second.dst],first_date:first.date,second_date:second.date,window_days:3},0.65);
+  }
   let checks=0; const seen=new Set();
   cycles: for(const a of [...financial.keys()].sort(compare)) for(const b of [...financial.get(a)].sort(compare)) for(const c of [...(financial.get(b)||[])].sort(compare)){
     if(++checks>100000){notes.push("Circular-transfer search reached 100,000 checks; additional loops may exist.");break cycles;}
@@ -99,8 +116,9 @@ export function buildDataset(input, name) {
     flag("Circular transfer links",cycle,"Transfer links form a directed three-entity loop. Verify dates and amounts before interpreting movement of funds.",{cycle:[...cycle,cycle[0]]},0.7);
   }
   if(omitted)notes.push(`${omitted} additional pattern flags omitted by the 200-flag limit.`);
-  notes.push("Pattern coverage: unusual frequency, shared locations and directed three-entity transfer loops. Dates/amounts are retained as supplied, not independently verified. Flags require review; no flags does not establish safety.");
+  notes.push("Pattern coverage: unusual frequency, reciprocal relationships, connection hubs, shared locations, daily activity bursts, rapid transfer chains and directed three-entity transfer loops. Dates/amounts are retained as supplied, not independently verified. Flags require review; no flags does not establish safety.");
+  const timeline=dated.map(({r,index,time})=>({id:`event-${index}`,date:new Date(time).toISOString(),src:r.src,dst:r.dst,rel:r.rel,frequency:r.frequency,amount:r.amount,source_rows:r.source_rows}));
   return {id:crypto.randomUUID(),name,created:new Date().toISOString(),analysis_version:ANALYSIS_VERSION,
     graph:{nodes,edges:records.map((r,i)=>({...r,id:`record-${i}`})),truncated:false,total_nodes:nodes.length,total_edges:records.length},
-    players,communities,details,records,notes,alerts:alerts.sort((a,b)=>b.severity_score-a.severity_score||compare(a.pattern_type,b.pattern_type)||compare(JSON.stringify(a.entities_involved),JSON.stringify(b.entities_involved)))};
+    players,communities,details,records,timeline,notes,alerts:alerts.sort((a,b)=>b.severity_score-a.severity_score||compare(a.pattern_type,b.pattern_type)||compare(JSON.stringify(a.entities_involved),JSON.stringify(b.entities_involved)))};
 }

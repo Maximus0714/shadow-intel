@@ -7,27 +7,31 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react";
 import { getAlerts } from "../lib/data/api";
-import { sampleAlerts, useData, readable } from "../lib/state/workspace";
+import { sampleAlerts, useData, readable, useWorkspace } from "../lib/state/workspace";
 import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 export default function Alerts() {
   const [params] = useSearchParams();
   const entity = params.get("entity");
   const [severity, setSeverity] = useState("all");
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [review, setReview] = useState("all");
+  const { alertDecisions, setAlertDecision } = useWorkspace();
   const state = useData("alerts", getAlerts, {
     flags: sampleAlerts,
     total: sampleAlerts.length,
   });
   const all = state.data?.flags || [];
   const flags = all.filter(
-    (a) =>
-      (!entity || a.entities_involved.includes(entity)) &&
+    (a) => {
+      const key = `${a.pattern_type}:${a.entities_involved.join("|")}`;
+      return (!entity || a.entities_involved.includes(entity)) &&
       (severity === "all" ||
         (severity === "high"
           ? a.severity_score >= 0.7
           : severity === "medium"
             ? a.severity_score >= 0.4 && a.severity_score < 0.7
-            : a.severity_score < 0.4)),
+            : a.severity_score < 0.4)) && (review === "all" || (review === "unreviewed" ? !alertDecisions[key] : alertDecisions[key] === review));
+    },
   );
   return (
     <>
@@ -55,6 +59,7 @@ export default function Alerts() {
             </button>
           ))}
         </div>
+        <select aria-label="Filter by review status" value={review} onChange={(event) => setReview(event.target.value)}><option value="all">All review states</option><option value="unreviewed">Unreviewed</option><option value="confirmed">Relevant</option><option value="dismissed">Dismissed</option></select>
         <span className="muted">{flags.length} signals</span>
       </div>
       {entity && (
@@ -70,6 +75,8 @@ export default function Alerts() {
       ) : flags.length ? (
         <div className="signals-list">
           {flags.map((a, i) => {
+            const alertKey = `${a.pattern_type}:${a.entities_involved.join("|")}`;
+            const decision = alertDecisions[alertKey];
             const level =
               a.severity_score >= 0.7
                 ? "high"
@@ -122,6 +129,7 @@ export default function Alerts() {
                       {JSON.stringify(a.evidence || {}, null, 2)}
                     </pre>
                   )}
+                  <div className="review-actions"><button className={decision === "confirmed" ? "active" : ""} onClick={() => setAlertDecision(alertKey, decision === "confirmed" ? "unreviewed" : "confirmed")}>Relevant</button><button className={decision === "dismissed" ? "active danger" : ""} onClick={() => setAlertDecision(alertKey, decision === "dismissed" ? "unreviewed" : "dismissed")}>Dismiss</button>{decision && <span className="muted">Reviewed</span>}</div>
                 </div>
                 <Link
                   className="icon-button"

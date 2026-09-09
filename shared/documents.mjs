@@ -18,6 +18,14 @@ function analyzeLocalText(text) {
   for (const m of text.matchAll(/\b\d{4}-\d{2}-\d{2}\b/g)) add(m[0], "Date");
   for (const m of text.matchAll(/(?:Rs\.?|INR|USD|\$)\s?[\d,]+(?:\.\d+)?/g))
     add(m[0], "Amount");
+  for (const m of text.matchAll(/\b[A-Z][\w&.-]*(?:\s+[A-Z][\w&.-]*)*\s+(?:Ltd|Limited|LLP|Inc|Corporation|Corp|Company|Enterprises|Traders|Foundation|Association)\b/g))
+    add(m[0], "Organization");
+  for (const m of text.matchAll(/\b(?:at|near|in|from)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})/g))
+    add(m[1], "Location");
+  for (const m of text.matchAll(/\b(?:account|a\/c)\s*(?:number|no\.?|id)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{5,23})\b/gi))
+    add(m[1], "Account");
+  for (const m of text.matchAll(/\b(?:[Oo]peration|[Ee]vent|[Mm]eeting)\s+(?:named\s+|code(?:named)?\s+)?([A-Z][\w-]+(?:\s+[A-Z][\w-]+){0,3})\b/g))
+    add(m[1], "Event");
   const triples = [];
   const sentences = text.match(/[^.!?]+[.!?]*/g)?.map((s) => s.trim()).filter(Boolean) || [text];
   const pattern = /\b([A-Z][a-z]+(?: [A-Z][a-z]+){0,2})\s+(called|emailed|met|paid|transferred to)\s+([A-Z][a-z]+(?: [A-Z][a-z]+){0,2})\b/g;
@@ -45,18 +53,43 @@ function analyzeLocalText(text) {
     i,
     score: terms.filter((t) => s.toLowerCase().includes(t)).length
   })).sort((a, b) => b.score - a.score || a.i - b.i).slice(0, 3).sort((a, b) => a.i - b.i);
+  const people=[...entities.values()].filter(e=>e.type==="Person");
+  const normalizeName=value=>value.toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+  const clusters=new Map();
+  for(const person of people){const key=normalizeName(person.text);const cluster=clusters.get(key)||{canonical_label:person.text,type:"Person",members:[],confidence:1};cluster.members.push(person.text);if(person.text.length>cluster.canonical_label.length)cluster.canonical_label=person.text;clusters.set(key,cluster);}
+  const clusterValues=[...clusters.values()], review_queue=[];
+  for(let i=0;i<clusterValues.length;i++)for(let j=i+1;j<clusterValues.length;j++){
+    const a=normalizeName(clusterValues[i].canonical_label).split(" "),b=normalizeName(clusterValues[j].canonical_label).split(" ");
+    if(a.length<2||b.length<2||a.at(-1)!==b.at(-1)||a[0][0]!==b[0][0])continue;
+    const score=a[0]===b[0]?0.92:(a[0].length===1||b[0].length===1?0.88:0.72);
+    review_queue.push({entity_a:clusterValues[i].canonical_label,entity_b:clusterValues[j].canonical_label,confidence:score,reason:"Matching surname and first-name initial"});
+  }
+  const cueGroups = {
+    high: ["weapon", "explosive", "attack", "kidnap", "murder", "extortion"],
+    moderate: ["threat", "fraud", "ransom", "illegal", "stolen", "suspicious"],
+  };
+  const lower = text.toLowerCase();
+  const matched_cues = [...cueGroups.high, ...cueGroups.moderate].filter((cue) => lower.includes(cue));
+  const highCount = cueGroups.high.filter((cue) => lower.includes(cue)).length;
+  const review_priority = highCount ? "high" : matched_cues.length >= 2 ? "moderate" : "routine";
+  const confidence = review_priority === "high" ? Math.min(0.9, 0.68 + highCount * 0.08) : review_priority === "moderate" ? 0.66 : 0.55;
   return {
     doc_id: "shared-text",
     summary: selected.map((s) => s.s).join(" "),
     entities: [...entities.values()],
     triples,
+    resolution: { clusters: clusterValues, review_queue, method: "Normalized exact matching with initial-and-surname review candidates" },
     classification: {
       method: "Shared English rules and extractive summary v3.0.0",
       sentences: sentences.length,
-      characters: text.length
+      characters: text.length,
+      review_priority,
+      confidence,
+      matched_cues,
+      interpretation: "Keyword-based review prioritization; not a determination of criminality or intent."
     },
     warnings: [
-      "Matches are candidate mentions for review, not verified identities. Rules recognize explicit English name-verb-name statements and formatted identifiers; no generative model or threat classification is used.",
+      "Matches are candidate mentions for review, not verified identities. Rules recognize explicit English name-verb-name statements and formatted identifiers. Review priority is keyword-based triage, not a finding.",
       "Document results are separate from the network. Import relationship rows to build a graph."
     ]
   };

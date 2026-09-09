@@ -8,5 +8,12 @@ These scripts prepare source datasets and evaluate the optional Python NLP pipel
 - `ner_eval.py` — evaluate named-entity extraction.
 
 Run them from the repository root so their relative input and output paths work.
-Use module commands, for example `python -m scripts.ner_eval --gold gold_sample.json`
-or `python -m scripts.caviar_ingest --help`. This resolves backend imports correctly.
+Use module commands, for example `python -m scripts.ner_eval --gold path/to/your_gold.json`
+or `python -m scripts.caviar_ingest --help`. The Python NER evaluator is optional
+and expects spaCy plus a model supplied by the developer.
+
+## Quality evaluation
+
+`node scripts/document_eval.mjs` runs the production shared document extractor
+against `tests/fixtures/document_gold.json` and fails below an F1 score of 0.80.
+CI runs this regression on every push and pull request.
