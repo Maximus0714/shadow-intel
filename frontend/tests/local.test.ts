@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { buildDataset, localPaths } from "../src/lib/local";
-import { analyzeLocalText } from "../src/lib/localDocuments";
-import { cleanRows, detectMapping, parseCsvText } from "../src/lib/upload";
+import { buildDataset, localPaths } from "../src/lib/analysis/local";
+import { analyzeLocalText } from "../src/lib/analysis/localDocuments";
+import { cleanRows, detectMapping, parseCsvText } from "../src/lib/data/upload";
 const parsed = parseCsvText(
   "src,dst,rel,frequency,date,amount\nA,B,FINANCIAL_TRANSFER,1,2026-09-01,100\nB,C,FINANCIAL_TRANSFER,1,2026-09-02,90\nC,A,FINANCIAL_TRANSFER,1,2026-09-03,80\nC,D,CALLED,5,,\nD,Place,REGISTERED_AT,1,,\nE,Place,REGISTERED_AT,1,,\nF,G,CALLED,1,,",
 );
@@ -35,13 +35,12 @@ assert.equal(
 assert.throws(() => buildDataset([], "empty"));
 const doc = analyzeLocalText(
   "Asha Rao called Kabir Shah. Their vehicle is MH12AB1234. Meeting date 2026-09-01.",
-  [],
 );
 assert.equal(doc.triples[0].subject, "Asha Rao");
 assert.equal(doc.triples[0].object, "Kabir Shah");
 assert.ok(doc.entities.some((e) => e.text === "MH12AB1234"));
 assert.equal(
-  analyzeLocalText("No identifiable structured evidence here.", []).triples
+  analyzeLocalText("No identifiable structured evidence here.").triples
     .length,
   0,
 );

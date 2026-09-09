@@ -2,7 +2,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import cytoscape from "cytoscape";
 import cola from "cytoscape-cola";
-import type { FullGraph, FullGraphNode } from "../lib/api";
+import type { FullGraph, FullGraphNode } from "../lib/data/api";
 cytoscape.use(cola);
 export interface GraphHandle {
   fit: () => void;

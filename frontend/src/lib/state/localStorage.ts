@@ -1,4 +1,4 @@
-import type { LocalDataset } from "./local";
+import type { LocalDataset } from "../analysis/local";
 function database(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("x-tracer-evidence", 1);

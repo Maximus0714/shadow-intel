@@ -9,8 +9,8 @@ Match rule: exact (text, type) pair after strip/lower normalization.
 Set --strict-offsets to also require start/end equality.
 
 Usage:
-  python3 ner_eval.py --gold gold_sample.json
-  python3 ner_eval.py --gold gold_sample.json --strict-offsets
+  python3 -m scripts.ner_eval --gold gold_sample.json
+  python3 -m scripts.ner_eval --gold gold_sample.json --strict-offsets
 
 Prints overall P/R/F1, per-source P/R/F1, and per-type P/R/F1.
 """
@@ -18,7 +18,7 @@ import argparse
 import json
 from collections import defaultdict
 
-from nlp_pipeline import CrimeNerPipeline
+from backend.nlp_pipeline import CrimeNerPipeline
 
 
 def norm(e):

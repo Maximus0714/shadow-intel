@@ -6,8 +6,8 @@ import {
   CaretDown,
   WarningCircle,
 } from "@phosphor-icons/react";
-import { getAlerts } from "../lib/api";
-import { sampleAlerts, useData, readable } from "../lib/workspace";
+import { getAlerts } from "../lib/data/api";
+import { sampleAlerts, useData, readable } from "../lib/state/workspace";
 import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 export default function Alerts() {
   const [params] = useSearchParams();

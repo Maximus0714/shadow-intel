@@ -19,9 +19,9 @@ import {
   getPaths,
   type FullGraph,
   type FullGraphNode,
-} from "../lib/api";
-import { demoGraph, demoPaths } from "../lib/demo";
-import { useData, useWorkspace, readable } from "../lib/workspace";
+} from "../lib/data/api";
+import { demoGraph, demoPaths } from "../lib/data/demo";
+import { useData, useWorkspace, readable } from "../lib/state/workspace";
 import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 export default function NetworkExplorer() {
   const [params] = useSearchParams();

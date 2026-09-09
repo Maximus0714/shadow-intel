@@ -31,7 +31,7 @@ Output: {"clusters": [...], "mapping": {mention_id: canonical_id},
          "review_queue": [...], "stats": {...}}
 
 Usage:
-  from entity_resolution import resolve, mentions_from_ner
+  from backend.entity_resolution import resolve, mentions_from_ner
   result = resolve(mentions)
 """
 import re

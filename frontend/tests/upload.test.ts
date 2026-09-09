@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import './local.test';
-import { cleanRows, detectMapping, parseCsvText } from "../src/lib/upload";
-import { demoPaths, demoEgo } from "../src/lib/demo";
+import './order.test';
+import { cleanRows, detectMapping, parseCsvText } from "../src/lib/data/upload";
+import { demoPaths, demoEgo } from "../src/lib/data/demo";
 const parsed = parseCsvText(
   '\uFEFFsrc,dst,note\r\na,b,"two\nlines, and ""quotes"""\r\n',
 );

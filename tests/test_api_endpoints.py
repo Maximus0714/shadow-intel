@@ -1,5 +1,5 @@
 # tests/test_api_endpoints.py
-import api
+import backend.api as api
 
 api.API_KEY = "dev-key-change-me"
 
@@ -56,7 +56,7 @@ def test_upload_override_and_invalid_mapping():
 
 
 def test_ingest_keeps_financial_evidence_and_person_node():
-    from graph_store import GraphStore
+    from backend.graph_store import GraphStore
     from unittest.mock import patch
     store = GraphStore(fallback=True)
     payload = b"src,dst,rel,amount,date\nP1,P2,FINANCIAL_TRANSFER,900,2026-09-08\nP1,P2,FINANCIAL_TRANSFER,900,2026-09-08\nP1,V1,OWNS_VEHICLE,,\n"

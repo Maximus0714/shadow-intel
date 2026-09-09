@@ -7,14 +7,14 @@ import {
   FileText,
   Check,
 } from "@phosphor-icons/react";
-import { getGraphFull, getAlerts } from "../lib/api";
-import { demoGraph } from "../lib/demo";
+import { getGraphFull, getAlerts } from "../lib/data/api";
+import { demoGraph } from "../lib/data/demo";
 import {
   sampleAlerts,
   useWorkspace,
   useData,
   downloadFile,
-} from "../lib/workspace";
+} from "../lib/state/workspace";
 import { PageHeader, ErrorState, Empty } from "../components/UI";
 export default function Reports() {
   const { mode, cfg, watched, toggleWatch, notify } = useWorkspace();
@@ -57,6 +57,7 @@ export default function Reports() {
     const report = {
       title: title.trim() || "Investigation summary",
       generated_by: "X-Tracer",
+      analysis_version: mode === "demo" ? "fictional-demo" : cfg.dataset?.analysis_version || "legacy — reanalysis recommended",
       analysis_methods:
         mode === "local"
           ? cfg.dataset?.notes || []
@@ -66,7 +67,7 @@ export default function Reports() {
       rankings: mode === "local" ? cfg.dataset?.players || [] : [],
       communities: mode === "local" ? cfg.dataset?.communities || [] : [],
       generated_at: new Date().toISOString(),
-      data_mode: mode,
+      data_mode: mode === "demo" ? "demo" : cfg.dataset?.engine || "local",
       scope: state.data.graph.truncated
         ? "Capped graph snapshot"
         : "Loaded graph",
@@ -84,7 +85,7 @@ export default function Reports() {
     const content =
       format === "json"
         ? JSON.stringify(report, null, 2)
-        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${mode}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analysis methods\n${report.analysis_methods.map((n) => `- ${n}`).join("\n")}\n\n## Entity rankings\n${report.rankings.map((p) => `- ${p.name}: influence ${p.influence_score.toFixed(3)}, group ${p.community_id}, structural role ${p.role}`).join("\n") || "See the workspace entity list."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
+        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${report.data_mode}\nAnalysis version: ${report.analysis_version}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analysis methods\n${report.analysis_methods.map((n) => `- ${n}`).join("\n")}\n\n## Entity rankings\n${report.rankings.map((p) => `- ${p.name}: influence ${p.influence_score.toFixed(6)}, Group ${p.community_id + 1}, structural role ${p.role}`).join("\n") || "See the workspace entity list."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
     downloadFile(
       `x-tracer-report.${format}`,
       content,

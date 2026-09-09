@@ -12,12 +12,14 @@ import {
   detectMapping,
   cleanRows,
   type SheetInfo,
-} from "../lib/upload";
-import { useWorkspace } from "../lib/workspace";
+} from "../lib/data/upload";
+import { useWorkspace } from "../lib/state/workspace";
 import { PageHeader, Empty } from "../components/UI";
 import PreviewTable from "../components/PreviewTable";
+import AnalysisLocation from "../components/AnalysisLocation";
+import { ANALYSIS_VERSION } from "../lib/analysis/local";
 export default function UploadSettings() {
-  const { importData, dataset, setMode } = useWorkspace();
+  const { importData, dataset, setMode, engine } = useWorkspace();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [info, setInfo] = useState<SheetInfo | null>(null);
@@ -76,9 +78,10 @@ export default function UploadSettings() {
     <>
       <PageHeader
         title="Every investigation starts somewhere."
-        description="Upload your own records and explore a detailed investigation, entirely on this device."
-        eyebrow="YOUR DATA, LOCAL"
+        description="Upload your records, choose where to analyze them, and explore a detailed investigation."
+        eyebrow="YOUR EVIDENCE"
       />
+      <AnalysisLocation disabled={busy} />
       {dataset && (
         <div className="inline-notice">
           <span>Saved investigation: {dataset.name}</span>
@@ -91,6 +94,13 @@ export default function UploadSettings() {
           >
             Resume investigation
           </button>
+          <button className="btn" disabled={busy} onClick={async()=>{
+            setBusy(true);setError("");
+            try { await importData(dataset.records,dataset.name,dataset.id);navigate("/overview"); }
+            catch(e){setError(e instanceof Error?e.message:String(e));}
+            finally{setBusy(false);}
+          }}>{busy ? "Reanalyzing…" : "Reanalyze saved evidence"}</button>
+          <span>{dataset.analysis_version === ANALYSIS_VERSION ? `Analysis ${ANALYSIS_VERSION}` : "Older calculations: reanalyze to apply matching results. Your notes and watchlist are retained."}</span>
         </div>
       )}
       <section className="panel data-guide">
@@ -99,7 +109,7 @@ export default function UploadSettings() {
           Use <strong>CSV, XLSX, XLS or JSON</strong> with one relationship per
           row. Maximum{" "}
           <strong>5 MB, 10,000 relationships and 2,000 entities</strong>.
-          Processing and saved results stay in this browser.
+          Results are saved in this browser. Connected backend sends your reviewed records to the server; On this device keeps processing local.
         </p>
         <div className="data-guide-grid">
           <div>
@@ -333,7 +343,7 @@ export default function UploadSettings() {
                 disabled={!reviewed || busy || parsing}
                 onClick={send}
               >
-                {busy ? "Analyzing locally…" : "Build network"}{" "}
+                {busy ? (engine === "backend" ? "Analyzing on server…" : "Analyzing locally…") : "Build network"}{" "}
                 <ArrowRight size={17} />
               </button>
             </>

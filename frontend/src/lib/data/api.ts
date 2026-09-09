@@ -1,7 +1,9 @@
-import { localPaths } from "./local";
-import { analyzeLocalText } from "./localDocuments";
+import { localPaths } from "../analysis/local";
+import { analyzeLocalText } from "../analysis/localDocuments";
+import { postWorkspace } from "./server";
 export interface ApiConfig {
-  dataset: import("./local").LocalDataset | null;
+  engine?: "local" | "backend";
+  dataset: import("../analysis/local").LocalDataset | null;
 }
 export interface FullGraphNode {
   id: string;
@@ -141,4 +143,6 @@ export const getEgo = async (
   };
 };
 export const analyzeDocumentText = async (c: ApiConfig, text: string) =>
-  analyzeLocalText(text, c.dataset?.graph.nodes || []);
+  c.engine === "backend"
+    ? postWorkspace<ReturnType<typeof analyzeLocalText>>("documents", { text })
+    : analyzeLocalText(text);

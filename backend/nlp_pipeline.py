@@ -2,7 +2,7 @@
 Criminal-network NER pipeline (source-aware, swappable NER backend).
 
 Usage:
-    from nlp_pipeline import CrimeNerPipeline, PHONE_PATTERNS, SOURCE_CONFIG
+  from backend.nlp_pipeline import CrimeNerPipeline, PHONE_PATTERNS, SOURCE_CONFIG
 
     pipe = CrimeNerPipeline(source="own_dataset")   # or "enron"
     print(pipe.extract("doc1", "Ravi called +919876543210 from MH12AB1234."))

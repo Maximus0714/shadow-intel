@@ -8,9 +8,10 @@ import {
   UploadSimple,
   ArrowUpRight,
 } from "@phosphor-icons/react";
-import { analyzeDocumentText } from "../lib/api";
-import { useWorkspace, downloadFile } from "../lib/workspace";
+import { analyzeDocumentText } from "../lib/data/api";
+import { useWorkspace, downloadFile } from "../lib/state/workspace";
 import { PageHeader, Loading, Empty } from "../components/UI";
+import AnalysisLocation from "../components/AnalysisLocation";
 interface Analysis {
   doc_id: string;
   summary: string;
@@ -47,11 +48,11 @@ const sampleAnalysis: Analysis = {
     { subject: "Mohan Yadav", relation: "REGISTERED_AT", object: "Andheri" },
   ],
   warnings: [
-    "This is a prewritten demonstration. Your own text is analyzed with local rules.",
+    "This is a prewritten demonstration. Your own text is analyzed with rules in your selected location.",
   ],
 };
 export default function Documents() {
-  const { mode, cfg, notify } = useWorkspace();
+  const { mode, cfg, notify, engine } = useWorkspace();
   const [text, setText] = useState("");
   const [result, setResult] = useState<Analysis | null>(null);
   const [error, setError] = useState("");
@@ -97,6 +98,7 @@ export default function Documents() {
           Load example
         </button>
       </PageHeader>
+      <AnalysisLocation disabled={busy} />
       <div className="document-layout">
         <section className="panel document-source">
           <div className="panel-header">
@@ -156,7 +158,7 @@ export default function Documents() {
           {error && (
             <div className="inline-notice warning" role="alert">
               {error}
-              <span>Processed on this device with local extraction rules.</span>
+              <span>{engine === "backend" ? "Submitted to the backend for rule-based extraction." : "Processed on this device with local extraction rules."}</span>
             </div>
           )}
         </section>
@@ -226,7 +228,7 @@ export default function Documents() {
                       </Link>
                     ))
                   ) : (
-                    <Empty body="No identifiers or explicit connections matched the local rules. Try clear English statements such as Asha Rao called Kabir Shah." />
+                    <Empty body="No identifiers or explicit connections matched the extraction rules. Try clear English statements such as Asha Rao called Kabir Shah." />
                   )}
                 </div>
               )}

@@ -45,6 +45,14 @@ const PATTERNS: Record<string, RegExp[]> = {
   date: [/timestamp/i, /^date$/i, /datetime/i],
   amount: [/amount/i, /value/i],
 };
+const RELATIONSHIP_ALIASES: Record<string, string> = {
+  PAID: "FINANCIAL_TRANSFER", PAYMENT: "FINANCIAL_TRANSFER",
+  TRANSFER: "FINANCIAL_TRANSFER", TRANSFERRED: "FINANCIAL_TRANSFER",
+  CALL: "CALLED", CALLED_BY: "CALLED", EMAIL: "EMAILED",
+  "E-MAILED": "EMAILED", COLOCATED: "CO_LOCATED", "CO-LOCATED": "CO_LOCATED",
+  FAMILY: "FAMILY_OF", OWNS: "OWNS_VEHICLE",
+  KNOWS: "ASSOCIATE_OF", LEADS: "ASSOCIATE_OF",
+};
 
 export function detectMapping(
   columns: string[],
@@ -87,10 +95,11 @@ export function cleanRows(
       skipped.push({ row: i + 2, reason: "missing endpoint" });
       return;
     }
-    const rel =
+    let rel =
       ((m.rel ? (r[m.rel] ?? "") : "") || "ASSOCIATE_OF")
         .trim()
         .toUpperCase() || "ASSOCIATE_OF";
+    rel = RELATIONSHIP_ALIASES[rel] ?? rel;
     if (!supported.has(rel)) {
       skipped.push({ row: i + 2, reason: `Unsupported relationship: ${rel}` });
       return;

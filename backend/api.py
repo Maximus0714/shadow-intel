@@ -6,9 +6,9 @@ suspicious_patterns.py) + document intel (doc_intel.py, nlp_pipeline.py)
 as REST endpoints for a React frontend.
 
 Run:
-    uvicorn api:app --reload --port 8000
+    uvicorn backend.api:app --reload --port 8000
     # or
-    python api.py
+    python -m backend.api
 
 Auth: every request (except /, /health, /docs, /redoc, /openapi.json)
 must carry the API key as:
@@ -23,6 +23,7 @@ Config via environment:
     CAVIAR_DIR=out_caviar  ENRON_DIR=out_enron
     ENRON_MAX_EDGES=5000    (Enron *_agg file is ~100MB; cap rows per file)
     EVENT_DATES=1994-04-03  (comma-separated, used by /analytics/alerts)
+    SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY (optional)
 """
 import csv
 import io
@@ -39,7 +40,7 @@ from typing import Any, Dict, List, Optional
 try:
     from dotenv import load_dotenv
 
-    load_dotenv(Path(__file__).resolve().parent / ".env", override=False)
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=False)
 except ImportError:  # dotenv optional — plain env vars still work
     pass
 
@@ -69,8 +70,11 @@ ENRON_DIR = os.getenv("ENRON_DIR", "out_enron")
 ENRON_MAX_EDGES = int(os.getenv("ENRON_MAX_EDGES", "5000"))
 EVENT_DATES = [d.strip() for d in os.getenv("EVENT_DATES", "").split(",")
                if d.strip()]
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 PUBLIC_PATHS = {"/", "/health", "/docs", "/redoc", "/openapi.json",
-                "/openapi.yaml"}
+                "/openapi.yaml", "/workspace/analyze", "/workspace/documents"}
 
 if API_KEY == "dev-key-change-me":
     print("WARNING: running with default API_KEY — set API_KEY env var.",
@@ -229,7 +233,7 @@ _rank_lock = threading.Lock()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global store
-    from graph_store import GraphStore
+    from .graph_store import GraphStore
     if NEO4J_URI:
         store = GraphStore(uri=NEO4J_URI, user=NEO4J_USER,
                            password=NEO4J_PASSWORD)
@@ -268,7 +272,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="X-Tracer Investigation API", version="1.0.0",
               lifespan=lifespan)
+from .workspace import router as workspace_router
+from .request_limits import WorkspaceBodyLimit
+app.include_router(workspace_router)
 app.add_middleware(ApiKeyMiddleware)
+app.add_middleware(WorkspaceBodyLimit)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=FRONTEND_ORIGINS,
@@ -309,7 +317,7 @@ def _ranked() -> list:
     global _ranked_cache
     with _rank_lock:
         if _ranked_cache is None:
-            from analytics import analyze
+            from .analytics import analyze
             _ranked_cache = analyze(_require_store())
         return _ranked_cache
 
@@ -386,7 +394,10 @@ def health():
     ok = store is not None
     return {"status": "ok" if ok else "starting",
             "backend": ("fallback" if getattr(store, "fallback", True)
-                        else "neo4j") if ok else None}
+                        else "neo4j") if ok else None,
+            "supabase": {"configured": bool(SUPABASE_URL and
+                                                (SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY)),
+                         "url": SUPABASE_URL or None}}
 
 
 @app.get("/stats", summary="Node / edge counts")
@@ -562,7 +573,7 @@ def communities():
          summary="Flagged suspicious patterns")
 def alerts(source_dataset: str = Query("combined"),
            event_date: Optional[List[str]] = Query(None)):
-    from suspicious_patterns import detect_all
+    from .suspicious_patterns import detect_all
     dates = event_date if event_date else EVENT_DATES
     try:
         central = _ranked()
@@ -581,7 +592,7 @@ def alerts(source_dataset: str = Query("combined"),
 def search(req: SearchRequest):
     from rapidfuzz import fuzz, process
     try:
-        from entity_resolution import (normalize_phone, normalize_vehicle)
+        from .entity_resolution import (normalize_phone, normalize_vehicle)
     except ImportError:  # light fallback if module missing
         import re
         def normalize_phone(t):
@@ -691,7 +702,7 @@ async def analyze_document(
     summary, classification, triples, entities = "", {}, [], []
 
     try:
-        from doc_intel import DocIntel
+        from .doc_intel import DocIntel
         d = DocIntel(source=source if source in
                      ("own_dataset", "enron") else "own_dataset")
         try:
@@ -712,7 +723,7 @@ async def analyze_document(
         warnings.append(f"doc_intel unavailable: {e}")
 
     try:
-        from nlp_pipeline import CrimeNerPipeline
+        from .nlp_pipeline import CrimeNerPipeline
         pipe = CrimeNerPipeline(source=source if source in
                                 ("own_dataset", "enron") else "own_dataset")
         entities = pipe.extract(doc_id, content)["entities"]
@@ -884,7 +895,7 @@ def entity_paths(a: str, b: str, max_hops: int = Query(3, ge=1, le=5),
 
 def _parse_ingest_upload(filename: str, raw: bytes,
                          sheet: Optional[str], mapping_json: Optional[str] = None):
-    from ingest_preview import (clean_edge_rows, detect_column_mapping,
+    from .ingest_preview import (clean_edge_rows, detect_column_mapping,
                                 parse_upload_file)
     rows_raw, meta = parse_upload_file(filename, raw, sheet)
     if meta["kind"] == "json":
@@ -908,7 +919,7 @@ def _parse_ingest_upload(filename: str, raw: bytes,
             raise ValueError("Mapping must reference columns in the uploaded file.")
         mapping.update(override)
     cleaned, skipped = clean_edge_rows(rows_raw, mapping)
-    from graph_store import EDGE_KIND_MAP
+    from .graph_store import EDGE_KIND_MAP
     unsupported = sorted({row["rel"] for row in cleaned if row["rel"] not in EDGE_KIND_MAP})
     if unsupported:
         raise ValueError("Unsupported relationship types: " + ", ".join(unsupported) + ". Use " + ", ".join(EDGE_KIND_MAP) + ".")
@@ -970,5 +981,5 @@ async def ingest_load(file: UploadFile = File(...),
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("api:app", host="0.0.0.0",
+    uvicorn.run("backend.api:app", host="0.0.0.0",
                 port=int(os.getenv("PORT", "8000")), reload=True)

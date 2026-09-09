@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock
-from graph_store import GraphStore
+from backend.graph_store import GraphStore
 
 
 def test_neo4j_existing_edge_update_is_scoped_to_target():

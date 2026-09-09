@@ -27,7 +27,7 @@ edge with aggregated frequency + merged timestamp list.
 
 Usage:
   # local testing, no database:
-  from graph_store import GraphStore
+  from backend.graph_store import GraphStore
   g = GraphStore(fallback=True)
   g.load_prompt1_outputs(caviar_dir="out_caviar", max_edges_per_file=5000)
   print(g.get_ego_network("caviar:1", depth=1))
@@ -49,6 +49,7 @@ EDGE_KIND_MAP = {  # source :TYPE -> canonical relationship
     "FINANCIAL_TRANSFER": "FINANCIAL_TRANSFER",
     "CO_LOCATED": "CO_LOCATED",
     "ASSOCIATE_OF": "ASSOCIATE_OF",
+    "FAMILY_OF": "FAMILY_OF",
     "OWNS_VEHICLE": "OWNS_VEHICLE",
     "REGISTERED_AT": "REGISTERED_AT",
 }

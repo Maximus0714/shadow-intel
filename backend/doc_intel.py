@@ -6,7 +6,7 @@ dependency/pattern triple extractor). Each stage has a HuggingFace upgrade
 behind a flag — no caller changes needed:
   summarize(..., method="abstractive")  -> facebook/bart-large-cnn
   classify(..., method="zeroshot")      -> facebook/bart-large-mnli
-  (triples stay syntactic; entities come from nlp_pipeline.CrimeNerPipeline)
+  (triples stay syntactic; entities come from backend.nlp_pipeline.CrimeNerPipeline)
 
 Graph mapping: triples use relation verbs mapped to schema edge types
   MET -> ASSOCIATE_OF, CALLED -> CALLED, TRANSFERRED/PAID -> FINANCIAL_TRANSFER
@@ -14,7 +14,7 @@ Graph mapping: triples use relation verbs mapped to schema edge types
 so output rows feed graph_store.load_relationships() directly.
 
 Usage:
-  from doc_intel import DocIntel
+  from backend.doc_intel import DocIntel
   d = DocIntel(source="own_dataset")
   print(d.process("fir102", FIR_TEXT))
 """
@@ -69,7 +69,7 @@ def extractive_summary(text, n=3):
     if len(sents) <= n:
         return " ".join(sents)
     try:
-        from nlp_pipeline import CrimeNerPipeline
+        from .nlp_pipeline import CrimeNerPipeline
         _NER = getattr(extractive_summary, "_ner", None)
         if _NER is None:
             _NER = CrimeNerPipeline(source="own_dataset")

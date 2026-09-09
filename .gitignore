@@ -1,5 +1,9 @@
 # secrets
 .env
+.env.*
+!.env.example
+.DS_Store
+.venv/
 
 # python
 __pycache__/

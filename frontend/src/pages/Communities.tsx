@@ -5,8 +5,8 @@ import {
   ArrowUpRight,
   MagnifyingGlass,
 } from "@phosphor-icons/react";
-import { getCommunities } from "../lib/api";
-import { sampleCommunities, useData } from "../lib/workspace";
+import { getCommunities } from "../lib/data/api";
+import { sampleCommunities, useData } from "../lib/state/workspace";
 import {
   PageHeader,
   Loading,

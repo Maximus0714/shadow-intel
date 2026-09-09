@@ -10,15 +10,16 @@ import {
   BookmarkSimple,
   ArrowRight,
 } from "@phosphor-icons/react";
-import { getStats, getKeyPlayers, getAlerts, getCommunities } from "../lib/api";
+import { getStats, getKeyPlayers, getAlerts, getCommunities } from "../lib/data/api";
 import {
   useWorkspace,
   useData,
   samplePlayers,
   sampleAlerts,
   sampleCommunities,
-} from "../lib/workspace";
-import { demoGraph } from "../lib/demo";
+} from "../lib/state/workspace";
+import { demoGraph } from "../lib/data/demo";
+import { ANALYSIS_VERSION } from "../lib/analysis/local";
 import {
   PageHeader,
   Reveal,
@@ -69,6 +70,7 @@ export default function Overview() {
         </Link>
       </PageHeader>
       {mode === 'demo' && dataset && <div className="inline-notice"><span>Your dataset, {dataset.name}, is saved on this device.</span><button className="btn" onClick={()=>setMode('local')}>Resume my data</button></div>}
+      {mode !== "demo" && dataset?.analysis_version !== ANALYSIS_VERSION && <div className="inline-notice"><span>This saved result uses older calculations. Reanalyze it to get consistent on-device and backend results.</span><Link className="btn" to="/upload">Update analysis</Link></div>}
       {mode === 'local' && dataset && <details className="panel data-guide"><summary>Analysis methods & data coverage</summary>{dataset.notes.map(note=><p key={note}>{note}</p>)}<p>Dataset: {dataset.name}. Imported {new Date(dataset.created).toLocaleString()}. Dates and amounts are preserved in entity dossiers and the JSON report.</p></details>}
       {state.loading ? (
         <Loading />

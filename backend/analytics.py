@@ -7,8 +7,8 @@ GraphStore in NetworkX-fallback mode, then computes per Person node:
   composite influence score, role (leader | bridge | member).
 
 Usage:
-  from analytics import analyze
-  from graph_store import GraphStore
+  from backend.analytics import analyze
+  from backend.graph_store import GraphStore
 
   g = GraphStore(fallback=True)
   g.load_prompt1_outputs(caviar_dir="out_caviar")
@@ -54,6 +54,7 @@ def _nx_person_graph(store):
     if getattr(store, "fallback", False):
         G = store.G
         H = nx.Graph()
+        H.add_nodes_from(pid for (label, pid) in G.nodes if label == "Person")
         for (ls, s), (ld, d), e in G.edges(data=True):
             if ls != "Person" or ld != "Person":
                 continue
@@ -95,7 +96,7 @@ def _node_names(store):
 
 
 def analyze(store, w_degree=0.3, w_between=0.4, w_pagerank=0.3,
-            resolution=1.0, seed=42):
+            resolution=1.0, seed=42, sample_size=None):
     """Full pipeline -> ranked JSON list. Weights need not sum to 1."""
     import networkx as nx
     from community import community_louvain
@@ -105,7 +106,11 @@ def analyze(store, w_degree=0.3, w_between=0.4, w_pagerank=0.3,
         return []
 
     deg = nx.degree_centrality(H)
-    btw = nx.betweenness_centrality(H, weight="weight", seed=seed)
+    # Frequency represents connection strength, not travel distance.
+    for _, _, edge in H.edges(data=True):
+        edge["distance"] = 1 / max(1, edge["weight"])
+    btw = nx.betweenness_centrality(H, weight="distance", seed=seed,
+                                   k=min(sample_size, len(H)) if sample_size else None)
     pr = nx.pagerank(H, weight="weight")
     comm = community_louvain.best_partition(H, weight="weight",
                                             resolution=resolution,
@@ -163,7 +168,7 @@ if __name__ == "__main__":
     if args.explain:
         print(EXPLAINER)
         raise SystemExit
-    from graph_store import GraphStore
+    from .graph_store import GraphStore
     if args.uri:
         g = GraphStore(uri=args.uri, user=args.user,
                        password=args.password)

@@ -1,7 +1,7 @@
 """Upload parse/detect/clean helpers for POST /ingest/preview + /ingest/load.
 
 Pure functions (no FastAPI imports) so they are unit-testable without a server.
-Column synonyms mirror dashboard.js validateUpload + graph_store loaders.
+Column synonyms mirror the legacy dashboard validation + graph store loaders.
 """
 import csv
 import io
@@ -19,6 +19,16 @@ _ROLE_PATTERNS = {
     "amount": [r"amount", r"value", r"\brs\b", r"inr"],
     "node_id": [r"person_id", r"email", r"account_id", r"^id$"],
     "node_label": [r"^label$", r"^name$", r"person_id"],
+}
+
+RELATIONSHIP_ALIASES = {
+    "PAID": "FINANCIAL_TRANSFER", "PAYMENT": "FINANCIAL_TRANSFER",
+    "TRANSFER": "FINANCIAL_TRANSFER", "TRANSFERRED": "FINANCIAL_TRANSFER",
+    "CALL": "CALLED", "CALLED_BY": "CALLED",
+    "EMAIL": "EMAILED", "E-MAILED": "EMAILED",
+    "COLOCATED": "CO_LOCATED", "CO-LOCATED": "CO_LOCATED",
+    "FAMILY": "FAMILY_OF", "OWNS": "OWNS_VEHICLE",
+    "KNOWS": "ASSOCIATE_OF", "LEADS": "ASSOCIATE_OF",
 }
 
 
@@ -63,6 +73,7 @@ def clean_edge_rows(rows, mapping):
             skipped.append({"row": i, "reason": "missing endpoint"})
             continue
         rel = str(r.get(r_key) or "ASSOCIATE_OF").strip().upper() or "ASSOCIATE_OF"
+        rel = RELATIONSHIP_ALIASES.get(rel, rel)
         freq = _to_int_freq(r.get(w_key)) if w_key else 1
         date = str(r.get(d_key) or "").strip() if d_key else ""
         amount = str(r.get(a_key) or "").strip() if a_key else ""

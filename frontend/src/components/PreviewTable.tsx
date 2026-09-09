@@ -1,4 +1,4 @@
-import type { CleanedEdge, SkippedRow } from "../lib/upload";
+import type { CleanedEdge, SkippedRow } from "../lib/data/upload";
 
 interface Props {
   columns: string[];

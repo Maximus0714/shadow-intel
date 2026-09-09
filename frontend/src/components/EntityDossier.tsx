@@ -5,9 +5,9 @@ import {
   ArrowUpRight,
   UsersThree,
 } from "@phosphor-icons/react";
-import { getEntity, type EntityDetail, type FullGraphNode } from "../lib/api";
-import { demoGraph } from "../lib/demo";
-import { useData, useWorkspace } from "../lib/workspace";
+import { getEntity, type EntityDetail, type FullGraphNode } from "../lib/data/api";
+import { demoGraph } from "../lib/data/demo";
+import { useData, useWorkspace } from "../lib/state/workspace";
 import { ErrorState, Loading } from "./UI";
 export default function EntityDossier({
   node,

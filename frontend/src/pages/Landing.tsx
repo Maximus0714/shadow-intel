@@ -18,7 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
 import { Brand, Reveal, ThemeButton } from "../components/UI";
-import { useWorkspace } from "../lib/workspace";
+import { useWorkspace } from "../lib/state/workspace";
 const questions = [
   [
     "What can I investigate?",
@@ -26,7 +26,7 @@ const questions = [
   ],
   [
     "Can I use my own data locally?",
-    "Yes. Upload relationship records to compute your graph, rankings, communities and review flags in your browser. You can also explore a separate fictional demo.",
+    "Yes. Choose On this device for browser analysis, or Connected backend to use the Python analysis service. Both produce graphs, rankings, communities and review flags. A separate fictional demo is available.",
   ],
   [
     "Does an alert mean someone is guilty?",
@@ -38,7 +38,7 @@ const questions = [
   ],
   [
     "Where does my data go?",
-    "Your files are processed on your device. The current dataset is saved in this browser, with local watchlists and notes. Nothing is sent to an analysis server. Clearing site data removes saved investigations.",
+    "Connected backend sends submitted evidence to this website’s server for processing without retaining it. On this device keeps analysis in your browser. Results, watchlists and notes are saved in this browser. Clearing site data removes saved investigations.",
   ],
 ];
 export default function Landing() {
@@ -123,6 +123,9 @@ export default function Landing() {
                 <a className="btn large" href="#platform">
                   Discover the platform <ArrowUpRight size={19} />
                 </a>
+                <Link className="text-link" to="/signin">
+                  Sign in with Google <ArrowRight size={17} />
+                </Link>
               </div>
             </Reveal>
           </div>

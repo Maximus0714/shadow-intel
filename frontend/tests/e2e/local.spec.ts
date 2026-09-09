@@ -12,6 +12,7 @@ test("own data runs locally, persists, exports and stays separate from demo", as
     .first()
     .click();
   await expect(page).toHaveURL(/upload/);
+  await page.getByLabel("Analyze using").selectOption("local");
   await expect(
     page.getByRole("heading", { name: "What can X-Tracer process?" }),
   ).toBeVisible();
@@ -74,6 +75,7 @@ test("custom document text is analyzed without credentials", async ({
   page,
 }) => {
   await page.goto("/documents");
+  await page.getByLabel("Analyze using").selectOption("local");
   await page
     .locator("textarea")
     .fill("Asha Rao called Kabir Shah. Vehicle MH12AB1234 was mentioned.");

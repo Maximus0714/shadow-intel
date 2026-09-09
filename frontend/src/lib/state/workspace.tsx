@@ -7,11 +7,12 @@ import {
   useMemo,
   type ReactNode,
 } from "react";
-import { type ApiConfig, type KeyPlayer, type AlertFlag } from "./api";
-import { demoGraph } from "./demo";
-import type { LocalDataset } from "./local";
-import type { CleanedEdge } from "./upload";
+import { type ApiConfig, type KeyPlayer, type AlertFlag } from "../data/api";
+import { demoGraph } from "../data/demo";
+import type { LocalDataset } from "../analysis/local";
+import type { CleanedEdge } from "../data/upload";
 import { readDataset, saveDataset } from "./localStorage";
+import { analyzeOnServer } from "../data/server";
 
 export const samplePlayers: KeyPlayer[] = demoGraph.nodes
   .filter((n) => n.label === "Person")
@@ -82,12 +83,14 @@ export const sampleCommunities: Community[] = [
 });
 
 interface Workspace {
+  engine: "local" | "backend";
+  setEngine: (engine: "local" | "backend") => void;
   mode: "demo" | "local";
   setMode: (mode: "demo" | "local") => void;
   cfg: ApiConfig;
   dataset: LocalDataset | null;
   ready: boolean;
-  importData: (records: CleanedEdge[], name: string) => Promise<void>;
+  importData: (records: CleanedEdge[], name: string, retainId?: string) => Promise<void>;
   revision: number;
   refresh: () => void;
   watched: string[];
@@ -110,7 +113,16 @@ function readMigrated<T>(key: string, legacyKey: string, fallback: T): T {
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [dataset, setDataset] = useState<LocalDataset | null>(null);
   const [ready, setReady] = useState(false);
-  const cfg = useMemo(() => ({ dataset }), [dataset]);
+  const [engine, setEngineState] = useState<"local" | "backend">(() =>
+    read<string>("xt-engine", "backend") === "local" ? "local" : "backend",
+  );
+  const setEngine = (value: "local" | "backend") => {
+    setEngineState(value);
+    try {
+      localStorage.setItem("xt-engine", JSON.stringify(value));
+    } catch {}
+  };
+  const cfg = useMemo(() => ({ dataset, engine }), [dataset, engine]);
   const [mode, setModeState] = useState<"demo" | "local">(() => {
     const m = readMigrated<string>("xt-mode", "si-mode", "demo");
     return m === "demo" ? "demo" : "local";
@@ -153,29 +165,37 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("si-mode");
     } catch {}
   };
-  const importData = async (records: CleanedEdge[], name: string) => {
-    const worker = new Worker(
-      new URL("./analysis.worker.ts", import.meta.url),
-      { type: "module" },
-    );
-    const result = await new Promise<LocalDataset>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        worker.terminate();
-        reject(new Error("Analysis timed out. Try a smaller dataset."));
-      }, 60000);
-      worker.onmessage = ({ data }) => {
-        clearTimeout(timeout);
-        worker.terminate();
-        if (data.error) reject(new Error(data.error));
-        else resolve(data.dataset);
-      };
-      worker.onerror = () => {
-        clearTimeout(timeout);
-        worker.terminate();
-        reject(new Error("Local analysis failed. Try a smaller dataset."));
-      };
-      worker.postMessage({ records, name });
-    });
+  const importData = async (records: CleanedEdge[], name: string, retainId?: string) => {
+    const result =
+      engine === "backend"
+        ? await analyzeOnServer(records, name)
+        : await (async () => {
+            const worker = new Worker(
+              new URL("../analysis/analysis.worker.ts", import.meta.url),
+              { type: "module" },
+            );
+            return await new Promise<LocalDataset>((resolve, reject) => {
+              const timeout = setTimeout(() => {
+                worker.terminate();
+                reject(new Error("Analysis timed out. Try a smaller dataset."));
+      }, 80000);
+              worker.onmessage = ({ data }) => {
+                clearTimeout(timeout);
+                worker.terminate();
+                if (data.error) reject(new Error(data.error));
+                else resolve(data.dataset);
+              };
+              worker.onerror = () => {
+                clearTimeout(timeout);
+                worker.terminate();
+                reject(
+                  new Error("Local analysis failed. Try a smaller dataset."),
+                );
+              };
+              worker.postMessage({ records, name });
+            });
+          })();
+    if (retainId && retainId === dataset?.id) result.id = retainId;
     let saved = true;
     try {
       await saveDataset(result);
@@ -187,7 +207,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setRevision((n) => n + 1);
     notify(
       saved
-        ? "Your local investigation is ready and saved on this device."
+        ? "Your investigation is ready and saved in this browser."
         : "Analysis ready for this session. Storage is full or unavailable; download a report before closing.",
     );
   };
@@ -207,6 +227,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        engine,
+        setEngine,
         mode,
         setMode,
         cfg,

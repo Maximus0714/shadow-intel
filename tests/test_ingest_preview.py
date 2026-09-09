@@ -1,5 +1,5 @@
 # tests/test_ingest_preview.py
-from ingest_preview import detect_column_mapping, clean_edge_rows
+from backend.ingest_preview import detect_column_mapping, clean_edge_rows
 
 
 def test_detect_caviar_style_headers():
@@ -55,7 +55,7 @@ def test_nonfinite_frequency_and_transaction_preservation():
 
 def test_invalid_json_shapes_are_validation_errors():
     import pytest
-    from ingest_preview import parse_upload_file
+    from backend.ingest_preview import parse_upload_file
     for content in [b"[]", b"null", b'{"edges": [null]}', b'{"edges": {"src":"a"}}']:
         with pytest.raises(ValueError):
             parse_upload_file("bad.json", content)
@@ -65,7 +65,7 @@ def test_workbook_missing_sheet_and_corrupt_file():
     import io
     import pytest
     from openpyxl import Workbook
-    from ingest_preview import parse_upload_file
+    from backend.ingest_preview import parse_upload_file
     out = io.BytesIO()
     wb = Workbook()
     wb.active.append(["src", "dst"])
@@ -78,6 +78,6 @@ def test_workbook_missing_sheet_and_corrupt_file():
 
 
 def test_csv_header_whitespace_matches_client_mapping():
-    from ingest_preview import parse_upload_file
+    from backend.ingest_preview import parse_upload_file
     rows, _ = parse_upload_file("data.csv", b" src , dst \na,b\n")
     assert rows == [{"src": "a", "dst": "b"}]

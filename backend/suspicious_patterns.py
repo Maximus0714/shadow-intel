@@ -18,8 +18,8 @@ only when the source actually has FINANCIAL_TRANSFER edges — Enron/Caviar
 have none, so those checks skip gracefully (reported in `skipped`).
 
 Usage:
-  from graph_store import GraphStore
-  from suspicious_patterns import detect_all
+  from backend.graph_store import GraphStore
+  from backend.suspicious_patterns import detect_all
   g = GraphStore(uri="bolt://localhost:7687", user="neo4j",
                  password="SIH-Hackathon-2026")
   flags, skipped = detect_all(g, event_dates=["1994-04-03"],
@@ -294,7 +294,7 @@ def check_outliers(store, source):
             tx_vol[s] += a
             tx_vol[d] += a
     try:
-        from analytics import analyze
+        from .analytics import analyze
         central = {r["person_id"]: r["centrality_breakdown"]
                    for r in analyze(store)}
     except Exception:
@@ -350,7 +350,7 @@ def detect_all(store, source_dataset="caviar", event_dates=(),
     skipped["structuring"] = sk
     if central is None and criminal_records:
         try:
-            from analytics import analyze
+            from .analytics import analyze
             central = analyze(store)
         except Exception:
             central = []
@@ -369,7 +369,7 @@ def detect_all(store, source_dataset="caviar", event_dates=(),
 
 if __name__ == "__main__":
     import json
-    from graph_store import GraphStore
+    from .graph_store import GraphStore
     g = GraphStore(uri="bolt://localhost:7687", user="neo4j",
                    password="SIH-Hackathon-2026")
     flags, skipped = detect_all(

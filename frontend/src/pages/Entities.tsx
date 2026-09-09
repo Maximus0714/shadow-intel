@@ -16,11 +16,12 @@ import {
   getKeyPlayers,
   searchEntities,
   type FullGraphNode,
-} from "../lib/api";
-import { demoGraph } from "../lib/demo";
-import { samplePlayers, useData, useWorkspace } from "../lib/workspace";
+} from "../lib/data/api";
+import { demoGraph } from "../lib/data/demo";
+import { samplePlayers, useData, useWorkspace } from "../lib/state/workspace";
 import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 import EntityDossier from "../components/EntityDossier";
+import { orderEntities, type EntitySort } from "../lib/data/entityOrder";
 export default function Entities() {
   const { id } = useParams();
   const [params] = useSearchParams();
@@ -29,6 +30,10 @@ export default function Entities() {
   const [query, setQuery] = useState(params.get("q") || "");
   const [type, setType] = useState("all");
   const [savedOnly, setSavedOnly] = useState(false);
+  const [role, setRole] = useState("all");
+  const [community, setCommunity] = useState("all");
+  const [sort, setSort] = useState<EntitySort>("influence");
+  const [direction, setDirection] = useState<"asc" | "desc">("desc");
   const [hits, setHits] = useState<FullGraphNode[] | null>(null);
   const [searchError, setSearchError] = useState("");
   const [searching, setSearching] = useState(false);
@@ -79,15 +84,23 @@ export default function Entities() {
       clearTimeout(timer);
     };
   }, [query, mode, cfg]);
-  const nodes = (hits || state.data?.nodes || []).filter(
+  const ranked = new Map(state.data?.players.map(p=>[p.person_id,p]));
+  const allNodes = (hits || state.data?.nodes || []).map(n=>{
+    const p = ranked.get(n.id);
+    return {...n,role:p?.role??n.role,community_id:p?.community_id??n.community_id,influence_score:p?.influence_score??n.influence_score};
+  });
+  const nodes = orderEntities(allNodes.filter(
     (n) =>
       (mode === "local" && query.trim() && hits
         ? true
         : !query.trim() ||
           `${n.name} ${n.id}`.toLowerCase().includes(query.toLowerCase())) &&
       (type === "all" || n.label === type) &&
+      (role === "all" || (n.role || "unranked") === role) &&
+      (community === "all" || (n.community_id == null ? "ungrouped" : String(n.community_id)) === community) &&
       (!savedOnly || watched.includes(n.id)),
-  );
+  ), sort, direction);
+  const currentPage = Math.min(page, Math.max(1, Math.ceil(nodes.length / 15)));
   const selected = id
     ? state.data?.nodes.find((n) => n.id === id) || {
         id,
@@ -141,6 +154,24 @@ export default function Entities() {
             Watchlist
           </button>
         </div>
+        <div className="entity-controls">
+          <label className="field"><span>Role</span><select aria-label="Filter by role" value={role} onChange={e=>{setRole(e.target.value);setPage(1);}}>
+            <option value="all">All roles</option><option value="leader">Leader</option><option value="bridge">Bridge</option><option value="member">Member</option><option value="unranked">Unranked</option>
+          </select></label>
+          <label className="field"><span>Community</span><select aria-label="Filter by community" value={community} onChange={e=>{setCommunity(e.target.value);setPage(1);}}>
+            <option value="all">All communities</option>
+            {[...new Set(state.data?.nodes.map(n=>ranked.get(n.id)?.community_id??n.community_id).filter((c):c is number=>c!=null))].sort((a,b)=>a-b).map(c=><option key={c} value={c}>Group {c+1}</option>)}
+            <option value="ungrouped">Not grouped</option>
+          </select></label>
+          <label className="field"><span>Order by</span><select aria-label="Order entities by" value={sort} onChange={e=>{setSort(e.target.value as EntitySort);setPage(1);}}>
+            <option value="influence">Influence</option><option value="role">Role</option><option value="community">Community</option><option value="name">Name</option>
+          </select></label>
+          <label className="field"><span>Direction</span><select aria-label="Sort direction" value={direction} onChange={e=>{setDirection(e.target.value as "asc"|"desc");setPage(1);}}>
+            <option value="asc">Ascending</option><option value="desc">Descending</option>
+          </select></label>
+          <button className="btn" onClick={()=>{setRole("all");setCommunity("all");setType("all");setSavedOnly(false);setQuery("");setSort("influence");setDirection("desc");setPage(1);}}>Reset filters</button>
+        </div>
+        <p className="helper">Role order: member → bridge → leader. Unranked values stay last. Ordering applies to all matching results before pagination.</p>
         {state.loading || searching ? (
           <Loading />
         ) : state.error || searchError ? (
@@ -165,7 +196,7 @@ export default function Entities() {
                   </tr>
                 </thead>
                 <tbody>
-                  {nodes.slice((page - 1) * 15, page * 15).map((n) => {
+                  {nodes.slice((currentPage - 1) * 15, currentPage * 15).map((n) => {
                     const p = state.data?.players.find(
                       (p) => p.person_id === n.id,
                     );
@@ -202,7 +233,7 @@ export default function Entities() {
                         </td>
                         <td className="mono">
                           {(p?.influence_score ?? n.influence_score)?.toFixed(
-                            2,
+                            4,
                           ) || "N/A"}
                         </td>
                         <td>
@@ -242,18 +273,18 @@ export default function Entities() {
               <div>
                 <button
                   className="btn small"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
+                  disabled={currentPage === 1}
+                  onClick={() => setPage(currentPage - 1)}
                 >
                   Previous
                 </button>
                 <span>
-                  {page} / {Math.ceil(nodes.length / 15)}
+                  {currentPage} / {Math.ceil(nodes.length / 15)}
                 </span>
                 <button
                   className="btn small"
-                  disabled={page * 15 >= nodes.length}
-                  onClick={() => setPage((p) => p + 1)}
+                  disabled={currentPage * 15 >= nodes.length}
+                  onClick={() => setPage(currentPage + 1)}
                 >
                   Next
                 </button>

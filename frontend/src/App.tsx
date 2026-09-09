@@ -28,7 +28,8 @@ import {
   CaretRight,
 } from "@phosphor-icons/react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
-import { WorkspaceProvider, useWorkspace } from "./lib/workspace";
+import { WorkspaceProvider, useWorkspace } from "./lib/state/workspace";
+import { AuthProvider, useAuth } from "./lib/auth";
 import { Brand, ThemeButton, Loading } from "./components/UI";
 import Landing from "./pages/Landing";
 const Overview = lazy(() => import("./pages/Overview"));
@@ -39,6 +40,7 @@ const Documents = lazy(() => import("./pages/Documents"));
 const UploadSettings = lazy(() => import("./pages/UploadSettings"));
 const Communities = lazy(() => import("./pages/Communities"));
 const Reports = lazy(() => import("./pages/Reports"));
+const SignIn = lazy(() => import("./pages/SignIn"));
 const nav = [
   { to: "/overview", label: "Overview", icon: House },
   { to: "/network", label: "Network Explorer", icon: Graph },
@@ -58,6 +60,7 @@ function RouteReset() {
 }
 function WorkspaceLayout() {
   const { mode, setMode, notice, watched, dataset, ready } = useWorkspace();
+  const { user, loading, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [menu, setMenu] = useState(false);
@@ -81,6 +84,10 @@ function WorkspaceLayout() {
     (location.pathname === "/upload"
       ? "Upload your data"
       : "Workspace");
+  if (loading) return <Loading label="Restoring your account" />;
+  if (!user) return <Navigate to="/signin" state={{ from: location.pathname }} replace />;
+  const displayName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Investigator";
+  const initials = displayName.split(/\s+/).map((part: string) => part[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -173,18 +180,16 @@ function WorkspaceLayout() {
             <kbd>↵</kbd>
           </form>
           <ThemeButton />
-          <span className="analyst-avatar" title="Local analyst workspace">
-            AN
-          </span>
+          <button className="analyst-avatar account-avatar" title={`${displayName} — sign out`} onClick={() => void signOut()}>{user.user_metadata?.avatar_url ? <img src={user.user_metadata.avatar_url} alt="" /> : initials}</button>
         </header>
         <div className={`mode-strip ${mode}`}>
           <span>
             <span className="status-dot" />
-            {mode === "demo" ? "Demo workspace" : "Local workspace"}
+            {mode === "demo" ? "Demo workspace" : dataset?.engine === "backend" ? "Backend analysis" : "Local workspace"}
             <span className="mode-detail">
               {mode === "demo"
                 ? "Explore freely with fictional investigation data."
-                : "Analyzed on this device. Your data stays local."}
+                : dataset?.engine === "backend" ? "Analyzed by the server. Results saved in this browser." : "Analyzed on this device. Your data stays local."}
             </span>
           </span>
           {mode === "demo" ? (
@@ -235,10 +240,12 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <IconContext.Provider value={{ weight: "regular", size: 20 }}>
         <BrowserRouter>
+          <AuthProvider>
           <WorkspaceProvider>
             <RouteReset />
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/signin" element={<SignIn />} />
               <Route element={<WorkspaceLayout />}>
                 <Route path="/overview" element={<Overview />} />
                 <Route path="/network" element={<NetworkExplorer />} />
@@ -264,6 +271,7 @@ export default function App() {
               </Route>
             </Routes>
           </WorkspaceProvider>
+          </AuthProvider>
         </BrowserRouter>
       </IconContext.Provider>
     </MotionConfig>

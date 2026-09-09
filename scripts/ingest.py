@@ -39,8 +39,8 @@ cannot be populated — the source files contain none of those attributes.
 They are kept as documented extension points in the Neo4j DDL comments only.
 
 Usage:
-  python ingest.py --caviar-dir CAVIAR --emails-csv emails.csv --out out [--sample-emails 20000]
-  python ingest.py ... --full   # parse all 517k email rows (slow, ~GB RAM for JSON)
+  python scripts/ingest.py --caviar-dir CAVIAR --emails-csv emails.csv --out out [--sample-emails 20000]
+  python scripts/ingest.py ... --full   # parse all 517k email rows (slow, ~GB RAM for JSON)
 
 Outputs (in --out):
   nodes_person.csv, nodes_email_account.csv, nodes_email_message.csv,
