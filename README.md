@@ -31,6 +31,13 @@ Open `http://localhost:4179`. Nginx serves the website and forwards
 The backend port is not published. No user API key is needed. Stop with
 `docker compose down`. Set `WEB_PORT` to change the published port.
 
+The workspace now includes **AI & Evidence Proof**: case-local Isolation Forest
+activity ranking and salted evidence fingerprints anchored in real Ethereum
+development-chain transactions. Docker starts the internal Geth node and persists
+its ledger in `evidence-chain`. Do not delete that volume if you need existing
+receipts. This is a single-node prototype, not a public blockchain deployment.
+See [the feature explanation, PDF comparison and hackathon demo script](docs/ai-blockchain-presentation.md).
+
 For a clean rebuild after changing dependencies or Docker files:
 
 ```sh
@@ -68,9 +75,13 @@ Production build: `npm run build`; local preview: `npm run preview`.
 
 Choose **Add your own data** to paste English transcripts, arguments, articles or case notes. The default text flow extracts candidate relationships on the backend and lets you exclude incorrect links before building a network. Source sentences, line numbers, unresolved statements and standalone identifiers are retained. You can also upload TXT, MD, SRT or VTT transcripts, or switch to **Data file** for CSV, XLSX and relationship JSON with column mapping.
 
+Before graph creation, backend entity resolution compares names and normalized identifiers and presents likely duplicate identities for investigator review. Shared phones, vehicles and accounts strengthen a suggestion. Nothing is merged automatically: the investigator approves a pair and chooses the canonical name, while the discarded alias remains attached to the source record as provenance.
+
 Files support up to **20 MB**, text extraction up to **500,000 characters**, and graphs up to **10,000 relationships / 2,000 entities**. Convert legacy XLS files to XLSX. Audio and scanned documents need transcription first. Extraction uses bounded English rules, so it cannot promise full understanding of arbitrary prose. It does not infer ambiguous pronouns; negated and uncertain statements remain unlinked. Explicit speaker-label “I” statements are supported.
 
 All upload parsing, cleaning, extraction, rankings, community detection, pattern analysis, neighbourhood expansion and path searches run on FastAPI. The browser displays and filters server results, saves snapshots and exports reports. There is no browser analysis switch or silent fallback. Path searches operate on the visible graph, preserving relationship/community filters and node limits.
+
+The network explorer uses directed arrows, relationship-specific colours and line styles, optional edge labels, multi-select relationship filters and one-relationship quick views. Pattern review uses evidence-aware rules for robust contact-volume outliers, explicit threats and repeated conflict, shared phones/accounts/vehicles, address concentration, same-type reciprocal flows, cross-community activity, time-linked transfer cycles and repeated similar-value payments. These are triage leads, not predictions of guilt.
 
 Supported context includes payment history with dates, currency and references; vehicle ownership versus use; phones, accounts, employers, addresses and visits. Original structured columns are retained in relationship attributes. Currency totals are not combined or converted. Graph paths are capped at 10 results and 50,000 search expansions, with truncation reported.
 

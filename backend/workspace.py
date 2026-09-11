@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/workspace", tags=["Browser workspace"])
 slots = threading.BoundedSemaphore(2)
+intelligence_slots = threading.BoundedSemaphore(2)
 RUNNER = Path(__file__).resolve().parent.parent / "shared" / "runner.mjs"
 
 
@@ -84,6 +85,72 @@ def build_snapshot(body: Evidence):
 @router.post("/analyze")
 def analyze_evidence(body: Evidence):
     return build_snapshot(body)
+
+
+class ResolutionApproval(BaseModel):
+    candidate_id: str = Field(min_length=16, max_length=16)
+    keep: str = Field(min_length=1, max_length=255)
+
+
+class ResolutionRequest(BaseModel):
+    evidence: Evidence
+    approvals: list[ResolutionApproval] = Field(default_factory=list, max_length=5000)
+
+
+@router.post("/resolution/candidates")
+def entity_resolution_candidates(body: Evidence):
+    from .entity_resolution import resolution_candidates
+    return resolution_candidates([record.model_dump() for record in body.records])
+
+
+@router.post("/resolution/apply")
+def apply_entity_resolution(body: ResolutionRequest):
+    from .entity_resolution import apply_reviewed_resolution
+    records = [record.model_dump() for record in body.evidence.records]
+    approvals = [approval.model_dump() for approval in body.approvals]
+    return apply_reviewed_resolution(records, approvals)
+
+
+@router.post("/intelligence")
+def intelligence(body: Evidence):
+    from .intelligence import make_brief
+    if not intelligence_slots.acquire(blocking=False):
+        raise HTTPException(503, "AI analysis is busy. Please retry shortly.")
+    try:
+        return make_brief(build_snapshot(body))
+    finally:
+        intelligence_slots.release()
+
+
+from .evidence_proof import Receipt, anchor, lookup, verify
+
+
+class ProofRequest(BaseModel):
+    evidence: Evidence
+    receipt: Receipt
+    simulate_tamper: bool = False
+
+
+class ProofLookupRequest(BaseModel):
+    key: str = Field(min_length=1, max_length=100)
+
+
+@router.post("/proof/anchor")
+def anchor_evidence(body: Evidence):
+    return anchor(body.model_dump())
+
+
+@router.post("/proof/verify")
+def verify_evidence(body: ProofRequest):
+    evidence = body.evidence.model_dump()
+    if body.simulate_tamper:
+        evidence["records"][0]["frequency"] += 1
+    return {**verify(evidence, body.receipt), "simulated": body.simulate_tamper}
+
+
+@router.post("/proof/lookup")
+def lookup_evidence_proof(body: ProofLookupRequest):
+    return lookup(body.key)
 
 
 class Document(BaseModel):

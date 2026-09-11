@@ -3,6 +3,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import cytoscape from "cytoscape";
 import cola from "cytoscape-cola";
 import type { FullGraph, FullGraphNode } from "../lib/data/api";
+import { relationshipVisual } from "../lib/data/relationships";
 cytoscape.use(cola);
 export interface GraphHandle {
   fit: () => void;
@@ -13,6 +14,7 @@ interface Props {
   graph: FullGraph;
   layout: string;
   labels: boolean;
+  connectionLabels: boolean;
   selected: string | null;
   paths: string[][];
   onSelect: (node: FullGraphNode | null) => void;
@@ -25,7 +27,7 @@ const colors: Record<string, string> = {
   Phone: "#8eab99",
 };
 const GraphCanvas = forwardRef<GraphHandle, Props>(function GraphCanvas(
-  { graph, layout, labels, selected, paths, onSelect },
+  { graph, layout, labels, connectionLabels, selected, paths, onSelect },
   ref,
 ) {
   const container = useRef<HTMLDivElement>(null);
@@ -68,7 +70,10 @@ const GraphCanvas = forwardRef<GraphHandle, Props>(function GraphCanvas(
       elements: [
         ...graph.nodes.map((n) => ({ data: { ...n } })),
         ...graph.edges.map((e) => ({
-          data: { ...e, source: e.src, target: e.dst },
+          data: { ...e, source: e.src, target: e.dst,
+            relLabel: relationshipVisual(e.rel).label,
+            edgeColor: relationshipVisual(e.rel).color,
+            edgeLine: relationshipVisual(e.rel).line },
         })),
       ],
       minZoom: 0.15,
@@ -101,12 +106,21 @@ const GraphCanvas = forwardRef<GraphHandle, Props>(function GraphCanvas(
           selector: "edge",
           style: {
             width: 1.2,
-            "line-color": "#777b83",
-            opacity: 0.42,
+            "line-color": "data(edgeColor)",
+            "line-style": (e: cytoscape.EdgeSingular) =>
+              e.data("edgeLine") as "solid" | "dashed" | "dotted",
+            opacity: 0.72,
             "curve-style": "bezier",
-            "target-arrow-shape": (e: cytoscape.EdgeSingular) =>
-              e.data("rel") === "FINANCIAL_TRANSFER" ? "triangle" : "none",
-            "target-arrow-color": "#a4a7ad",
+            "target-arrow-shape": "triangle",
+            "target-arrow-color": "data(edgeColor)",
+            "arrow-scale": 0.82,
+            label: connectionLabels ? "data(relLabel)" : "",
+            "font-size": 8,
+            "font-family": "Geist Mono",
+            "text-rotation": "autorotate",
+            "text-margin-y": -8,
+            "text-background-opacity": 0.86,
+            "text-background-padding": "2px",
           },
         },
         {
@@ -195,6 +209,19 @@ const GraphCanvas = forwardRef<GraphHandle, Props>(function GraphCanvas(
   useEffect(() => {
     const c = core.current;
     if (!c) return;
+    const vars = getComputedStyle(document.documentElement);
+    c.style()
+      .selector("edge")
+      .style({
+        label: connectionLabels ? "data(relLabel)" : "",
+        "text-background-color": vars.getPropertyValue("--well").trim(),
+        color: vars.getPropertyValue("--text").trim(),
+      })
+      .update();
+  }, [connectionLabels, graph]);
+  useEffect(() => {
+    const c = core.current;
+    if (!c) return;
     c.elements().removeClass("selected path faded");
     if (paths.length) {
       c.elements().addClass("faded");
@@ -222,7 +249,7 @@ const GraphCanvas = forwardRef<GraphHandle, Props>(function GraphCanvas(
       className="graph-canvas"
       ref={container}
       role="img"
-      aria-label="Interactive entity network. Use the entity selector to open a dossier with your keyboard."
+      aria-label="Directed entity network. Arrowheads point from the source entity to the target entity. Use the entity selector to open a dossier with your keyboard."
     />
   );
 });

@@ -16,6 +16,9 @@ services:
     build:
       context: .
       target: api
+    depends_on:
+      chain:
+        condition: service_healthy
     environment:
       API_KEY: ${API_KEY:-dev-key-change-me}
       FRONTEND_ORIGINS: http://localhost:4179,http://127.0.0.1:4179
@@ -25,6 +28,25 @@ services:
       SUPABASE_URL: ${SUPABASE_URL:-}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      EVIDENCE_RPC_URL: http://chain:8545
     expose:
       - "8000"
     restart: unless-stopped
+
+  # Internal, local Ethereum demo chain. Never expose its unlocked accounts publicly.
+  chain:
+    image: ethereum/client-go:v1.16.7@sha256:fc5cee2ac93202d72af2eacaffbd17a43f6d9316032dc5f3c67663f91d43aa5f
+    command: ["--dev", "--datadir", "/data/gethnode", "--http", "--http.addr", "0.0.0.0", "--http.api", "eth,net,web3", "--http.vhosts", "chain,localhost", "--ipcdisable", "--cache", "128", "--verbosity", "2"]
+    volumes:
+      - evidence-chain:/data
+    restart: unless-stopped
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD", "geth", "attach", "--exec", "eth.blockNumber", "http://localhost:8545"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
+
+volumes:
+  evidence-chain:

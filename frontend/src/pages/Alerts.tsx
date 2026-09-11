@@ -40,7 +40,8 @@ export default function Alerts() {
         <ShieldCheck size={24} />
         <p>
           These are investigation leads, not conclusions. Every flag needs
-          context and human review.
+          context and human review. Priority reflects rule strength and evidence
+          completeness; it is not a probability of wrongdoing.
         </p>
       </div>
       <div className="filter-bar">
@@ -90,7 +91,7 @@ export default function Alerts() {
                       {level} priority
                     </span>
                     <span className="mono">
-                      {a.severity_score.toFixed(2)} score
+                      {Math.round(a.severity_score * 100)}/100 review priority
                     </span>
                     <span className="source-label">
                       {a.source_dataset || "Connected dataset"}
@@ -118,9 +119,7 @@ export default function Alerts() {
                     View supporting evidence <CaretDown size={16} />
                   </button>
                   {expanded === i && (
-                    <pre className="evidence-json">
-                      {JSON.stringify(a.evidence || {}, null, 2)}
-                    </pre>
+                    <EvidenceFacts evidence={a.evidence || {}} />
                   )}
                 </div>
                 <Link
@@ -142,4 +141,14 @@ export default function Alerts() {
       )}
     </>
   );
+}
+
+function EvidenceFacts({evidence}:{evidence:Record<string,unknown>}) {
+  const format=(value:unknown):string=>{
+    if(Array.isArray(value))return value.map(item=>typeof item==="object"?JSON.stringify(item):String(item)).join(" · ");
+    if(value&&typeof value==="object")return Object.entries(value as Record<string,unknown>).map(([key,item])=>`${readable(key)}: ${String(item)}`).join(" · ");
+    if(typeof value==="number"&&!Number.isInteger(value))return value.toFixed(2);
+    return String(value??"Not supplied");
+  };
+  return <dl className="evidence-facts">{Object.entries(evidence).map(([key,value])=><div key={key}><dt>{readable(key)}</dt><dd>{format(value)}</dd></div>)}</dl>;
 }

@@ -1,0 +1,45 @@
+SYNTHETIC TRAINING DATA — NOT A REAL CASE
+Case title: Meridian Transit / narrative extraction demonstration
+
+The following notes are fictional and are intended to test X-Tracer's natural-language evidence workflow. They combine an incident report, a meeting transcript, an email summary, and informal investigator notes. Some statements are deliberately uncertain so that the application can show unresolved context instead of silently inventing a relationship.
+
+INCIDENT REPORT — 03 August 2026
+
+Asha Rao called Kabir Shah eight times from phone +91-9000000001. The call log places the conversation near Dockside Warehouse in Mumbai. Asha Rao works for Northstar Trading, and Kabir Shah is listed as a contractor for Northstar Trading. The report says that Asha asked Kabir to confirm a delivery vehicle, but the exact vehicle registration was not captured in this entry.
+
+On 04 August 2026, Asha Rao paid Kabir Shah INR 125000 from account acct-asha-01. The bank reference was TX-SYN-001. The payment description says “advance for materials”. Kabir Shah used vehicle MH12AB1234 to visit Dockside Warehouse four times that afternoon. Meera Sen was also seen at Dockside Warehouse twice. The report does not establish whether Meera travelled in the same vehicle.
+
+MEETING TRANSCRIPT — 05 August 2026
+
+Dev Shah: I emailed Northstar Trading the invoice yesterday.
+Meera Sen: The invoice was received by Northstar Trading, but I do not know who approved it.
+Dev Shah: Kabir Shah argued with me about the missing INR 42000 payment.
+Kabir Shah: I sent the delivery confirmation to Asha Rao after the call.
+
+The transcript records that Dev Shah emailed Northstar Trading six times. Dev Shah transferred INR 42000 to Northstar Trading on 05 August 2026. The account used by Dev Shah is not known. The phrase “they met later” appears in the transcript without identifying who “they” refers to.
+
+FIELD NOTE — 06 to 09 August 2026
+
+Meera Sen met Asha Rao at Riverside Cafe on 06 August 2026. Both people were recorded at the location for approximately thirty minutes. Asha Rao and Kabir Shah know each other through Northstar Trading. This is an investigator's description, not a confirmed database relationship.
+
+On 07 August 2026, Kabir Shah led a delivery to Dockside Warehouse. Vehicle MH12AB1234 was seen at the warehouse again. On 09 August 2026, Farah Khan transferred INR 18000 to Kabir Shah using a digital wallet. The transaction reference was TX-SYN-002. Farah Khan called Meera Sen four times that day and used account acct-farah-01.
+
+VEHICLE AND ACCOUNT REGISTER — 10 August 2026
+
+Asha Rao owns vehicle DL01AB1234. Vehicle DL01AB1234 is registered at Riverside Garage. Kabir Shah used telephone number +91-9000000003. Meera Sen has telephone number +91-9000000002. Northstar Trading has account acct-northstar-01. The records do not state whether acct-northstar-01 is a current or closed account.
+
+EMAIL SUMMARY — 11 to 13 August 2026
+
+Asha Rao emailed Kabir Shah nine times. One email included attachment invoice-8841.pdf. Kabir Shah called Meera Sen seven times. Meera Sen contacted Northstar Trading four times. Farah Khan is associated with Asha Rao, but the source does not explain whether this means a personal or business association.
+
+On 12 August 2026, Dev Shah threatened Kabir Shah during an argument according to one witness statement. This allegation needs human verification. On 13 August 2026, Kabir Shah transferred INR 9500 to Northstar Trading. Northstar Trading transferred INR 7000 to Farah Khan on the same day. The payment method for both transactions was not recorded.
+
+FINAL OBSERVATION — 14 to 18 August 2026
+
+Vehicle MH12AB1234 visited Riverside Garage twice on 14 August 2026. Asha Rao and Meera Sen are family according to an unverified note. Dev Shah works for Northstar Trading. Kabir Shah is associated with Northstar Trading and has used vehicle MH12AB1234. Meera Sen used MH12AB1234 twice on 16 August 2026, although the reason is unknown.
+
+On 16 August 2026, Farah Khan visited Riverside Cafe. On 17 August 2026, Asha Rao paid Kabir Shah INR 21000 using reference TX-SYN-003. On 18 August 2026, Kabir Shah paid Asha Rao INR 5000 using reference TX-SYN-004. Asha Rao visited Dockside Warehouse twice on 18 August 2026.
+
+REVIEW INSTRUCTION
+
+These notes are synthetic. Extract only relationships supported by explicit wording. Keep source sentences and dates with each relationship. Mark uncertain, attributed, or pronoun-only statements for investigator review. Do not infer that a payment is unlawful or that a person is guilty.

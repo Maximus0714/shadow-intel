@@ -62,7 +62,49 @@ def test_louvain_partition_modularity_and_input_order_invariance():
 
 
 def test_opposite_direction_cycles_are_not_collapsed():
-    rows = [{"src": a, "dst": b, "rel": "FINANCIAL_TRANSFER"}
-            for a, b in [("A", "B"), ("B", "C"), ("C", "A"), ("A", "C"), ("C", "B"), ("B", "A")]]
+    rows = [{"src": a, "dst": b, "rel": "FINANCIAL_TRANSFER",
+             "date": f"2026-09-0{i + 1}", "amount": "100", "currency": "INR"}
+            for i, (a, b) in enumerate([("A", "B"), ("B", "C"), ("C", "A"), ("A", "C"), ("C", "B"), ("B", "A")])]
     flags = snapshot(rows)["alerts"]
-    assert len([f for f in flags if f["pattern_type"] == "Circular transfer links"]) == 2
+    assert len([f for f in flags if f["pattern_type"] == "Time-linked transfer cycle"]) == 2
+
+
+def test_alerts_do_not_pair_unrelated_relationship_types_as_reciprocal():
+    flags = snapshot([
+        {"src": "A", "dst": "B", "rel": "CALLED", "frequency": 4},
+        {"src": "B", "dst": "A", "rel": "FINANCIAL_TRANSFER", "frequency": 4},
+    ])["alerts"]
+    assert not any(flag["pattern_type"] in {"Two-way communication", "Two-way fund movement"}
+                   for flag in flags)
+
+
+def test_incident_patterns_require_concrete_supporting_signals():
+    rows = [
+        {"src": "A", "dst": "Phone-1", "rel": "HAS_PHONE"},
+        {"src": "B", "dst": "Phone-1", "rel": "HAS_PHONE"},
+        {"src": "C", "dst": "D", "rel": "THREATENED", "evidence": "C threatened D."},
+        {"src": "E", "dst": "Address-1", "rel": "REGISTERED_AT"},
+        {"src": "F", "dst": "Address-1", "rel": "REGISTERED_AT"},
+        {"src": "A", "dst": "C", "rel": "CALLED", "frequency": 1},
+        {"src": "B", "dst": "D", "rel": "CALLED", "frequency": 1},
+        {"src": "A", "dst": "D", "rel": "CALLED", "frequency": 9},
+    ]
+    flags = snapshot(rows)["alerts"]
+    types = {flag["pattern_type"] for flag in flags}
+    assert {"Shared phone", "Reported threat", "High-volume contact"} <= types
+    assert "Address concentration" not in types
+    high_volume = next(flag for flag in flags if flag["pattern_type"] == "High-volume contact")
+    assert high_volume["evidence"]["case_median"] == 1
+    assert high_volume["evidence"]["review_threshold"] == 6
+
+
+def test_repeated_similar_payments_require_amount_currency_and_time_window():
+    supported = [{"src": "A", "dst": "B", "rel": "FINANCIAL_TRANSFER",
+                  "amount": str(amount), "currency": "INR", "date": f"2026-09-{day:02d}"}
+                 for amount, day in [(1000, 1), (1050, 4), (990, 9)]]
+    assert any(flag["pattern_type"] == "Repeated similar-value payments"
+               for flag in snapshot(supported)["alerts"])
+    outside_window = [{**row, "date": date} for row, date in zip(
+        supported, ["2026-01-01", "2026-03-01", "2026-05-01"])]
+    assert not any(flag["pattern_type"] == "Repeated similar-value payments"
+                   for flag in snapshot(outside_window)["alerts"])

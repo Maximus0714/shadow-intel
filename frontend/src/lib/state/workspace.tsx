@@ -27,37 +27,30 @@ export const samplePlayers: KeyPlayer[] = demoGraph.nodes
   .sort((a, b) => b.influence_score - a.influence_score);
 export const sampleAlerts: AlertFlag[] = [
   {
-    pattern_type: "Cross-community connection",
-    severity_score: 0.76,
+    pattern_type: "Cross-group financial activity",
+    severity_score: 0.59,
     entities_involved: ["P01", "P05"],
     plain_language_explanation:
-      "A financial connection links two otherwise separate groups. Review the source records to understand the relationship.",
+      "A financial link connects two graph communities and has at least three recorded interactions. Communities are structural estimates, so confirm operational context.",
     source_dataset: "Fictional demonstration",
     evidence: {
       relationship: "FINANCIAL_TRANSFER",
       from: "P01",
       to: "P05",
       frequency: 5,
-      note: "Illustrative flag, not a finding about real people.",
+      source_group: 0,
+      target_group: 1,
+      note: "Fictional demonstration. The flag is a review lead, not a conclusion.",
     },
   },
   {
-    pattern_type: "Bridge entity",
-    severity_score: 0.56,
+    pattern_type: "Cross-group communication",
+    severity_score: 0.5,
     entities_involved: ["P02", "P07"],
     plain_language_explanation:
-      "These entities connect multiple parts of the sample network. Their communication may help explain how the groups interact.",
+      "A communication link connects two graph communities and has three recorded interactions. Review dates and source records before interpreting coordination.",
     source_dataset: "Fictional demonstration",
     evidence: { relationship: "CALLED", frequency: 3 },
-  },
-  {
-    pattern_type: "Shared location",
-    severity_score: 0.28,
-    entities_involved: ["P01", "L1"],
-    plain_language_explanation:
-      "A location record is linked to an entity of interest. Verify its date and provenance before drawing conclusions.",
-    source_dataset: "Fictional demonstration",
-    evidence: { relationship: "REGISTERED_AT", location: "Andheri" },
   },
 ];
 export interface Community {

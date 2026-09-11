@@ -35,6 +35,7 @@ Usage:
   result = resolve(mentions)
 """
 import re
+import hashlib
 from collections import defaultdict
 from rapidfuzz import fuzz
 
@@ -279,6 +280,192 @@ def mentions_from_ner(ner_outputs):
                              "source": doc.get("source", ""),
                              "attrs": attrs})
     return mentions
+
+
+# ---------------------------------------------- investigator review flow ---
+TYPE_MAP = {
+    "person": "PERSON", "organization": "ORGANIZATION",
+    "vehicle": "VEHICLE_NUMBER", "phone": "PHONE_NUMBER",
+    "account": "ACCOUNT", "location": "LOCATION", "email": "EMAIL",
+    "date": "DATE", "amount": "MONEY_AMOUNT",
+}
+
+LINKED_ATTRIBUTE = {
+    "HAS_PHONE": "phone", "HAS_ACCOUNT": "account",
+    "OWNS_VEHICLE": "vehicle", "USED_VEHICLE": "vehicle",
+}
+
+
+def _resolver_type(value):
+    return TYPE_MAP.get(str(value or "Person").strip().lower(),
+                        str(value or "PERSON").strip().upper())
+
+
+def mentions_from_records(records):
+    """Build one mention per distinct graph label and attach strong identifiers.
+
+    Relationship records are the common representation shared by natural-language
+    and tabular uploads, so entity resolution behaves identically for both.
+    """
+    entities = {}
+    linked = defaultdict(lambda: defaultdict(set))
+    for record in records:
+        src = str(record.get("src", "")).strip()
+        dst = str(record.get("dst", "")).strip()
+        src_type = _resolver_type(record.get("src_type", "Person"))
+        dst_type = _resolver_type(record.get("dst_type", "Person"))
+        if src:
+            entities[(src_type, src)] = True
+        if dst:
+            entities[(dst_type, dst)] = True
+        rel = str(record.get("rel", "")).strip().upper()
+        attr = LINKED_ATTRIBUTE.get(rel)
+        if attr and src and dst:
+            linked[(src_type, src)][attr].add(dst)
+        for endpoint, endpoint_type in ((src, src_type), (dst, dst_type)):
+            for key, value in (record.get("attributes") or {}).items():
+                key = str(key).strip().lower()
+                if key in {"phone", "phone_number", "vehicle", "vehicle_number",
+                           "account", "account_number", "email"} and value:
+                    linked[(endpoint_type, endpoint)][key].add(str(value).strip())
+
+    mentions = []
+    for index, (entity_type, text) in enumerate(sorted(entities), 1):
+        attrs = {}
+        for key, values in linked[(entity_type, text)].items():
+            if values:
+                normalized_key = {"phone_number": "phone",
+                                  "vehicle_number": "vehicle",
+                                  "account_number": "account"}.get(key, key)
+                attrs[normalized_key] = sorted(values)[0]
+        mentions.append({"mention_id": f"m{index:05d}", "type": entity_type,
+                         "text": text, "doc_id": "upload", "source": "upload",
+                         "attrs": attrs})
+    return mentions
+
+
+def review_candidates(mentions, minimum=REVIEW_THRESHOLD):
+    """Return suggested pairs without merging any identity automatically."""
+    by_id = {m["mention_id"]: m for m in mentions}
+    index = defaultdict(list)
+    attr_index = defaultdict(list)
+    for mention in mentions:
+        for key in block_keys(mention):
+            index[key].append(mention["mention_id"])
+        for key, value in norm_attrs(mention.get("attrs")).items():
+            attr_index[(mention["type"], key, value)].append(mention["mention_id"])
+
+    pairs = set()
+    for ids in list(index.values()) + list(attr_index.values()):
+        for i in range(len(ids)):
+            for j in range(i + 1, len(ids)):
+                pairs.add(tuple(sorted((ids[i], ids[j]))))
+
+    candidates = []
+    for left_id, right_id in sorted(pairs):
+        left, right = by_id[left_id], by_id[right_id]
+        if left["text"] == right["text"]:
+            continue
+        score, detail = pair_score(left, right)
+        if score < minimum:
+            continue
+        raw_id = "\x1f".join((left["type"], left["text"], right["text"]))
+        candidate_id = hashlib.sha256(raw_id.encode("utf-8")).hexdigest()[:16]
+        reasons = []
+        if detail.get("base", 0) == 1:
+            reasons.append("Same normalized identifier or name")
+        elif detail.get("base", 0) >= minimum:
+            reasons.append("Similar name spelling or initials")
+        for attr in detail.get("shared_attrs", []):
+            reasons.append(f"Shared {attr.replace('_', ' ')}")
+        if detail.get("conflicting_attrs"):
+            reasons.append("Conflicting phone reduced confidence")
+        candidates.append({
+            "candidate_id": candidate_id,
+            "entity_a": left["text"], "entity_b": right["text"],
+            "entity_type_key": left["type"],
+            "entity_type": left["type"].replace("_NUMBER", "").title(),
+            "score": round(score, 3), "reasons": reasons,
+            "detail": detail,
+        })
+    candidates.sort(key=lambda item: (-item["score"], item["entity_a"], item["entity_b"]))
+    return candidates
+
+
+def resolution_candidates(records, minimum=REVIEW_THRESHOLD):
+    mentions = mentions_from_records(records)
+    candidates = review_candidates(mentions, minimum)
+    return {"candidates": candidates,
+            "stats": {"entities_scanned": len(mentions),
+                      "candidates_found": len(candidates),
+                      "automatic_merges": 0}}
+
+
+def apply_reviewed_resolution(records, approvals):
+    """Apply only reviewed candidate pairs and keep aliases in provenance."""
+    proposed = resolution_candidates(records)["candidates"]
+    by_candidate = {item["candidate_id"]: item for item in proposed}
+    parent = {}
+
+    def find(value):
+        parent.setdefault(value, value)
+        if parent[value] != value:
+            parent[value] = find(parent[value])
+        return parent[value]
+
+    def union(left, right):
+        left_root, right_root = find(left), find(right)
+        if left_root != right_root:
+            parent[right_root] = left_root
+
+    accepted, preferences = [], defaultdict(list)
+    for approval in approvals:
+        candidate = by_candidate.get(approval.get("candidate_id"))
+        if not candidate:
+            continue
+        keep = approval.get("keep")
+        if keep not in {candidate["entity_a"], candidate["entity_b"]}:
+            continue
+        left = (candidate["entity_type_key"], candidate["entity_a"])
+        right = (candidate["entity_type_key"], candidate["entity_b"])
+        union(left, right)
+        preferences[find(left)].append((candidate["entity_type_key"], keep))
+        accepted.append(candidate)
+
+    components = defaultdict(set)
+    for value in list(parent):
+        components[find(value)].add(value)
+    canonical = {}
+    for root, members in components.items():
+        votes = []
+        for old_root, chosen in list(preferences.items()):
+            if find(old_root) == root:
+                votes.extend(chosen)
+        winner = max(members, key=lambda value: (votes.count(value),
+                                                  len(value[1]), value[1].lower()))
+        for member in members:
+            canonical[member] = winner
+
+    resolved = []
+    for source in records:
+        record = dict(source)
+        record["attributes"] = dict(source.get("attributes") or {})
+        for endpoint in ("src", "dst"):
+            original = str(record.get(endpoint, ""))
+            endpoint_type = _resolver_type(record.get(f"{endpoint}_type", "Person"))
+            replacement = canonical.get((endpoint_type, original),
+                                        (endpoint_type, original))[1]
+            if replacement != original:
+                if len(record["attributes"]) >= 30:
+                    record["attributes"] = dict(list(record["attributes"].items())[:29])
+                record["attributes"][f"resolved_{endpoint}_alias"] = original
+                record[endpoint] = replacement
+        resolved.append(record)
+    aliases = [{"entity_type": alias[0], "alias": alias[1], "canonical": value[1]}
+               for alias, value in sorted(canonical.items()) if alias != value]
+    return {"records": resolved, "applied": len(accepted), "aliases": aliases,
+            "stats": {"approved_pairs": len(accepted),
+                      "entities_merged": len(aliases)}}
 
 
 # ------------------------------------------------------- worked example ---

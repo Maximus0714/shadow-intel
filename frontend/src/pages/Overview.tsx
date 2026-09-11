@@ -6,9 +6,6 @@ import {
   ShieldWarning,
   SquaresFour,
   UploadSimple,
-  FileText,
-  BookmarkSimple,
-  ArrowRight,
 } from "@phosphor-icons/react";
 import { getStats, getKeyPlayers, getAlerts, getCommunities } from "../lib/data/api";
 import {
@@ -20,6 +17,7 @@ import {
 } from "../lib/state/workspace";
 import { demoGraph } from "../lib/data/demo";
 import { ANALYSIS_VERSION } from "../lib/analysis/local";
+import { formatInfluence } from "../lib/data/entityOrder";
 import {
   PageHeader,
   Reveal,
@@ -28,7 +26,7 @@ import {
   Empty,
 } from "../components/UI";
 export default function Overview() {
-  const { mode, watched, dataset, setMode } = useWorkspace();
+  const { mode, dataset, setMode } = useWorkspace();
   const state = useData(
     "overview",
     async (c) => {
@@ -56,13 +54,12 @@ export default function Overview() {
   return (
     <>
       <PageHeader
-        title="A clearer view of your investigation."
+        title="Investigation overview"
         description={
           mode === "demo"
-            ? "Welcome to Copper Ledger. Get to know the tools with a fictional investigation."
-            : "Your evidence, connections and next steps, all in one place."
+            ? "Explore the tools using fictional investigation data."
+            : "Review your evidence, connections and signals."
         }
-        eyebrow="YOUR WORKSPACE"
       >
         <Link className="btn primary" to="/upload">
           <UploadSimple size={18} />
@@ -125,29 +122,6 @@ export default function Overview() {
                 </Reveal>
               ))}
             </div>
-            <Reveal className="workspace-spotlight">
-              <div>
-                <span className="overline">START WITH THE CONNECTIONS</span>
-                <h2>
-                  See what the records
-                  <br />
-                  can’t show on their own.
-                </h2>
-                <p>
-                  Move through the network. Follow an entity, trace a path, or
-                  uncover a group.
-                </p>
-                <Link className="btn primary" to="/network">
-                  Open Network Explorer <ArrowRight size={17} />
-                </Link>
-              </div>
-              <img
-                src="/images/connections.webp"
-                width="1536"
-                height="1024"
-                alt="Interconnected silver threads"
-              />
-            </Reveal>
             <div className="overview-columns">
               <section className="panel">
                 <div className="panel-header">
@@ -173,11 +147,11 @@ export default function Overview() {
                       <span>
                         <strong>{p.name}</strong>
                         <small>
-                          {p.person_id} · {p.role}
+                          {p.role}
                         </small>
                       </span>
                       <span className="row-score">
-                        {p.influence_score.toFixed(2)}
+                        {formatInfluence(p.influence_score)}
                         <small>influence</small>
                       </span>
                       <ArrowUpRight size={16} />
@@ -216,42 +190,6 @@ export default function Overview() {
           </>
         )
       )}
-      <section>
-        <div className="section-title">
-          <h2>Keep your investigation moving.</h2>
-        </div>
-        <div className="quick-actions">
-          {[
-            {
-              icon: UploadSimple,
-              title: "Bring in new data",
-              body: "Preview and import relationships.",
-              to: "/upload",
-            },
-            {
-              icon: FileText,
-              title: "Read between the lines",
-              body: "Analyze a report or statement.",
-              to: "/documents",
-            },
-            {
-              icon: BookmarkSimple,
-              title: "Build your case notes",
-              body: `${watched.length} saved entities in your watchlist.`,
-              to: "/reports",
-            },
-          ].map((x) => (
-            <Link className="quick-action" to={x.to} key={x.title}>
-              <x.icon size={24} weight="thin" />
-              <div>
-                <h3>{x.title}</h3>
-                <p>{x.body}</p>
-              </div>
-              <ArrowUpRight size={18} />
-            </Link>
-          ))}
-        </div>
-      </section>
     </>
   );
 }

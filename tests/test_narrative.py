@@ -36,6 +36,26 @@ def test_payments_same_sentence_are_not_combined_or_misassigned():
     assert len(extract_narrative('Asha Rao paid Kabir Shah INR 100. Asha Rao paid Kabir Shah INR 100.')['records']) == 2
 
 
+def test_unstructured_paragraph_active_passive_pronouns_and_context():
+    text = ('On 12 September 2026, Asha Rao called Kabir Shah at 8:30 pm. '
+            'She then sent INR 25,000 to Meera Sen via NEFT, reference TXN-77881. '
+            'Vehicle DL01AB1234 was driven by Kabir Shah. Kabir Shah went to New Delhi. '
+            'A payment of USD 300 was made from Dev Shah to Asha Rao. '
+            'Meera Sen may know Dev Shah.')
+    result = extract_narrative(text)
+    facts = {(r['src'], r['rel'], r['dst']) for r in result['records']}
+    assert ('Asha Rao', 'CALLED', 'Kabir Shah') in facts
+    assert ('Asha Rao', 'FINANCIAL_TRANSFER', 'Meera Sen') in facts
+    assert ('Kabir Shah', 'USED_VEHICLE', 'DL01AB1234') in facts
+    assert ('Kabir Shah', 'VISITED', 'New Delhi') in facts
+    assert ('Dev Shah', 'FINANCIAL_TRANSFER', 'Asha Rao') in facts
+    transfer = next(r for r in result['records'] if r['dst'] == 'Meera Sen')
+    assert transfer['amount'] == '25000' and transfer['currency'] == 'INR'
+    assert transfer['attributes']['channel_or_method'] == 'NEFT'
+    assert transfer['attributes']['reference'] == 'TXN-77881'
+    assert any('may know' in row['text'] for row in result['unresolved'])
+
+
 def test_server_file_preview_metadata_and_path_filters():
     with TestClient(app) as client:
         response = client.post('/workspace/file', data={'kind':'data'}, files={'file':('case.csv',b'src,dst,rel,currency,amount,date,note\nA,B,PAID,INR,50,2026-09-01,receipt','text/csv')})

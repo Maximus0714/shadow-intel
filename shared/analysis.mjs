@@ -1,5 +1,5 @@
 import { compare, rounded, metrics } from "./metrics.mjs";
-export const ANALYSIS_VERSION = "3.0.0";
+export const ANALYSIS_VERSION = "3.1.0";
 const supported = new Set(["CALLED", "EMAILED", "CONTACTED", "ASSOCIATE_OF", "FINANCIAL_TRANSFER", "FAMILY_OF", "CO_LOCATED", "OWNS_VEHICLE", "REGISTERED_AT", "USED_VEHICLE", "HAS_PHONE", "HAS_ACCOUNT", "VISITED", "WORKS_FOR", "ARGUED_WITH", "THREATENED"]);
 const relationshipAliases = new Map([
   ["PAID", "FINANCIAL_TRANSFER"], ["PAYMENT", "FINANCIAL_TRANSFER"],
@@ -82,31 +82,68 @@ export function buildDataset(input, name) {
     if(alerts.length>=200){omitted++;return;}
     alerts.push({pattern_type,entities_involved,plain_language_explanation,evidence,severity_score,source_dataset:name});
   };
-  // Aggregate frequency per directed pair/type before comparing relationships.
-  const ties=new Map(), locations=new Map(), financial=new Map();
+  // Aggregate directed ties while retaining the source records used by each rule.
+  const ties=new Map(), locations=new Map(), financial=new Map(), financialRows=new Map(), assetLinks=new Map();
   for(const r of records){
     const key=JSON.stringify([r.src,r.dst,r.rel]);
-    const tie=ties.get(key)||{src:r.src,dst:r.dst,rel:r.rel,frequency:0}; tie.frequency+=r.frequency;ties.set(key,tie);
+    const tie=ties.get(key)||{src:r.src,dst:r.dst,rel:r.rel,frequency:0,records:[]}; tie.frequency+=r.frequency;tie.records.push(r);ties.set(key,tie);
     if(r.rel==="REGISTERED_AT"){if(!locations.has(r.dst))locations.set(r.dst,new Set());locations.get(r.dst).add(r.src);}
-    if(r.rel==="FINANCIAL_TRANSFER"){if(!financial.has(r.src))financial.set(r.src,new Set());financial.get(r.src).add(r.dst);}
+    if(r.rel==="FINANCIAL_TRANSFER"){
+      if(!financial.has(r.src))financial.set(r.src,new Set());financial.get(r.src).add(r.dst);
+      const pair=`${r.src}\u0000${r.dst}`;if(!financialRows.has(pair))financialRows.set(pair,[]);financialRows.get(pair).push(r);
+    }
+    if(["HAS_PHONE","HAS_ACCOUNT","OWNS_VEHICLE","USED_VEHICLE"].includes(r.rel) && labels.get(r.src)==="Person"){
+      const asset=assetLinks.get(r.dst)||{people:new Set(),relationships:new Set()};asset.people.add(r.src);asset.relationships.add(r.rel);assetLinks.set(r.dst,asset);
+    }
   }
-  const values=[...ties.values()], average=values.reduce((s,r)=>s+r.frequency,0)/values.length;
-  const deviation=Math.sqrt(values.reduce((s,r)=>s+(r.frequency-average)**2,0)/values.length);
-  const frequencyThreshold = Math.max(1, average + 1.5 * deviation);
-  for(const r of values) if(r.frequency>frequencyThreshold || (r.frequency>=2 && r.frequency>=average*1.5)) flag("Unusual frequency",[r.src,r.dst],"Relationship frequency is materially above the dataset baseline. Review timing, source reliability and the records behind this connection.",{...r,average:rounded(average),threshold:rounded(frequencyThreshold),deviation:rounded(deviation)},0.55);
-  const directedPairs = new Set(values.map(r => `${r.src}\u0000${r.dst}`));
-  for(const r of values) if(directedPairs.has(`${r.dst}\u0000${r.src}`) && compare(r.src,r.dst)<0) flag("Reciprocal relationship",[r.src,r.dst],"Both entities have relationship records pointing to each other. Reciprocal activity can indicate coordination and should be checked against dates and source records.",{pair:[r.src,r.dst],directions:[`${r.src}->${r.dst}`,`${r.dst}->${r.src}`]},0.4);
-  for(const [place,owners] of locations) if(owners.size>1) flag("Shared location",[place,...[...owners].sort(compare)],"Multiple people share a location record. This does not establish simultaneous presence.",{location:place,neighbors:[...owners].sort(compare)},0.3);
+  const values=[...ties.values()];
+  const median=input=>{const sorted=[...input].sort((a,b)=>a-b),middle=Math.floor(sorted.length/2);return sorted.length?sorted.length%2?sorted[middle]:(sorted[middle-1]+sorted[middle])/2:0;};
+  const contactTypes=new Set(["CALLED","EMAILED","CONTACTED"]), contactTies=values.filter(r=>contactTypes.has(r.rel));
+  const contactMedian=median(contactTies.map(r=>r.frequency)), contactMad=median(contactTies.map(r=>Math.abs(r.frequency-contactMedian)));
+  const contactThreshold=Math.max(6,Math.ceil(contactMedian+3*Math.max(1,contactMad)));
+  for(const r of contactTies){
+    const enoughContext=contactTies.length>=3?r.frequency>=contactThreshold&&r.frequency>=Math.max(2,contactMedian*2):r.frequency>=10;
+    if(enoughContext)flag("High-volume contact",[r.src,r.dst],"Contact volume is a strong outlier compared with other communication links in this case. Review the time window, whether counts were aggregated, and the underlying source records.",{relationship:r.rel,frequency:r.frequency,case_median:rounded(contactMedian),median_absolute_deviation:rounded(contactMad),review_threshold:contactThreshold,baseline_links:contactTies.length},Math.min(.78,.48+.04*Math.log2(Math.max(1,r.frequency/contactThreshold))));
+  }
+  for(const r of values.filter(r=>r.rel==="THREATENED" || r.rel==="ARGUED_WITH")){
+    if(r.rel==="THREATENED" || r.frequency>=2)flag(r.rel==="THREATENED"?"Reported threat":"Repeated conflict reports",[r.src,r.dst],r.rel==="THREATENED"?"The source data contains an explicit threat report. Prioritize source verification, timing and safeguarding context; this flag does not determine intent or credibility.":"The same pair has multiple argument or conflict records. Review dates and original statements to determine whether these are separate incidents.",{relationship:r.rel,frequency:r.frequency,source_records:r.records.map(x=>({date:x.date,source_rows:x.source_rows,evidence:x.evidence})).slice(0,10)},r.rel==="THREATENED"?.74:.56);
+  }
+  for(const [asset,value] of assetLinks)if(value.people.size>=2){
+    const people=[...value.people].sort(compare),rels=[...value.relationships].sort(compare),kind=labels.get(asset)||"identifier";
+    flag(`Shared ${kind.toLowerCase()}`,people.concat(asset),`The same ${kind.toLowerCase()} is linked to multiple people. Check whether it is genuinely shared, reassigned, jointly used, or the result of an identity-resolution error.`,{asset,people,relationships:rels},kind==="Account"?.68:kind==="Phone"?.64:.55);
+  }
+  for(const [place,owners] of locations) if(owners.size>=3) flag("Address concentration",[place,...[...owners].sort(compare)],"Three or more people are registered at the same location. This can be legitimate; compare dates, household context and source provenance before treating it as an investigative lead.",{location:place,people:[...owners].sort(compare),minimum_people:3},0.42);
+  const tieByKey=new Map(values.map(r=>[JSON.stringify([r.src,r.dst,r.rel]),r]));
+  for(const r of values)if(compare(r.src,r.dst)<0 && ["CALLED","EMAILED","CONTACTED","FINANCIAL_TRANSFER"].includes(r.rel)){
+    const reverse=tieByKey.get(JSON.stringify([r.dst,r.src,r.rel]));if(!reverse)continue;
+    const combined=r.frequency+reverse.frequency;
+    if(r.rel==="FINANCIAL_TRANSFER" || combined>=6)flag(r.rel==="FINANCIAL_TRANSFER"?"Two-way fund movement":"Two-way communication",[r.src,r.dst],r.rel==="FINANCIAL_TRANSFER"?"Funds are recorded moving in both directions between the same pair. Compare dates, amounts, refunds and business context before interpreting the movement.":"Communication records run in both directions with enough combined volume to warrant timeline review.",{relationship:r.rel,forward_frequency:r.frequency,reverse_frequency:reverse.frequency,combined_frequency:combined},r.rel==="FINANCIAL_TRANSFER"?.61:.47);
+  }
+  for(const r of values)if(["CALLED","EMAILED","CONTACTED","FINANCIAL_TRANSFER"].includes(r.rel)){
+    const from=rank.get(r.src),to=rank.get(r.dst);
+    if(from&&to&&from.community_id!==to.community_id&&r.frequency>=3)flag(r.rel==="FINANCIAL_TRANSFER"?"Cross-group financial activity":"Cross-group communication",[r.src,r.dst],`A ${r.rel==="FINANCIAL_TRANSFER"?"financial":"communication"} link connects two graph communities and has at least three recorded interactions. Communities are structural estimates, so confirm operational context.`,{relationship:r.rel,frequency:r.frequency,source_group:from.community_id,target_group:to.community_id},r.rel==="FINANCIAL_TRANSFER"?.59:.5);
+  }
   let checks=0; const seen=new Set();
   cycles: for(const a of [...financial.keys()].sort(compare)) for(const b of [...financial.get(a)].sort(compare)) for(const c of [...(financial.get(b)||[])].sort(compare)){
     if(++checks>100000){notes.push("Circular-transfer search reached 100,000 checks; additional loops may exist.");break cycles;}
     if(a===b||b===c||a===c||!financial.get(c)?.has(a))continue;
     const rotations=[[a,b,c],[b,c,a],[c,a,b]].sort((x,y)=>compare(JSON.stringify(x),JSON.stringify(y))), cycle=rotations[0];
     const key=JSON.stringify(cycle);if(seen.has(key))continue;seen.add(key);
-    flag("Circular transfer links",cycle,"Transfer links form a directed three-entity loop. Verify dates and amounts before interpreting movement of funds.",{cycle:[...cycle,cycle[0]]},0.7);
+    const cycleRows=[[a,b],[b,c],[c,a]].flatMap(([x,y])=>financialRows.get(`${x}\u0000${y}`)||[]);
+    const dated=cycleRows.map(r=>Date.parse(r.date)).filter(Number.isFinite), amounts=cycleRows.map(r=>({value:Number(String(r.amount).replace(/,/g,"")),currency:r.currency})).filter(x=>Number.isFinite(x.value)&&x.value>0&&x.currency);
+    const rapid=dated.length>=3&&(Math.max(...dated)-Math.min(...dated))/86400000<=30;
+    const currencies=new Set(amounts.map(x=>x.currency)), comparable=amounts.length>=3&&currencies.size===1&&Math.max(...amounts.map(x=>x.value))/Math.min(...amounts.map(x=>x.value))<=1.5;
+    const repeated=cycleRows.reduce((sum,row)=>sum+row.frequency,0)>=6;
+    if(rapid&&(comparable||repeated))flag("Time-linked transfer cycle",cycle,"Transfers form a directed loop within 30 days, supported by similar-value payments or repeated activity. Review transaction references, legitimate pass-through reasons and the complete chronology.",{cycle:[...cycle,cycle[0]],date_span_days:rounded((Math.max(...dated)-Math.min(...dated))/86400000),same_currency:currencies.size===1,similar_amounts:comparable,combined_frequency:cycleRows.reduce((sum,row)=>sum+row.frequency,0),source_records:cycleRows.map(r=>({date:r.date,amount:r.amount,currency:r.currency,source_rows:r.source_rows}))},0.76);
+  }
+  for(const [pair,payments] of financialRows)if(payments.length>=3){
+    const amounts=payments.map(r=>Number(String(r.amount).replace(/,/g,""))),dates=payments.map(r=>Date.parse(r.date)),currencies=new Set(payments.map(r=>r.currency).filter(Boolean));
+    const valid=amounts.every(value=>Number.isFinite(value)&&value>0)&&dates.every(Number.isFinite)&&currencies.size===1;
+    const spread=valid?(Math.max(...amounts)-Math.min(...amounts))/median(amounts):Infinity,dateSpan=valid?(Math.max(...dates)-Math.min(...dates))/86400000:Infinity;
+    if(valid&&spread<=.15&&dateSpan<=30){const [src,dst]=pair.split("\u0000");flag("Repeated similar-value payments",[src,dst],"At least three similarly valued payments are recorded between the same pair within 30 days. Review invoices, references and the reason for repetition.",{payment_count:payments.length,currency:[...currencies][0],minimum_amount:Math.min(...amounts),maximum_amount:Math.max(...amounts),date_span_days:rounded(dateSpan)},0.63);}
   }
   if(omitted)notes.push(`${omitted} additional pattern flags omitted by the 200-flag limit.`);
-  notes.push("Pattern coverage: unusual frequency, shared locations and directed three-entity transfer loops. Dates/amounts are retained as supplied, not independently verified. Flags require review; no flags does not establish safety.");
+  notes.push("Pattern coverage uses robust contact baselines, explicit threat/conflict reports, shared identifiers, address concentration, same-type reciprocal flows, cross-community links, time-linked transfer cycles and repeated similar-value payments. Dates, amounts and source claims are not independently verified. Missing fields can prevent a pattern from being raised; every flag requires human review.");
   return {id:crypto.randomUUID(),name,created:new Date().toISOString(),analysis_version:ANALYSIS_VERSION,
     graph:{nodes,edges:records.map((r,i)=>({...r,id:`record-${i}`})),truncated:false,total_nodes:nodes.length,total_edges:records.length},
     players,communities,details,records,notes,alerts:alerts.sort((a,b)=>b.severity_score-a.severity_score||compare(a.pattern_type,b.pattern_type)||compare(JSON.stringify(a.entities_involved),JSON.stringify(b.entities_involved)))};

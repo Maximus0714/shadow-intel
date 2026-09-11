@@ -21,8 +21,9 @@ import {
   type FullGraphNode,
 } from "../lib/data/api";
 import { demoGraph } from "../lib/data/demo";
-import { useData, useWorkspace, readable } from "../lib/state/workspace";
+import { useData, useWorkspace } from "../lib/state/workspace";
 import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
+import { relationshipVisual } from "../lib/data/relationships";
 export default function NetworkExplorer() {
   const [params] = useSearchParams();
   const { setMode, cfg } = useWorkspace();
@@ -37,6 +38,7 @@ export default function NetworkExplorer() {
   );
   const [layout, setLayout] = useState("cola");
   const [labels, setLabels] = useState(true);
+  const [connectionLabels, setConnectionLabels] = useState(false);
   const [filters, setFilters] = useState(false);
   const [excluded, setExcluded] = useState<string[]>([]);
   const [community, setCommunity] = useState("all");
@@ -52,6 +54,12 @@ export default function NetworkExplorer() {
   const [busy, setBusy] = useState(false);
   const canvas = useRef<GraphHandle>(null);
   const task = useRef(0);
+  const relationshipTypes = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const edge of state.data?.edges || [])
+      counts.set(edge.rel, (counts.get(edge.rel) || 0) + 1);
+    return [...counts].sort((a, b) => relationshipVisual(a[0]).label.localeCompare(relationshipVisual(b[0]).label));
+  }, [state.data]);
   useEffect(() => {
     task.current++;
     setEgo(null);
@@ -218,13 +226,14 @@ export default function NetworkExplorer() {
             {filters && (
               <div className="filter-tray">
                 <div>
-                  <span className="field-caption">Relationships</span>
+                  <div className="relationship-filter-heading"><span className="field-caption">Connections shown</span><span>Arrow points from source to target</span></div>
                   <div className="filter-pills">
-                    {[...new Set(state.data?.edges.map((e) => e.rel))].map(
-                      (rel) => (
+                    {relationshipTypes.map(
+                      ([rel, count]) => (
                         <button
                           key={rel}
                           className={`filter-pill ${!excluded.includes(rel) ? "selected" : ""}`}
+                          aria-pressed={!excluded.includes(rel)}
                           onClick={() => {
                             setExcluded((v) =>
                               v.includes(rel)
@@ -234,12 +243,25 @@ export default function NetworkExplorer() {
                             setPaths([]);
                           }}
                         >
-                          {readable(rel)}
+                          <i style={{backgroundColor:relationshipVisual(rel).color}} />
+                          {relationshipVisual(rel).label}<small>{count}</small>
                         </button>
                       ),
                     )}
                   </div>
                 </div>
+                <label className="field">
+                  <span>Quick view</span>
+                  <select value={excluded.length===0?"all":relationshipTypes.filter(([rel])=>!excluded.includes(rel)).length===1?relationshipTypes.find(([rel])=>!excluded.includes(rel))?.[0]||"custom":"custom"} onChange={e=>{
+                    if(e.target.value==="all")setExcluded([]);
+                    else if(e.target.value!=="custom")setExcluded(relationshipTypes.map(([rel])=>rel).filter(rel=>rel!==e.target.value));
+                    setPaths([]);
+                  }}>
+                    <option value="all">All connections</option>
+                    <option value="custom" disabled>Custom selection</option>
+                    {relationshipTypes.map(([rel])=><option key={rel} value={rel}>Only {relationshipVisual(rel).label.toLowerCase()}</option>)}
+                  </select>
+                </label>
                 <label className="field">
                   <span>Community</span>
                   <select
@@ -281,6 +303,10 @@ export default function NetworkExplorer() {
                     onChange={(e) => setLabels(e.target.checked)}
                   />
                   Show labels
+                </label>
+                <label className="checkbox-label">
+                  <input type="checkbox" checked={connectionLabels} onChange={(e)=>setConnectionLabels(e.target.checked)}/>
+                  Label connections
                 </label>
               </div>
             )}
@@ -362,6 +388,7 @@ export default function NetworkExplorer() {
                     graph={graph}
                     layout={layout}
                     labels={labels}
+                    connectionLabels={connectionLabels}
                     selected={selected?.id || null}
                     paths={paths}
                     onSelect={choose}
@@ -409,6 +436,7 @@ export default function NetworkExplorer() {
                     <i className="location" />
                     Location
                   </span>
+                  <span className="direction-legend">Line <b>→</b> target</span>
                 </div>
                 {selected && (
                   <div className="ego-actions">

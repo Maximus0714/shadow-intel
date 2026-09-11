@@ -3,15 +3,15 @@ import { buildDataset, localPaths } from "../src/lib/analysis/local";
 import { analyzeLocalText } from "../src/lib/analysis/localDocuments";
 import { cleanRows, detectMapping, parseCsvText } from "../src/lib/data/upload";
 const parsed = parseCsvText(
-  "src,dst,rel,frequency,date,amount\nA,B,FINANCIAL_TRANSFER,1,2026-09-01,100\nB,C,FINANCIAL_TRANSFER,1,2026-09-02,90\nC,A,FINANCIAL_TRANSFER,1,2026-09-03,80\nC,D,CALLED,5,,\nD,Place,REGISTERED_AT,1,,\nE,Place,REGISTERED_AT,1,,\nF,G,CALLED,1,,",
+  "src,dst,rel,frequency,date,amount\nA,B,FINANCIAL_TRANSFER,2,2026-09-01,100\nB,C,FINANCIAL_TRANSFER,2,2026-09-02,90\nC,A,FINANCIAL_TRANSFER,2,2026-09-03,80\nC,D,CALLED,5,,\nD,Place,REGISTERED_AT,1,,\nE,Place,REGISTERED_AT,1,,\nH,Place,REGISTERED_AT,1,,\nF,G,CALLED,1,,",
 );
 const records = cleanRows(parsed.rows, detectMapping(parsed.columns)).cleaned;
 const d = buildDataset(records, "test.csv");
-assert.equal(d.graph.total_nodes, 8);
-assert.equal(d.graph.total_edges, 7);
+assert.equal(d.graph.total_nodes, 9);
+assert.equal(d.graph.total_edges, 8);
 assert.equal(d.details.Place.label, "Location");
-assert.ok(d.alerts.some((a) => a.pattern_type === "Circular transfer links"));
-assert.ok(d.alerts.some((a) => a.pattern_type === "Shared location"));
+assert.ok(d.alerts.some((a) => a.pattern_type === "Time-linked transfer cycle"));
+assert.ok(d.alerts.some((a) => a.pattern_type === "Address concentration"));
 assert.ok(d.communities.length >= 2);
 assert.ok(
   d.players.find((p) => p.person_id === "C")!.influence_score >

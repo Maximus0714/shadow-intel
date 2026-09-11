@@ -9,6 +9,7 @@ import { getEntity, type EntityDetail, type FullGraphNode } from "../lib/data/ap
 import { demoGraph } from "../lib/data/demo";
 import { useData, useWorkspace } from "../lib/state/workspace";
 import { ErrorState, Loading } from "./UI";
+import { formatInfluence } from "../lib/data/entityOrder";
 export default function EntityDossier({
   node,
   onClose,
@@ -89,7 +90,7 @@ export default function EntityDossier({
                 <small>Connections</small>
               </div>
               <div>
-                <strong>{(data.influence_score || 0).toFixed(2)}</strong>
+                <strong>{formatInfluence(data.influence_score)}</strong>
                 <small>Influence</small>
               </div>
             </div>

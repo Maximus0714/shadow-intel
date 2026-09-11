@@ -71,7 +71,7 @@ export default function Landing() {
           </nav>
           <div className="site-nav-actions">
             <ThemeButton />
-            {user ? <div className="account-menu landing-account"><button className="analyst-avatar account-avatar landing-avatar" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{user.user_metadata?.avatar_url || user.user_metadata?.picture ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Your profile" /> : (user.email?.slice(0, 2).toUpperCase() || "ME")}</button>{accountOpen && <div className="account-popover"><strong>{user.user_metadata?.full_name || user.email?.split("@")[0]}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}</div> : <Link className="btn nav-login" to="/signin">Sign in</Link>}
+            {user ? <div className="account-menu landing-account"><button className="analyst-avatar account-avatar landing-avatar" aria-label="Open account menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{user.user_metadata?.avatar_url || user.user_metadata?.picture ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Your profile" /> : (user.email?.slice(0, 2).toUpperCase() || "ME")}</button>{accountOpen && <div className="account-popover"><strong>{user.user_metadata?.full_name || user.email?.split("@")[0]}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><Link to="/fingerprints" onClick={() => setAccountOpen(false)}>Saved fingerprints</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}</div> : <Link className="btn nav-login" to="/signin">Sign in</Link>}
             <button
               className="icon-button mobile-menu"
               aria-label="Toggle menu"
@@ -120,9 +120,6 @@ export default function Landing() {
                 >
                   Add your own data <ArrowRight size={19} />
                 </Link>
-                <a className="btn large" href="#platform">
-                  Discover the platform <ArrowUpRight size={19} />
-                </a>
                 <Link className="text-link" to="/overview" onClick={demo}>
                   Explore the demo <ArrowRight size={17} />
                 </Link>
@@ -318,9 +315,6 @@ export default function Landing() {
         <p>From evidence to intelligence.</p>
         <div>
           <Link to="/upload">Use your own data</Link>
-          <Link to="/upload">
-            Open workspace <ArrowUpRight size={14} />
-          </Link>
         </div>
         <span className="footer-note">
           X-Tracer is an investigation aid. Findings require human review.

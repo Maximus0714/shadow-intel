@@ -9,9 +9,9 @@ from backend.graph_store import GraphStore
 
 def payload(prefix=""):
     return {"name": "test.csv", "records": [
-        {"src": prefix + "A", "dst": prefix + "B", "rel": "FINANCIAL_TRANSFER", "amount": "100", "source_rows": [2]},
-        {"src": prefix + "B", "dst": prefix + "C", "rel": "FINANCIAL_TRANSFER"},
-        {"src": prefix + "C", "dst": prefix + "A", "rel": "FINANCIAL_TRANSFER"},
+        {"src": prefix + "A", "dst": prefix + "B", "rel": "FINANCIAL_TRANSFER", "amount": "100", "currency": "INR", "date": "2026-09-01", "source_rows": [2]},
+        {"src": prefix + "B", "dst": prefix + "C", "rel": "FINANCIAL_TRANSFER", "amount": "95", "currency": "INR", "date": "2026-09-03"},
+        {"src": prefix + "C", "dst": prefix + "A", "rel": "FINANCIAL_TRANSFER", "amount": "90", "currency": "INR", "date": "2026-09-05"},
         {"src": prefix + "C", "dst": prefix + "Place", "rel": "REGISTERED_AT"},
     ]}
 
@@ -31,7 +31,7 @@ def test_isolated_backend_analysis_and_provenance():
             assert data["communities"]
             assert data["details"][prefix + "A"]["properties"]["records"][0]["amount"] == "100"
             assert data["details"][prefix + "A"]["properties"]["records"][0]["source_rows"] == [2]
-            assert any(a["pattern_type"] == "Circular transfer links" for a in data["alerts"])
+            assert any(a["pattern_type"] == "Time-linked transfer cycle" for a in data["alerts"])
         assert client.get("/stats", headers={"X-API-Key": "dev-key-change-me"}).json() == before
         assert client.get("/graph/full").status_code == 401
 
@@ -81,3 +81,49 @@ def test_frequency_is_strength_not_path_distance():
     ])
     scores = {p["person_id"]: p["centrality_breakdown"]["betweenness"] for p in analyze(graph)}
     assert scores["B"] > scores["A"]
+
+
+def test_entity_resolution_requires_review_and_preserves_alias_provenance():
+    evidence = {"name": "aliases.txt", "records": [
+        {"src": "Rahul Sharma", "dst": "+91 98765 43210", "rel": "HAS_PHONE",
+         "src_type": "Person", "dst_type": "Phone"},
+        {"src": "R. Sharma", "dst": "9876543210", "rel": "HAS_PHONE",
+         "src_type": "Person", "dst_type": "Phone"},
+        {"src": "Kabir Shah", "dst": "R. Sharma", "rel": "CALLED",
+         "src_type": "Person", "dst_type": "Person"},
+    ]}
+    with TestClient(app) as client:
+        scan = client.post("/workspace/resolution/candidates", json=evidence)
+        assert scan.status_code == 200, scan.text
+        body = scan.json()
+        assert body["stats"]["automatic_merges"] == 0
+        person = next(candidate for candidate in body["candidates"]
+                      if {candidate["entity_a"], candidate["entity_b"]} ==
+                      {"Rahul Sharma", "R. Sharma"})
+        assert person["score"] >= .85
+        assert "Shared phone" in person["reasons"]
+
+        untouched = client.post("/workspace/resolution/apply", json={
+            "evidence": evidence, "approvals": [],
+        })
+        assert untouched.status_code == 200
+        assert untouched.json()["records"] == [
+            {**record, "frequency": 1, "date": "", "amount": "",
+             "source_rows": [], "evidence": "", "currency": "",
+             "attributes": {}}
+            for record in evidence["records"]
+        ]
+
+        applied = client.post("/workspace/resolution/apply", json={
+            "evidence": evidence,
+            "approvals": [{"candidate_id": person["candidate_id"],
+                           "keep": "Rahul Sharma"}],
+        })
+        assert applied.status_code == 200, applied.text
+        resolved = applied.json()
+        assert resolved["applied"] == 1
+        assert {"entity_type": "PERSON", "alias": "R. Sharma",
+                "canonical": "Rahul Sharma"} in resolved["aliases"]
+        call = next(record for record in resolved["records"] if record["rel"] == "CALLED")
+        assert call["dst"] == "Rahul Sharma"
+        assert call["attributes"]["resolved_dst_alias"] == "R. Sharma"

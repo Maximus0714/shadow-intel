@@ -3,6 +3,12 @@ export type EntitySort = "name" | "role" | "community" | "influence";
 const roles: Record<string,number> = {member:0,bridge:1,leader:2};
 const text = (a:string,b:string) => a < b ? -1 : a > b ? 1 : 0;
 
+/** Influence is calculated as a 0-1 graph score and shown as a percentage. */
+export function formatInfluence(value?: number | null) {
+  if (value == null || !Number.isFinite(value)) return "N/A";
+  return `${(Math.max(0, value) * 100).toFixed(1)}%`;
+}
+
 /** Missing values stay last in either direction; ID makes ties reproducible. */
 export function orderEntities(nodes: FullGraphNode[], field: EntitySort, direction: "asc" | "desc") {
   const value = (n:FullGraphNode) => field === "role" ? roles[n.role || ""]

@@ -21,7 +21,7 @@ import { demoGraph } from "../lib/data/demo";
 import { samplePlayers, useData, useWorkspace } from "../lib/state/workspace";
 import { PageHeader, Loading, ErrorState, Empty } from "../components/UI";
 import EntityDossier from "../components/EntityDossier";
-import { orderEntities, type EntitySort } from "../lib/data/entityOrder";
+import { formatInfluence, orderEntities, type EntitySort } from "../lib/data/entityOrder";
 export default function Entities() {
   const { id } = useParams();
   const [params] = useSearchParams();
@@ -111,9 +111,8 @@ export default function Entities() {
   return (
     <>
       <PageHeader
-        title="People. Places. Connections."
-        description="Find an entity, understand its role, and keep the important ones close."
-        eyebrow="ENTITIES & SEARCH"
+        title="Entities"
+        description="Search people, places and assets in this investigation."
       >
         <span className="count-label">
           {state.data?.nodes.length || 0} entities indexed
@@ -154,7 +153,9 @@ export default function Entities() {
             Watchlist
           </button>
         </div>
-        <div className="entity-controls">
+        <details className="filter-disclosure">
+          <summary>Sort and filter</summary>
+          <div className="entity-controls advanced-controls">
           <label className="field"><span>Role</span><select aria-label="Filter by role" value={role} onChange={e=>{setRole(e.target.value);setPage(1);}}>
             <option value="all">All roles</option><option value="leader">Leader</option><option value="bridge">Bridge</option><option value="member">Member</option><option value="unranked">Unranked</option>
           </select></label>
@@ -170,8 +171,8 @@ export default function Entities() {
             <option value="asc">Ascending</option><option value="desc">Descending</option>
           </select></label>
           <button className="btn" onClick={()=>{setRole("all");setCommunity("all");setType("all");setSavedOnly(false);setQuery("");setSort("influence");setDirection("desc");setPage(1);}}>Reset filters</button>
-        </div>
-        <p className="helper">Role order: member → bridge → leader. Unranked values stay last. Ordering applies to all matching results before pagination.</p>
+          </div>
+        </details>
         {state.loading || searching ? (
           <Loading />
         ) : state.error || searchError ? (
@@ -232,9 +233,7 @@ export default function Entities() {
                             : "Not grouped"}
                         </td>
                         <td className="mono">
-                          {(p?.influence_score ?? n.influence_score)?.toFixed(
-                            4,
-                          ) || "N/A"}
+                          {formatInfluence(p?.influence_score ?? n.influence_score)}
                         </td>
                         <td>
                           <div className="inline-actions">

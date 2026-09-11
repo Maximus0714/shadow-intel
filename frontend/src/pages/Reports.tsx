@@ -16,6 +16,7 @@ import {
   downloadFile,
 } from "../lib/state/workspace";
 import { PageHeader, ErrorState, Empty } from "../components/UI";
+import { formatInfluence } from "../lib/data/entityOrder";
 export default function Reports() {
   const { mode, cfg, watched, toggleWatch, notify } = useWorkspace();
   const scope = mode === "demo" ? "demo" : cfg.dataset?.id || "local";
@@ -57,7 +58,7 @@ export default function Reports() {
     const report = {
       title: title.trim() || "Investigation summary",
       generated_by: "X-Tracer",
-      analysis_version: mode === "demo" ? "fictional-demo" : cfg.dataset?.analysis_version || "legacy — reanalysis recommended",
+      analysis_version: mode === "demo" ? "fictional-demo" : cfg.dataset?.analysis_version || "legacy - reanalysis recommended",
       analysis_methods:
         mode === "local"
           ? cfg.dataset?.notes || []
@@ -86,7 +87,7 @@ export default function Reports() {
     const content =
       format === "json"
         ? JSON.stringify(report, null, 2)
-        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${report.data_mode}\nAnalysis version: ${report.analysis_version}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analysis methods\n${report.analysis_methods.map((n) => `- ${n}`).join("\n")}\n\n## Entity rankings\n${report.rankings.map((p) => `- ${p.name}: influence ${p.influence_score.toFixed(6)}, Group ${p.community_id + 1}, structural role ${p.role}`).join("\n") || "See the workspace entity list."}\n\n## Source document\n${report.source_document?.source_text || "Structured relationship file; see JSON export for every source row."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
+        : `# ${report.title}\n\nGenerated: ${report.generated_at}\nData mode: ${report.data_mode}\nAnalysis version: ${report.analysis_version}\n\n## Network\n${report.nodes} entities, ${report.connections} connections.\n\n## Watchlist\n${report.watchlist.map((n) => `- ${n.name} (${n.id})`).join("\n") || "No saved entities."}\n\n## Signals\n${report.alerts.map((a) => `- ${a.pattern_type}: ${a.plain_language_explanation}`).join("\n") || "No alerts."}\n\n## Analysis methods\n${report.analysis_methods.map((n) => `- ${n}`).join("\n")}\n\n## Entity rankings\n${report.rankings.map((p) => `- ${p.name}: influence ${formatInfluence(p.influence_score)}, Group ${p.community_id + 1}, structural role ${p.role}`).join("\n") || "See the workspace entity list."}\n\n## Source document\n${report.source_document?.source_text || "Structured relationship file; see JSON export for every source row."}\n\n## Analyst notes\n${notes || "No notes."}\n\n${report.notice}\n`;
     downloadFile(
       `x-tracer-report.${format}`,
       content,

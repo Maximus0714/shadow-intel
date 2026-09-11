@@ -26,7 +26,6 @@ import {
   ArrowUpRight,
   CheckCircle,
   CaretRight,
-  ClockCounterClockwise,
 } from "@phosphor-icons/react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { WorkspaceProvider, useWorkspace } from "./lib/state/workspace";
@@ -43,7 +42,9 @@ const Documents = lazy(() => import("./pages/Documents"));
 const UploadSettings = lazy(() => import("./pages/UploadSettings"));
 const Communities = lazy(() => import("./pages/Communities"));
 const Reports = lazy(() => import("./pages/Reports"));
+const Intelligence = lazy(() => import("./pages/Intelligence"));
 const Investigations = lazy(() => import("./pages/Investigations"));
+const Fingerprints = lazy(() => import("./pages/Fingerprints"));
 const nav = [
   { to: "/overview", label: "Overview", icon: House },
   { to: "/network", label: "Network Explorer", icon: Graph },
@@ -51,8 +52,8 @@ const nav = [
   { to: "/communities", label: "Communities", icon: SquaresFour },
   { to: "/alerts", label: "Alerts & Patterns", icon: ShieldWarning },
   { to: "/documents", label: "Document Intel", icon: FileText },
+  { to: "/intelligence", label: "AI & Evidence Proof", icon: CheckCircle },
   { to: "/reports", label: "Reports & Watchlist", icon: BookmarkSimple },
-  { to: "/investigations", label: "Past Investigations", icon: ClockCounterClockwise },
 ];
 function RouteReset() {
   const { pathname } = useLocation();
@@ -63,7 +64,7 @@ function RouteReset() {
   return null;
 }
 function WorkspaceLayout() {
-  const { mode, setMode, notice, watched, dataset, ready } = useWorkspace();
+  const { mode, notice, watched, dataset, ready } = useWorkspace();
   const { user, loading, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -138,10 +139,6 @@ function WorkspaceLayout() {
         </nav>
         <div className="sidebar-bottom">
           <ButtonUpload />
-          <Link className="nav-link" to="/upload">
-            <House size={20} />
-            Your data
-          </Link>
           <Link className="back-home" to="/">
             About X-Tracer <ArrowUpRight size={15} />
           </Link>
@@ -188,27 +185,9 @@ function WorkspaceLayout() {
           <div className="account-menu" title={displayName}>
             <span className="account-name">{displayName}</span>
             <button className="analyst-avatar account-avatar" aria-label={`Open ${displayName} account menu`} aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>{(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={`${displayName} profile`} /> : initials}</button>
-            {accountOpen && <div className="account-popover"><strong>{displayName}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}
+            {accountOpen && <div className="account-popover"><strong>{displayName}</strong><small>{user.email}</small><Link to="/investigations" onClick={() => setAccountOpen(false)}>Past investigations</Link><Link to="/fingerprints" onClick={() => setAccountOpen(false)}>Saved fingerprints</Link><button onClick={() => { setAccountOpen(false); void signOut(); }}>Sign out</button></div>}
           </div>
         </header>
-        <div className={`mode-strip ${mode}`}>
-          <span>
-            <span className="status-dot" />
-            {mode === "demo" ? "Demo workspace" : dataset?.engine === "backend" ? "Backend analysis" : "Local workspace"}
-            <span className="mode-detail">
-              {mode === "demo"
-                ? "Explore freely with fictional investigation data."
-                : dataset?.engine === "backend" ? "Analyzed by the server. Results saved in this browser." : "Previously saved result. Reimport evidence to use backend analysis."}
-            </span>
-          </span>
-          {mode === "demo" ? (
-            <Link to="/upload">
-              Use your own data <ArrowUpRight size={14} />
-            </Link>
-          ) : (
-            <button onClick={() => setMode("demo")}>Explore demo</button>
-          )}
-        </div>
         <main
           className={`workspace-page ${location.pathname === "/network" ? "network-page" : ""}`}
           id="main-content"
@@ -265,7 +244,9 @@ export default function App() {
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/intelligence" element={<Intelligence />} />
                 <Route path="/investigations" element={<Investigations />} />
+                <Route path="/fingerprints" element={<Fingerprints />} />
                 <Route path="/upload" element={<UploadSettings />} />
                 <Route path="/settings" element={<Navigate to="/upload" replace />} />
                 <Route
