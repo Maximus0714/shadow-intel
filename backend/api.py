@@ -75,7 +75,8 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 PUBLIC_PATHS = {"/", "/health", "/docs", "/redoc", "/openapi.json",
                 "/openapi.yaml", "/workspace/analyze", "/workspace/documents", "/workspace/narrative", "/workspace/file", "/workspace/preview", "/workspace/resolution/candidates", "/workspace/resolution/apply", "/workspace/paths", "/workspace/ego",
-                "/workspace/intelligence", "/workspace/proof/anchor", "/workspace/proof/verify", "/workspace/proof/lookup"}
+                "/workspace/intelligence", "/workspace/assistant", "/workspace/timeline",
+                "/workspace/proof/anchor", "/workspace/proof/verify", "/workspace/proof/lookup"}
 
 if API_KEY == "dev-key-change-me":
     print("WARNING: running with default API_KEY — set API_KEY env var.",

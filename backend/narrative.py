@@ -104,7 +104,7 @@ def extract_narrative(text):
                 start -= 1
             value = " ".join(tokens[start:end + 1])
         value = re.sub(r"^(?:then|later|afterwards)\s+", "", value.strip(), flags=re.I)
-        if re.fullmatch(r"(?:he|she|him|her|his|hers)", value, re.I): return context["person"] or value
+        if re.fullmatch(r"(?:he|she|him|her|his|hers|me|my|mine|us|our|ours)", value, re.I): return context["person"] or value
         if re.fullmatch(r"(?:they|them|their|theirs)", value, re.I): return context["people"][-1] if context["people"] else value
         if re.fullmatch(r"(?:it|its|the vehicle|the car|the account|the phone)", value, re.I): return context["asset"] or value
         return value
@@ -124,8 +124,12 @@ def extract_narrative(text):
         if len(set(dates)) > 1: out["date_note"] = "Multiple dates in statement; date left unresolved."
         return out
     def edge(src,dst,rel,sentence,original,line_no,dates,target_type="Person",source_type="Person",payment=None,extra=None,frequency=1):
+        # Reject a regex capture that crossed a compound-clause boundary, for
+        # example “Northstar Trading and has” in “Kabir ... and has used a car”.
+        if re.search(r"\b(?:and|but|that)\s+(?:has|had|is|was|then)\b", str(src), re.I):
+            return
         src,dst = resolve(src),resolve(dst)
-        pronouns={"he","she","they","him","her","them","it"}
+        pronouns={"he","she","they","him","her","them","it","me","my","mine","us","our","ours"}
         glue={"and","that","four","times","time","day","days","same","later","records","record","according","one","source","account","payment","payments","the","this","these","who","what","with","from","into"}
         if (not src or not dst or src.casefold()==dst.casefold() or src.lower() in pronouns or dst.lower() in pronouns
                 or any(token.casefold() in glue for token in src.split())
@@ -164,17 +168,31 @@ def extract_narrative(text):
             before=len(records)
             verb_pattern="|".join(sorted(map(re.escape,VERBS),key=len,reverse=True))
             for m in re.finditer(rf"\b({PERSON})\s+({verb_pattern})\s+({PERSON})\b",sentence,re.I):
-                rel=VERBS[m[2].lower()]; target, count = split_frequency(m[3]); money=re.match(rf"\s*({MONEY})",sentence[m.end():],re.I) if rel=="FINANCIAL_TRANSFER" else None
+                rel=VERBS[m[2].lower()]; target, count = split_frequency(m[3]); count = max(count, frequency_for(sentence)); money=re.match(rf"\s*({MONEY})",sentence[m.end():],re.I) if rel=="FINANCIAL_TRANSFER" else None
                 edge(m[1],target,rel,sentence,original,line_no,dates,payment=money[1] if money else None,frequency=count)
             payments=[(rf"\b({PERSON})(?:\s+then)?\s+(?:paid|sent|transferred|gave)\s+({MONEY})\s+(?:to\s+)?({PERSON})",(1,3,2)),(rf"\b({PERSON})(?:\s+then)?\s+received\s+({MONEY})\s+from\s+({PERSON})",(3,1,2)),(rf"\b(?:a\s+)?(?:payment|transfer)\s+of\s+({MONEY})\s+(?:was\s+)?(?:made|sent|transferred)?\s*from\s+({PERSON})\s+to\s+({PERSON})",(2,3,1)),(rf"\b({PERSON})\s+was\s+paid\s+({MONEY})\s+by\s+({PERSON})",(3,1,2))]
             for pattern,groups in payments:
                 for m in re.finditer(pattern,sentence,re.I):edge(m[groups[0]],m[groups[1]],"FINANCIAL_TRANSFER",sentence,original,line_no,dates,payment=m[groups[2]],frequency=frequency_for(sentence,m.end()))
             for m in re.finditer(rf"\b({NAME})\s+and\s+({NAME})\s+(?:met|spoke|talked|communicated|worked|travelled|traveled)\b",sentence):edge(m[1],m[2],"ASSOCIATE_OF",sentence,original,line_no,dates)
+            for m in re.finditer(rf"\b({PERSON})\s+is\s+associated\s+with\s+({PERSON})\b", sentence, re.I):
+                edge(m[1], m[2], "ASSOCIATE_OF", sentence, original, line_no, dates)
+            for m in re.finditer(rf"\b({PERSON})\s+and\s+({PERSON})\s+(?:are|were)\s+family\b", sentence, re.I):
+                edge(m[1], m[2], "FAMILY_OF", sentence, original, line_no, dates)
+            for m in re.finditer(rf"\b({PERSON})\s+led\s+(?:a\s+)?delivery\s+to\s+({NAME})\b", sentence, re.I):
+                edge(m[1], m[2], "VISITED", sentence, original, line_no, dates, "Location")
+            for m in re.finditer(rf"\b({NAME})\s+is\s+associated\s+with\s+({NAME})\s+and\s+has\s+used\s+(?:(?:a|the|vehicle|car)\s+)*({PLATE})\b",sentence):
+                edge(m[1],m[2],"ASSOCIATE_OF",sentence,original,line_no,dates)
+                edge(m[1],m[3],"USED_VEHICLE",sentence,original,line_no,dates,"Vehicle")
             for m in re.finditer(rf"\b({PERSON})\s+(owns?|owned|registered|drove|drives|used|uses|rented|hired|bought|purchased|sold)\s+(?:(?:a|the|vehicle|car|bike|number|registration)\s+)*({PLATE})\b",sentence,re.I):
                 rel="OWNS_VEHICLE" if m[2].lower() in {"own","owns","owned","registered","bought","purchased"} else "USED_VEHICLE"
                 edge(m[1],m[3],rel,sentence,original,line_no,dates,"Vehicle",extra={"vehicle_action":m[2]},frequency=frequency_for(sentence,m.end()))
             for m in re.finditer(rf"\b(?:vehicle|car|bike)\s+({PLATE})\s+was\s+(?:driven|used|rented|hired)\s+by\s+({PERSON})",sentence,re.I):edge(m[2],m[1],"USED_VEHICLE",sentence,original,line_no,dates,"Vehicle",frequency=frequency_for(sentence,m.end()))
-            for m in re.finditer(rf"\b({PERSON})\s+(?:uses?|used|owns?|owned|has|had|called\s+from)\s+(?:(?:the|a)\s+)?(?:phone|mobile|number)?\s*({PHONE})\b",sentence,re.I):edge(m[1],m[2],"HAS_PHONE",sentence,original,line_no,dates,"Phone",frequency=frequency_for(sentence,m.end()))
+            for m in re.finditer(rf"\b(?:vehicle|car|bike)\s+({PLATE})\s+(?:visited|went\s+to|travelled\s+to|traveled\s+to|arrived\s+at|was\s+seen\s+at)\s+({NAME})", sentence, re.I):
+                target, count = split_frequency(m[2])
+                edge(m[1], target, "VISITED", sentence, original, line_no, dates, "Location", "Vehicle", frequency=count)
+            for m in re.finditer(rf"\b(?:vehicle|car|bike)\s+({PLATE})\s+(?:is|was)\s+registered\s+(?:at|in)\s+({NAME})", sentence, re.I):
+                edge(m[1], m[2], "REGISTERED_AT", sentence, original, line_no, dates, "Location", "Vehicle")
+            for m in re.finditer(rf"\b({PERSON})\s+(?:uses?|used|owns?|owned|has|had|called\s+from)\s+(?:(?:the|a)\s+)?(?:(?:phone|mobile|telephone)(?:\s+number)?|number)?\s*({PHONE})\b",sentence,re.I):edge(m[1],m[2],"HAS_PHONE",sentence,original,line_no,dates,"Phone",frequency=frequency_for(sentence,m.end()))
             for m in re.finditer(rf"\b({PERSON})\s+(?:uses?|used|owns?|owned|has|had|operates?)\s+(?:(?:the|a|bank)\s+)?(?:account|a/c)\s*(?:number|no\.?|#)?\s*[:#-]?\s*([A-Z0-9-]{{6,34}})\b",sentence,re.I):edge(m[1],m[2],"HAS_ACCOUNT",sentence,original,line_no,dates,"Account",frequency=frequency_for(sentence,m.end()))
             for m in re.finditer(rf"\b({PERSON})\s+(?:uses?|used|owns?|owned|has|had)\s+(?:the\s+)?(?:email|email address)\s+({EMAIL})",sentence,re.I):edge(m[1],m[2],"HAS_ACCOUNT",sentence,original,line_no,dates,"Email")
             for m in re.finditer(rf"\b({PERSON})\s+(?:lives?|lived|resides?|resided|stays?|stayed|is registered|was registered)\s+(?:at|in|near)\s+({NAME})",sentence,re.I):edge(m[1],m[2],"REGISTERED_AT",sentence,original,line_no,dates,"Location")

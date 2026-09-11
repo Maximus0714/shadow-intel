@@ -1,0 +1,56 @@
+SYNTHETIC TRAINING DATA — NOT A REAL CASE
+Case title: Meridian Signal / X-Tracer showcase
+
+This fictional case is designed to exercise the upload, entity-resolution, network, timeline, pattern-review, evidence-question, and proof workflows. Every asserted relationship is written with explicit names. Amounts, identifiers, dates, and repeated activity are included for demonstration only.
+
+On 2026-08-03, Asha Rao called Kabir Shah eight times from phone +91-9000000001 near Dockside Warehouse.
+On 2026-08-03, Asha Rao works for Northstar Trading.
+On 2026-08-03, Kabir Shah works for Northstar Trading.
+On 2026-08-03, Asha Rao emailed Kabir Shah six times about invoice INV-8841.
+On 2026-08-04, Asha Rao paid Kabir Shah INR 125000 using account ACCT-ASHA-01 and reference TX-SYN-001.
+On 2026-08-04, Kabir Shah used vehicle MH12AB1234 to visit Dockside Warehouse four times.
+On 2026-08-04, Meera Sen visited Dockside Warehouse twice.
+On 2026-08-04, Meera Sen used phone +91-9000000002.
+On 2026-08-04, Kabir Shah used phone +91-9000000003.
+On 2026-08-05, Dev Shah emailed Northstar Trading five times about invoice INV-8841.
+On 2026-08-05, Dev Shah paid Northstar Trading INR 42000 using account ACCT-DEV-01 and reference TX-SYN-002.
+On 2026-08-05, Dev Shah argued with Kabir Shah twice about a missing payment.
+On 2026-08-06, Meera Sen met Asha Rao at Riverside Cafe.
+On 2026-08-06, Asha Rao visited Riverside Cafe.
+On 2026-08-06, Meera Sen visited Riverside Cafe.
+On 2026-08-06, Asha Rao knows Kabir Shah through Northstar Trading.
+On 2026-08-07, Kabir Shah led a delivery to Dockside Warehouse.
+On 2026-08-07, vehicle MH12AB1234 visited Dockside Warehouse three times.
+On 2026-08-08, Farah Khan contacted Meera Sen four times.
+On 2026-08-08, Farah Khan paid Kabir Shah INR 18000 using account ACCT-FARAH-01 and reference TX-SYN-003.
+On 2026-08-08, Farah Khan used account ACCT-FARAH-01.
+On 2026-08-09, Asha Rao owns vehicle DL01AB1234.
+On 2026-08-09, vehicle DL01AB1234 is registered at Riverside Garage.
+On 2026-08-09, Northstar Trading has account ACCT-NORTHSTAR-01.
+On 2026-08-09, Northstar Trading is registered at Dockside Warehouse.
+On 2026-08-10, Kabir Shah called Meera Sen seven times.
+On 2026-08-10, Meera Sen contacted Northstar Trading four times.
+On 2026-08-10, Farah Khan is associated with Asha Rao.
+On 2026-08-11, Dev Shah threatened Kabir Shah during an argument.
+On 2026-08-11, Kabir Shah transferred INR 9500 to Northstar Trading using reference TX-SYN-004.
+On 2026-08-11, Northstar Trading transferred INR 7000 to Farah Khan using reference TX-SYN-005.
+On 2026-08-12, vehicle MH12AB1234 visited Riverside Garage twice.
+On 2026-08-12, Asha Rao and Meera Sen are family.
+On 2026-08-12, Dev Shah works for Northstar Trading.
+On 2026-08-13, Kabir Shah is associated with Northstar Trading.
+On 2026-08-13, Meera Sen used vehicle MH12AB1234 twice.
+On 2026-08-13, Farah Khan visited Riverside Cafe.
+On 2026-08-14, Asha Rao paid Kabir Shah INR 21000 using reference TX-SYN-006.
+On 2026-08-14, Kabir Shah paid Asha Rao INR 5000 using reference TX-SYN-007.
+On 2026-08-14, Asha Rao visited Dockside Warehouse twice.
+On 2026-08-15, Asha Rao called Kabir Shah three times.
+On 2026-08-15, Dev Shah contacted Farah Khan twice.
+On 2026-08-15, Meera Sen used vehicle MH12AB1234.
+On 2026-08-16, Northstar Trading paid Farah Khan INR 7000 using account ACCT-NORTHSTAR-01.
+On 2026-08-16, Farah Khan paid Northstar Trading INR 7000 using account ACCT-FARAH-01.
+On 2026-08-17, Asha Rao emailed Northstar Trading three times.
+On 2026-08-17, Kabir Shah visited Dockside Warehouse five times.
+On 2026-08-18, vehicle DL01AB1234 visited Riverside Garage.
+On 2026-08-18, Asha Rao used phone +91-9000000004.
+
+Review note: this dataset is fictional. Treat repeated contact, shared assets, reciprocal payments, and threats as explainable review signals only. They do not prove wrongdoing, intent, or guilt.

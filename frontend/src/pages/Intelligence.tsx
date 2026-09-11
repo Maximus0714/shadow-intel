@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Brain, Fingerprint, CheckCircle, DownloadSimple, ArrowRight } from "@phosphor-icons/react";
+import { Brain, Fingerprint, CheckCircle, DownloadSimple, ArrowRight, ChatsCircle } from "@phosphor-icons/react";
 import { PageHeader } from "../components/UI";
 import { useWorkspace, downloadFile } from "../lib/state/workspace";
 import { useAuth } from "../lib/auth";
@@ -17,6 +17,11 @@ interface Brief {
   findings: {entity_id: string; name: string; relative_percentile: number; outlier: boolean; observations: string[]; next_step: string;
     evidence: {record: number; src: string; dst: string; rel: string; source_rows: number[]; excerpt: string}[]}[];
 }
+interface AssistantAnswer {
+  answer:string;status:"supported"|"not_found"|"clarification"|"unsupported";entities_recognized:string[];path:string[];method:string;limitations:string;
+  facts:string[];warnings:string[];interpretation:string;matched_records:number;citations_truncated:boolean;path_directed:boolean;
+  citations:{record:number;src:string;dst:string;rel:string;date:string;amount:string;currency:string;frequency:number;source_rows:number[];source_page:string;source_file:string;excerpt:string}[];
+}
 
 export default function Intelligence() {
   const { mode, dataset } = useWorkspace();
@@ -29,14 +34,14 @@ export default function Intelligence() {
       dst_type: demoGraph.nodes.find(n => n.id === e.dst)?.label || "Person"})),
   } : dataset ? {name: dataset.name, records: dataset.records as unknown as Record<string, unknown>[], source_text: dataset.source_document?.source_text || ""} : null;
   return <><PageHeader eyebrow="AI & EVIDENCE PROOF" title="Find what stands out. Verify what stays true."
-    description="Review unusual activity, then seal the evidence behind your investigation." />
+    description="Review unusual activity, ask evidence-backed questions, then seal the evidence behind your investigation." />
     {evidence ? <EvidenceTools key={scope} evidence={evidence} scope={scope} demo={mode === "demo"} userId={user?.id || "guest"} />
       : <div className="panel intelligence-panel"><h2>Start with evidence</h2><p>Add a narrative or relationship file to use these tools.</p><Link className="btn primary" to="/upload">Add data <ArrowRight /></Link></div>}</>;
 }
 
 function EvidenceTools({ evidence, scope, demo, userId }: {evidence: Evidence; scope: string; demo: boolean; userId: string}) {
   const displayName = (id: string) => demo ? demoGraph.nodes.find(n => n.id === id)?.name || id : id;
-  const [tab, setTab] = useState<"ai" | "proof">("ai");
+  const [tab, setTab] = useState<"ai" | "assistant" | "proof">("ai");
   const [brief, setBrief] = useState<Brief | null>(null);
   const [receipt, setReceipt] = useState<Receipt | null>(() => {
     try { const saved = JSON.parse(localStorage.getItem(`xt-proof:${scope}`) || "null"); return saved?.transaction_hash ? saved : null; } catch { return null; }
@@ -71,6 +76,7 @@ function EvidenceTools({ evidence, scope, demo, userId }: {evidence: Evidence; s
   return <div className="intelligence-page">
     <div className="intelligence-tabs" role="group" aria-label="Investigation tools">
       <button className={`btn ${tab === "ai" ? "primary" : ""}`} aria-pressed={tab === "ai"} onClick={() => setTab("ai")}><Brain /> AI brief</button>
+      <button className={`btn ${tab === "assistant" ? "primary" : ""}`} aria-pressed={tab === "assistant"} onClick={() => setTab("assistant")}><ChatsCircle /> Evidence questions</button>
       <button className={`btn ${tab === "proof" ? "primary" : ""}`} aria-pressed={tab === "proof"} onClick={() => setTab("proof")}><Fingerprint /> Evidence proof</button>
       <span className="helper">{demo ? "Fictional demo · " : ""}{evidence.records.length} source records</span>
     </div>
@@ -96,7 +102,7 @@ function EvidenceTools({ evidence, scope, demo, userId }: {evidence: Evidence; s
         </section>
         <aside className="panel intelligence-panel"><h3>Before drawing conclusions</h3>{brief.data_gaps.map(g => <div className="intelligence-gap" key={g.label}><span>{g.label}</span><strong>{g.count}</strong></div>)}<details><summary>How this brief was made</summary><p>{brief.method}</p><p>The summary uses an evidence-based template. Feature comparisons are descriptive context, not causal model explanations.</p><p>{brief.limitations}</p></details></aside>
       </div>}
-    </> : <section className="panel intelligence-panel">
+    </> : tab === "assistant" ? <AssistantPanel evidence={evidence} displayName={displayName}/> : <section className="panel intelligence-panel">
       <div className="intelligence-heading"><div><span className="eyebrow">ETHEREUM · LOCAL DEVELOPMENT CHAIN</span><h2>A fingerprint for your evidence</h2></div><Fingerprint size={40} aria-hidden="true" /></div>
       <p>Nothing is sealed when this page opens, when analysis runs, or when the AI brief is generated. Press the button below to create one receipt for the current copy. Only a salted fingerprint goes on chain; the evidence stays off chain.</p>
       <ol className="proof-steps"><li><span>01</span> Choose a copy</li><li><span>02</span> Press seal</li><li><span>03</span> Verify later</li></ol>
@@ -124,6 +130,41 @@ function EvidenceTools({ evidence, scope, demo, userId }: {evidence: Evidence; s
           });
         }} />{imported && <div role="status" className={`proof-result ${imported.status}`}><strong>Uploaded bundle: {imported.status}</strong><p>{imported.message}</p></div>}<Link className="btn" to="/fingerprints"><Fingerprint size={17}/> Search sealed cases by key</Link></div>
       <details><summary>What this proof establishes</summary><p>It detects changes to the case name, ordered records and source text after sealing. It does not prove that the source is truthful, who collected it, or that AI conclusions are correct. Original file bytes and AI results are not sealed.</p><p>This is a single-node Ethereum development blockchain, not a public or multi-agency network. Its administrator can reset it. Receipts survive normal Docker restarts; deleting the chain volume removes the ledger. Downloaded bundles contain your evidence, so share them deliberately.</p>{receipt && <button className="btn" disabled={!!busy} onClick={() => perform("Sealing updated evidence", seal)}>Seal updated copy</button>}</details>
+    </section>}
+  </div>;
+}
+
+function AssistantPanel({evidence,displayName}:{evidence:Evidence;displayName:(id:string)=>string}) {
+  const [question,setQuestion]=useState("");
+  const [result,setResult]=useState<AssistantAnswer|null>(null);
+  const [busy,setBusy]=useState(false);
+  const [error,setError]=useState("");
+  const ask=async(candidate=question)=>{
+    if(!candidate.trim()||busy)return;
+    setQuestion(candidate);setBusy(true);setError("");setResult(null);
+    try{setResult(await postWorkspace<AssistantAnswer>("assistant",{evidence,question:candidate}));}
+    catch(e){setError(e instanceof Error?e.message:"The evidence search failed.");}
+    finally{setBusy(false);}
+  };
+  return <div className="assistant-layout">
+    <section className="panel intelligence-panel assistant-query">
+      <div className="intelligence-heading"><div><span className="eyebrow">EVIDENCE QUESTIONS</span><h2>Get an answer with its sources.</h2></div><ChatsCircle size={38}/></div>
+      <p>Ask who contacted whom, how often, which assets appear, or how much was recorded in payments. Use full names for precision and YYYY-MM-DD for dates. This tool answers structured evidence questions; it does not infer motives or understand every free-form question.</p>
+      <label className="field"><span>Question about this investigation</span><textarea rows={4} maxLength={1000} disabled={busy} value={question} onChange={event=>{setQuestion(event.target.value);setResult(null);}} placeholder="Who called an entity? How much did one entity pay another?" onKeyDown={event=>{if((event.metaKey||event.ctrlKey)&&event.key==="Enter")void ask();}}/></label>
+      <div className="assistant-prompts"><span>Try:</span>{["Show payment records","Which vehicles appear in the evidence?", `Who called ${String(evidence.records[0]?.src||"an entity")}?`, "Summarize the case"].map(prompt=><button disabled={busy} key={prompt} onClick={()=>void ask(prompt)}>{prompt}</button>)}</div>
+      <button className="btn primary" disabled={busy||!question.trim()} onClick={()=>void ask()}>{busy?"Searching records…":"Ask evidence"}<ArrowRight/></button>
+      {error&&<p role="alert" className="error-copy">{error}</p>}
+    </section>
+    {result&&<section className="assistant-answer" aria-live="polite">
+      <article className={`panel assistant-summary ${result.status}`}><span className="overline">{{supported:"ANSWER FROM RECORDS",not_found:"NO MATCHING EVIDENCE",clarification:"REFINE YOUR QUESTION",unsupported:"QUESTION NOT SUPPORTED"}[result.status]}</span>
+        <p className="assistant-answer-text">{result.answer}</p>
+        {result.interpretation&&<p className="helper">Applied filters: {result.interpretation}</p>}
+        {result.facts?.length>0&&<ul>{result.facts.map(fact=><li key={fact}>{fact}</li>)}</ul>}
+        {result.warnings?.map(warning=><p className="helper" key={warning}>{warning}</p>)}
+        {result.path.length>0&&<div className="assistant-path">{result.path.map((entity,index)=><span key={`${entity}-${index}`}>{index>0&&<span aria-label={result.path_directed?"points to":"connected to"}>{result.path_directed?"→":"↔"}</span>}<Link to={`/entities/${encodeURIComponent(entity)}`}>{displayName(entity)}</Link></span>)}</div>}</article>
+      {result.citations_truncated&&<p className="helper">Counts use all {result.matched_records} matching records. Showing the first 50 citations; narrow your question to inspect the rest.</p>}
+      <div className="assistant-citations"><div className="panel-header"><h2>Source records</h2><span className="tag">{result.citations.length} cited</span></div>{result.citations.length?result.citations.map(item=><article className="panel assistant-citation" key={item.record}><div><span className="mono">RECORD {item.record}</span><span className="tag">{item.rel.replace(/_/g," ").toLowerCase()}</span></div><h3>{displayName(item.src)} → {displayName(item.dst)}</h3><p>{item.excerpt||"Structured source record; original prose was not supplied."}</p><small>{item.date||"Undated"}{item.amount&&` · ${item.currency||"Amount"} ${item.amount}`} · recorded frequency {item.frequency}{item.source_page&&` · PDF page ${item.source_page}`}{item.source_rows.length?` · extracted source row ${item.source_rows.join(", ")}`:""}</small></article>):<div className="panel"><p>No supporting record was found.</p></div>}</div>
+      <details className="panel"><summary>How this answer was made</summary><p>{result.method}</p><p>{result.limitations}</p></details>
     </section>}
   </div>;
 }

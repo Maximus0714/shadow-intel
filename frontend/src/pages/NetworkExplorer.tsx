@@ -424,19 +424,27 @@ export default function NetworkExplorer() {
                   </button>
                 </div>
                 <div className="graph-legend">
-                  <span>
-                    <i className="person" />
-                    Person
-                  </span>
-                  <span>
-                    <i className="vehicle" />
-                    Vehicle
-                  </span>
-                  <span>
-                    <i className="location" />
-                    Location
-                  </span>
-                  <span className="direction-legend">Line <b>→</b> target</span>
+                  <div className="legend-group">
+                    <span className="legend-heading">Entities</span>
+                    <div className="legend-items">
+                      <span><i className="person" />Person</span>
+                      <span><i className="vehicle" />Vehicle</span>
+                      <span><i className="location" />Location</span>
+                    </div>
+                  </div>
+                  {relationshipTypes.length > 0 && <div className="legend-group relationship-key">
+                    <span className="legend-heading">Connections</span>
+                    <div className="legend-items">
+                      {relationshipTypes.map(([rel]) => {
+                        const visual = relationshipVisual(rel);
+                        return <span key={rel} title={`${visual.label}: ${visual.line} line`}>
+                          <i className="relationship-swatch" style={{color: visual.color, borderTopColor: visual.color, borderTopStyle: visual.line}} aria-hidden="true" />
+                          {visual.label}
+                        </span>;
+                      })}
+                    </div>
+                  </div>}
+                  <span className="direction-legend"><b>→</b> arrow points from source to target</span>
                 </div>
                 {selected && (
                   <div className="ego-actions">

@@ -75,3 +75,19 @@ def test_server_file_preview_metadata_and_path_filters():
         # File limit is above the former 5 MB boundary, without bypassing graph limits.
         assert client.post('/workspace/file',data={'kind':'data'},files={'file':('large.csv',large)}).status_code==200
         assert client.post('/workspace/file',data={'kind':'text'},files={'file':('note.txt',b'Asha Rao called Kabir Shah.')} ).json()['records'][0]['dst']=='Kabir Shah'
+
+
+def test_telephone_speaker_pronoun_and_compound_vehicle_clause():
+    text = ('Kabir Shah used telephone number +91-9000000003. '
+            'Meera Sen has telephone number +91-9000000002.\n'
+            'Dev Shah: Kabir Shah argued with me.\n'
+            'Kabir Shah is associated with Northstar Trading and has used vehicle MH12AB1234.')
+    result = extract_narrative(text)
+    facts = {(row['src'], row['rel'], row['dst']) for row in result['records']}
+    assert ('Kabir Shah', 'HAS_PHONE', '+91-9000000003') in facts
+    assert ('Meera Sen', 'HAS_PHONE', '+91-9000000002') in facts
+    assert ('Kabir Shah', 'ARGUED_WITH', 'Dev Shah') in facts
+    assert ('Kabir Shah', 'ASSOCIATE_OF', 'Northstar Trading') in facts
+    assert ('Kabir Shah', 'USED_VEHICLE', 'MH12AB1234') in facts
+    assert all(row['dst'].casefold() != 'me' for row in result['records'])
+    assert ('Northstar Trading', 'USED_VEHICLE', 'MH12AB1234') not in facts

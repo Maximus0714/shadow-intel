@@ -73,19 +73,21 @@ Override `API_PROXY_TARGET` for a backend on another port. On Windows activate
 the environment with `.venv\\Scripts\\Activate.ps1`. Docker needs no host Python or Node.
 Production build: `npm run build`; local preview: `npm run preview`.
 
-Choose **Add your own data** to paste English transcripts, arguments, articles or case notes. The default text flow extracts candidate relationships on the backend and lets you exclude incorrect links before building a network. Source sentences, line numbers, unresolved statements and standalone identifiers are retained. You can also upload TXT, MD, SRT or VTT transcripts, or switch to **Data file** for CSV, XLSX and relationship JSON with column mapping.
+Choose **Add your own data** to paste English transcripts, arguments, articles or case notes. The default text flow extracts candidate relationships on the backend and lets you exclude incorrect links before building a network. Source sentences, line numbers, unresolved statements and standalone identifiers are retained. You can also upload text-based PDF, TXT, MD, SRT or VTT evidence, or switch to **Data file** for CSV, XLSX and relationship JSON with column mapping.
 
 Before graph creation, backend entity resolution compares names and normalized identifiers and presents likely duplicate identities for investigator review. Shared phones, vehicles and accounts strengthen a suggestion. Nothing is merged automatically: the investigator approves a pair and chooses the canonical name, while the discarded alias remains attached to the source record as provenance.
 
-Files support up to **20 MB**, text extraction up to **500,000 characters**, and graphs up to **10,000 relationships / 2,000 entities**. Convert legacy XLS files to XLSX. Audio and scanned documents need transcription first. Extraction uses bounded English rules, so it cannot promise full understanding of arbitrary prose. It does not infer ambiguous pronouns; negated and uncertain statements remain unlinked. Explicit speaker-label “I” statements are supported.
+Files support up to **20 MB**, text extraction up to **500,000 characters**, PDFs up to **300 pages**, and graphs up to **10,000 relationships / 2,000 entities**. Convert legacy XLS files to XLSX. Audio and scanned image-only documents need transcription or OCR first. Extraction uses bounded English rules, so it cannot promise full understanding of arbitrary prose. It does not infer ambiguous pronouns; negated and uncertain statements remain unlinked. Explicit speaker-label “I” statements are supported.
 
 All upload parsing, cleaning, extraction, rankings, community detection, pattern analysis, neighbourhood expansion and path searches run on FastAPI. The browser displays and filters server results, saves snapshots and exports reports. There is no browser analysis switch or silent fallback. Path searches operate on the visible graph, preserving relationship/community filters and node limits.
 
 The network explorer uses directed arrows, relationship-specific colours and line styles, optional edge labels, multi-select relationship filters and one-relationship quick views. Pattern review uses evidence-aware rules for robust contact-volume outliers, explicit threats and repeated conflict, shared phones/accounts/vehicles, address concentration, same-type reciprocal flows, cross-community activity, time-linked transfer cycles and repeated similar-value payments. These are triage leads, not predictions of guilt.
 
+The **Investigation Timeline** sorts dated calls, payments, visits and other observations without inventing missing times. Ambiguous numeric dates remain in a review queue. Same-day clusters require a shared entity and compatible time basis, while undated records remain visible. Every event links to its source rows, original wording and PDF page when available. **Evidence questions** applies entity, relationship, direction and date conditions together; computes frequency and separate per-currency payment totals from all matches; cites the supporting records; traces paths up to four links; asks for clarification on ambiguous names; and declines unsupported motive or guilt questions.
+
 Supported context includes payment history with dates, currency and references; vehicle ownership versus use; phones, accounts, employers, addresses and visits. Original structured columns are retained in relationship attributes. Currency totals are not combined or converted. Graph paths are capped at 10 results and 50,000 search expansions, with truncation reported.
 
-The current result is saved in IndexedDB; notes and watchlists use local storage, separately for each dataset and demo. Returning to the same browser and origin restores it. Clearing site data removes it; replacing the dataset replaces the saved investigation. Download reports to retain findings. There is no server-side case storage, account login or cross-device synchronization.
+The current result is saved in IndexedDB; notes and watchlists use local storage, separately for each dataset and demo. Returning to the same browser and origin restores it. Clearing site data removes it; replacing the dataset replaces the saved investigation. Download reports to retain findings. Authentication uses Supabase when configured, while investigation contents remain on the current device; there is no server-side case storage or cross-device case synchronization.
 
 ## Optional standalone Python API
 
@@ -120,6 +122,8 @@ npm run build                     # TypeScript + optimized production build
 |---|---|---|
 | POST | `/workspace/analyze` | isolated uploaded-data analysis, no shared graph writes |
 | POST | `/workspace/documents` | bounded English rules and extractive summary |
+| POST | `/workspace/timeline` | chronological evidence projection and same-day clusters |
+| POST | `/workspace/assistant` | source-cited case retrieval and short path answers |
 | GET | `/health`, `/stats` | liveness + node/edge counts |
 | GET | `/graph/full?limit=600` | capped full graph for Cytoscape |
 | GET | `/entities/{id}`, `/entities/{id}/network?depth=N` | dossier + ego network |

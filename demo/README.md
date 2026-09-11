@@ -12,3 +12,5 @@ It is designed to exercise the backend workflow:
 - Paste the `source_text` into **Add your own data** to demonstrate natural-language extraction separately.
 
 The dataset intentionally contains repeated contacts, cross-community links, payment loops, vehicle/location links, phone and account identifiers, dated events, source-row references, and relationship attributes. It is a demonstration fixture, not ground truth.
+
+For a matching natural-language and CSV import, use `xtracer_showcase_dataset.txt` and `xtracer_showcase_dataset.csv`. They describe the same 49 explicit records and include a question list in `README_showcase_dataset.md`.

@@ -14,7 +14,7 @@ MAX_FILE_BYTES = 20_000_000
 _ROLE_PATTERNS = {
     "source": [r":START_ID", r"person_a", r"sender", r"^source$", r"^src$", r"\bfrom\b", r"^caller$", r"^from_number$"],
     "target": [r":END_ID", r"person_b", r"recipient", r"^target$", r"^dst$", r"\bto\b", r"^receiver$", r"^callee$", r"^to_number$"],
-    "rel": [r":TYPE", r"^rel$", r"^type$"],
+    "rel": [r":TYPE", r"^rel$", r"^type$", r"^relationship$"],
     "weight": [r"frequency", r"weight", r"count", r"calls"],
     "date": [r"timestamps?", r"^date$", r"datetime", r"approx_date_range"],
     "amount": [r"amount", r"value", r"\brs\b", r"inr"],

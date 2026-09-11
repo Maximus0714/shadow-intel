@@ -122,6 +122,29 @@ def intelligence(body: Evidence):
         intelligence_slots.release()
 
 
+class AssistantRequest(BaseModel):
+    evidence: Evidence
+    question: str = Field(min_length=2, max_length=1000)
+
+
+@router.post("/assistant")
+def investigation_assistant(body: AssistantRequest):
+    from .assistant import answer_question
+    try:
+        return answer_question(
+            [record.model_dump() for record in body.evidence.records],
+            body.question,
+        )
+    except ValueError as error:
+        raise HTTPException(422, str(error))
+
+
+@router.post("/timeline")
+def investigation_timeline(body: Evidence):
+    from .timeline import build_timeline
+    return build_timeline([record.model_dump() for record in body.records])
+
+
 from .evidence_proof import Receipt, anchor, lookup, verify
 
 
@@ -187,9 +210,8 @@ def evidence_file(file: UploadFile = File(...), kind: str = Form("data"), sheet:
         raise HTTPException(413, "File exceeds 20 MB.")
     try:
         if kind == "text":
-            if not (file.filename or "").lower().endswith((".txt", ".md", ".vtt", ".srt")):
-                raise ValueError("Upload TXT, Markdown, SRT or VTT text. Transcribe audio or convert PDFs first.")
-            return extract_narrative(content.decode("utf-8-sig"))
+            from .document_extract import extract_uploaded_narrative
+            return extract_uploaded_narrative(file.filename or "Uploaded evidence", content)
         rows, meta = parse_upload_file(file.filename, content, sheet or None)
         if len(rows) > 10000:
             raise ValueError("Use at most 10,000 relationship rows per investigation.")

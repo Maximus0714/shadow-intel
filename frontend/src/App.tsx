@@ -20,6 +20,7 @@ import {
   UploadSimple,
   SquaresFour,
   BookmarkSimple,
+  ClockCounterClockwise,
   List,
   X,
   MagnifyingGlass,
@@ -43,6 +44,7 @@ const UploadSettings = lazy(() => import("./pages/UploadSettings"));
 const Communities = lazy(() => import("./pages/Communities"));
 const Reports = lazy(() => import("./pages/Reports"));
 const Intelligence = lazy(() => import("./pages/Intelligence"));
+const Timeline = lazy(() => import("./pages/Timeline"));
 const Investigations = lazy(() => import("./pages/Investigations"));
 const Fingerprints = lazy(() => import("./pages/Fingerprints"));
 const nav = [
@@ -51,6 +53,7 @@ const nav = [
   { to: "/entities", label: "Entities & Search", icon: UsersThree },
   { to: "/communities", label: "Communities", icon: SquaresFour },
   { to: "/alerts", label: "Alerts & Patterns", icon: ShieldWarning },
+  { to: "/timeline", label: "Timeline", icon: ClockCounterClockwise },
   { to: "/documents", label: "Document Intel", icon: FileText },
   { to: "/intelligence", label: "AI & Evidence Proof", icon: CheckCircle },
   { to: "/reports", label: "Reports & Watchlist", icon: BookmarkSimple },
@@ -242,6 +245,7 @@ export default function App() {
                 <Route path="/entities/:id" element={<Entities />} />
                 <Route path="/communities" element={<Communities />} />
                 <Route path="/alerts" element={<Alerts />} />
+                <Route path="/timeline" element={<Timeline />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/intelligence" element={<Intelligence />} />

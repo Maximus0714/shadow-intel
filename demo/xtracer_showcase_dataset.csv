@@ -1,0 +1,50 @@
+source,target,relationship,frequency,date,amount,currency,evidence,source_type,target_type
+Asha Rao,Kabir Shah,CALLED,8,2026-08-03,,,"Asha Rao called Kabir Shah eight times from phone +91-9000000001 near Dockside Warehouse.",Person,Person
+Asha Rao,Northstar Trading,WORKS_FOR,1,2026-08-03,,,"Asha Rao works for Northstar Trading.",Person,Organization
+Kabir Shah,Northstar Trading,WORKS_FOR,1,2026-08-03,,,"Kabir Shah works for Northstar Trading.",Person,Organization
+Asha Rao,Kabir Shah,EMAILED,6,2026-08-03,,,"Asha Rao emailed Kabir Shah six times about invoice INV-8841.",Person,Person
+Asha Rao,Kabir Shah,FINANCIAL_TRANSFER,1,2026-08-04,125000,INR,"Asha Rao paid Kabir Shah INR 125000 using account ACCT-ASHA-01 and reference TX-SYN-001.",Person,Person
+Kabir Shah,MH12AB1234,USED_VEHICLE,4,2026-08-04,,,"Kabir Shah used vehicle MH12AB1234 to visit Dockside Warehouse four times.",Person,Vehicle
+Meera Sen,Dockside Warehouse,VISITED,2,2026-08-04,,,"Meera Sen visited Dockside Warehouse twice.",Person,Location
+Meera Sen,+91-9000000002,HAS_PHONE,1,2026-08-04,,,"Meera Sen used phone +91-9000000002.",Person,Phone
+Kabir Shah,+91-9000000003,HAS_PHONE,1,2026-08-04,,,"Kabir Shah used phone +91-9000000003.",Person,Phone
+Dev Shah,Northstar Trading,EMAILED,5,2026-08-05,,,"Dev Shah emailed Northstar Trading five times about invoice INV-8841.",Person,Organization
+Dev Shah,Northstar Trading,FINANCIAL_TRANSFER,1,2026-08-05,42000,INR,"Dev Shah paid Northstar Trading INR 42000 using account ACCT-DEV-01 and reference TX-SYN-002.",Person,Organization
+Dev Shah,Kabir Shah,ARGUED_WITH,2,2026-08-05,,,"Dev Shah argued with Kabir Shah twice about a missing payment.",Person,Person
+Meera Sen,Asha Rao,ASSOCIATE_OF,1,2026-08-06,,,"Meera Sen met Asha Rao at Riverside Cafe.",Person,Person
+Asha Rao,Riverside Cafe,VISITED,1,2026-08-06,,,"Asha Rao visited Riverside Cafe.",Person,Location
+Meera Sen,Riverside Cafe,VISITED,1,2026-08-06,,,"Meera Sen visited Riverside Cafe.",Person,Location
+Asha Rao,Kabir Shah,ASSOCIATE_OF,1,2026-08-06,,,"Asha Rao knows Kabir Shah through Northstar Trading.",Person,Person
+Kabir Shah,Dockside Warehouse,VISITED,1,2026-08-07,,,"Kabir Shah led a delivery to Dockside Warehouse.",Person,Location
+MH12AB1234,Dockside Warehouse,VISITED,3,2026-08-07,,,"Vehicle MH12AB1234 visited Dockside Warehouse three times.",Vehicle,Location
+Farah Khan,Meera Sen,CONTACTED,4,2026-08-08,,,"Farah Khan contacted Meera Sen four times.",Person,Person
+Farah Khan,Kabir Shah,FINANCIAL_TRANSFER,1,2026-08-08,18000,INR,"Farah Khan paid Kabir Shah INR 18000 using account ACCT-FARAH-01 and reference TX-SYN-003.",Person,Person
+Farah Khan,ACCT-FARAH-01,HAS_ACCOUNT,1,2026-08-08,,,"Farah Khan used account ACCT-FARAH-01.",Person,Account
+Asha Rao,DL01AB1234,OWNS_VEHICLE,1,2026-08-09,,,"Asha Rao owns vehicle DL01AB1234.",Person,Vehicle
+DL01AB1234,Riverside Garage,REGISTERED_AT,1,2026-08-09,,,"Vehicle DL01AB1234 is registered at Riverside Garage.",Vehicle,Location
+Northstar Trading,ACCT-NORTHSTAR-01,HAS_ACCOUNT,1,2026-08-09,,,"Northstar Trading has account ACCT-NORTHSTAR-01.",Organization,Account
+Northstar Trading,Dockside Warehouse,REGISTERED_AT,1,2026-08-09,,,"Northstar Trading is registered at Dockside Warehouse.",Organization,Location
+Kabir Shah,Meera Sen,CALLED,7,2026-08-10,,,"Kabir Shah called Meera Sen seven times.",Person,Person
+Meera Sen,Northstar Trading,CONTACTED,4,2026-08-10,,,"Meera Sen contacted Northstar Trading four times.",Person,Organization
+Farah Khan,Asha Rao,ASSOCIATE_OF,1,2026-08-10,,,"Farah Khan is associated with Asha Rao.",Person,Person
+Dev Shah,Kabir Shah,THREATENED,1,2026-08-11,,,"Dev Shah threatened Kabir Shah during an argument.",Person,Person
+Kabir Shah,Northstar Trading,FINANCIAL_TRANSFER,1,2026-08-11,9500,INR,"Kabir Shah transferred INR 9500 to Northstar Trading using reference TX-SYN-004.",Person,Organization
+Northstar Trading,Farah Khan,FINANCIAL_TRANSFER,1,2026-08-11,7000,INR,"Northstar Trading transferred INR 7000 to Farah Khan using reference TX-SYN-005.",Organization,Person
+MH12AB1234,Riverside Garage,VISITED,2,2026-08-12,,,"Vehicle MH12AB1234 visited Riverside Garage twice.",Vehicle,Location
+Asha Rao,Meera Sen,FAMILY_OF,1,2026-08-12,,,"Asha Rao and Meera Sen are family.",Person,Person
+Dev Shah,Northstar Trading,WORKS_FOR,1,2026-08-12,,,"Dev Shah works for Northstar Trading.",Person,Organization
+Kabir Shah,Northstar Trading,ASSOCIATE_OF,1,2026-08-13,,,"Kabir Shah is associated with Northstar Trading.",Person,Organization
+Meera Sen,MH12AB1234,USED_VEHICLE,2,2026-08-13,,,"Meera Sen used vehicle MH12AB1234 twice.",Person,Vehicle
+Farah Khan,Riverside Cafe,VISITED,1,2026-08-13,,,"Farah Khan visited Riverside Cafe.",Person,Location
+Asha Rao,Kabir Shah,FINANCIAL_TRANSFER,1,2026-08-14,21000,INR,"Asha Rao paid Kabir Shah INR 21000 using reference TX-SYN-006.",Person,Person
+Kabir Shah,Asha Rao,FINANCIAL_TRANSFER,1,2026-08-14,5000,INR,"Kabir Shah paid Asha Rao INR 5000 using reference TX-SYN-007.",Person,Person
+Asha Rao,Dockside Warehouse,VISITED,2,2026-08-14,,,"Asha Rao visited Dockside Warehouse twice.",Person,Location
+Asha Rao,Kabir Shah,CALLED,3,2026-08-15,,,"Asha Rao called Kabir Shah three times.",Person,Person
+Dev Shah,Farah Khan,CONTACTED,2,2026-08-15,,,"Dev Shah contacted Farah Khan twice.",Person,Person
+Meera Sen,MH12AB1234,USED_VEHICLE,1,2026-08-15,,,"Meera Sen used vehicle MH12AB1234.",Person,Vehicle
+Northstar Trading,Farah Khan,FINANCIAL_TRANSFER,1,2026-08-16,7000,INR,"Northstar Trading paid Farah Khan INR 7000 using account ACCT-NORTHSTAR-01.",Organization,Person
+Farah Khan,Northstar Trading,FINANCIAL_TRANSFER,1,2026-08-16,7000,INR,"Farah Khan paid Northstar Trading INR 7000 using account ACCT-FARAH-01.",Person,Organization
+Asha Rao,Northstar Trading,EMAILED,3,2026-08-17,,,"Asha Rao emailed Northstar Trading three times.",Person,Organization
+Kabir Shah,Dockside Warehouse,VISITED,5,2026-08-17,,,"Kabir Shah visited Dockside Warehouse five times.",Person,Location
+DL01AB1234,Riverside Garage,VISITED,1,2026-08-18,,,"Vehicle DL01AB1234 visited Riverside Garage.",Vehicle,Location
+Asha Rao,+91-9000000004,HAS_PHONE,1,2026-08-18,,,"Asha Rao used phone +91-9000000004.",Person,Phone
